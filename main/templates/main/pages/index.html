@@ -5,6 +5,10 @@
 {% block stylesheet %}{% endblock %}
 {% block content %}
     <h3>This is index page. Thank you!</h3>
+    <div class="user-login">
+        처음 오셨나요?
+        <a class="btn btn-default" href="{% url 'main:user_signup' %}" role="button">가입하기</a>
+    </div>
 
 {% endblock %}
 

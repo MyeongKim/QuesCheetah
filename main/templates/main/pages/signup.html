@@ -1,0 +1,16 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}{% endblock %}
+{% block content %}
+    <h3>This is signup page. Thank you!</h3>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form | linebreaks}}
+        <input type="submit">
+    </form>
+
+{% endblock %}
+
+{% block script %}{% endblock %}
