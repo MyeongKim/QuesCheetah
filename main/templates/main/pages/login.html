@@ -1,0 +1,49 @@
+{% extends "main/base.html" %}
+
+{% block content %}
+
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+
+{% if next %}
+<form action="/login/?next={{next}}" method="post" >
+{%else%}
+<form action="/login/" method="post" >
+{% endif %}
+    {% csrf_token %}
+    <table>
+        <tr>
+            <th>
+                <label for="email">Email:</label>
+            </th>
+            <td>
+                <input id="email" maxlength="254" name="email" type="text" />
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <label for="password">Password:</label>
+            </th>
+            <td>
+                <input id="password" name="password" type="password" />
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="login" />
+    <input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+{# Assumes you setup the password_reset view in your URLconf #}
+{#<p><a href="{% url 'password_reset' %}">Lost password?</a></p>#}
+
+{% endblock %}

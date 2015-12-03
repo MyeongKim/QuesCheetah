@@ -1,5 +1,8 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from hashlib import sha1
+from random import randint
+from django.conf import settings
 
 
 class UserManager(BaseUserManager):
@@ -39,3 +42,26 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return '{} ( {} )'.format(self.email, self.username)
 
+
+class ApiKeyManager(models.Manager):
+
+    def _generate_key(self):
+        return sha1(str(randint(0, (16 ** 40) - 1))).hexdigest()
+
+    def generate(self, user):
+        key = self._generate_key()
+
+        while self.filter(key=key).count() > 0:
+            key = self._generate_key()
+
+        return self.create(user=user, key=key)
+
+
+class ApiKey(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='api_keys')
+    key = models.CharField(max_length=40)
+    is_active = models.BooleanField(default=True)
+    objects = ApiKeyManager()
+
+    def __str__(self):
+        return self.key

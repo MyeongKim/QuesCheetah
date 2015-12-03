@@ -1,5 +1,6 @@
 from django import forms
 from main.models import User
+from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -36,3 +37,8 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['email', 'username', 'password']
+
+
+class AuthenticationFormWithInactiveUsersOkay(AuthenticationForm):
+    def confirm_login_allowed(self, user):
+        pass

@@ -127,3 +127,9 @@ STATICFILES_DIRS = [
 ]
 
 AUTH_USER_MODEL = 'main.User'
+
+from django.core.urlresolvers import reverse_lazy
+
+# LOGIN_REDIRECT_URL = reverse_lazy('main:index')
+LOGIN_URL = reverse_lazy('main:user_login')
+LOGOUT_URL = '/logout'
