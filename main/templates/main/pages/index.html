@@ -2,8 +2,69 @@
 
 {% load staticfiles %}
 
-{% block stylesheet %}{% endblock %}
+{% block stylesheet %}
+    <style rel="stylesheet" >
+        .jumbotron{
+            text-align: center;
+            background-color: #E07272;
+            color: #fff;
+            border-bottom: solid 10px #000;
+            position: relative;
+        }
+
+        .main-logo{
+{#            margin-bottom: 50px;#}
+        }
+
+        .main-logo h2{
+            line-height: 2em;
+        }
+
+        .main-info span{
+            font-size: 2.5em;
+            color : #000;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            width: 150px;
+            height: 150px;
+            background-color : #fff;
+            border: solid 10px #000;
+            bottom : -75px;
+            left: 0;
+            right : 0;
+            margin-left:auto;
+            margin-right:auto;
+        }
+
+    </style>
+{% endblock %}
+{% block jumbotron %}
+    <div class="jumbotron jumbotron-wrapper">
+        <div class="container">
+            <div class="main-logo">
+                <h2>빠른 조사, 쉬운 관리</h2>
+            </div>
+        </div>
+        <div class="main-info row">
+            <div class="main-info-left col-sm-6">
+                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
+                <p>실시간 설문 등록</p>
+                <p>14개</p>
+            </div>
+            <div class="main-info-right col-sm-6">
+                <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
+                <p>실시간 득표 현황</p>
+                <p>297개</p>
+            </div>
+        </div>
+        <div class="circle"></div>
+    </div>
+{% endblock %}
 {% block content %}
+
     <h3>This is index page. Thank you!</h3>
     <div class="user-login">
         처음 오셨나요?
