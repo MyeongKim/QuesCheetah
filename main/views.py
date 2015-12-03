@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from main.forms import UserForm
+from main.forms import UserForm, UserCreationForm
 # Create your views here.
 
 
@@ -16,12 +16,12 @@ def user_signup(request):
     }
 
     if request.method == 'POST':
-        form = UserForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('main:index')
     else:
-        form = UserForm()
+        form = UserCreationForm()
 
     context.update({'form': form})
     return render(request, 'main/pages/signup.html', context)
