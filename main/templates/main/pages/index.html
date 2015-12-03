@@ -6,7 +6,7 @@
     <style rel="stylesheet" >
         .jumbotron{
             text-align: center;
-            background-color: #E07272;
+            background-color: #8c2625;
             color: #fff;
             border-bottom: solid 10px #000;
             position: relative;
@@ -39,6 +39,35 @@
             margin-right:auto;
         }
 
+        .feature{
+            text-align: center;
+            margin-top : 50px;
+            margin-bottom: 50px;
+        }
+
+        .feature .feature-element {
+            height: 200px;
+            font-size: 1.3em;
+            margin-top : 10px;
+        }
+
+        .feature .feature-element span{
+            font-size: 2em;
+        }
+
+        .usecase{
+            background-color: #919191;
+            color : #fff;
+            text-align: center;
+            margin-bottom: 50px;
+        }
+    
+        .usecase .usecase-element{
+            height: 400px;
+            font-size: 1.3em;
+            margin-top: 30px;
+        }
+
     </style>
 {% endblock %}
 {% block jumbotron %}
@@ -64,13 +93,46 @@
     </div>
 {% endblock %}
 {% block content %}
+    <div class="feature">
+        <div class="row">
+            <div class="col-sm-6 feature-element">
+                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+                <p>단 두줄의 코드로 실행할 수 있습니다.</p>
+            </div>
+            <div class="col-sm-6 feature-element">
+                <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+                <p>Dashboard에서 결과를 편하게 관리하세요.</p>
+            </div>
 
-    <h3>This is index page. Thank you!</h3>
-    <div class="user-login">
-        처음 오셨나요?
-        <a class="btn btn-default" href="{% url 'main:user_signup' %}" role="button">가입하기</a>
+            <div class="col-sm-6 feature-element">
+                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+                <p>질문과 보기화면 커스텀이 자유롭습니다.</p>
+            </div>
+            <div class="col-sm-6 feature-element">
+                <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+                <p>실시간으로 설문 결과가 반영됩니다.</p>
+            </div>
+            <div class="col-sm-12">
+                <a href="#">데모 페이지 바로가기</a>
+            </div>
+        </div>
     </div>
-
+    <div class="usecase">
+        <div class="row">
+            <div class="col-sm-6 usecase-element">
+                <p>USECASE1</p>
+                <p>서비스 만족도 체크</p>
+                <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSXwYIr6yyoMGJ_9bSFgmXJF4cAVtqH_3UPCT1Hf4KlcUPcuLlNWw">
+            </div>
+            <div class="col-sm-6 usecase-element">
+                <div class="usecase-text">
+                    <p>USECASE2</p>
+                    <p>고객 선호도 체크</p>
+                </div>
+                <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSXwYIr6yyoMGJ_9bSFgmXJF4cAVtqH_3UPCT1Hf4KlcUPcuLlNWw">
+            </div>
+        </div>
+    </div>
 {% endblock %}
 
 {% block script %}{% endblock %}
