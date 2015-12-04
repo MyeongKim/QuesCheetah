@@ -4,41 +4,84 @@
 
 {% block stylesheet %}
     <style rel="stylesheet" >
-        .jumbotron{
+        .my-jumbotron{
             text-align: center;
-            background-color: #8c2625;
+            background: url("/static/images/red.jpg");
             color: #fff;
-            border-bottom: solid 10px #000;
+            border-bottom: solid 3px #6a070b;
             position: relative;
+            padding-bottom: 0;
+            padding-top: 60px;
         }
 
-        .main-logo{
-{#            margin-bottom: 50px;#}
-        }
-
-        .main-logo h2{
-            line-height: 2em;
-        }
-
-        .main-info span{
-            font-size: 2.5em;
-            color : #000;
-        }
-
-        .circle {
+        .outer-circle {
             position: absolute;
             border-radius: 50%;
-            width: 150px;
-            height: 150px;
+            width: 100px;
+            height: 100px;
             background-color : #fff;
-            border: solid 10px #000;
-            bottom : -75px;
+            border: solid 3px #6a070b;
+            bottom : -50px;
             left: 0;
             right : 0;
             margin-left:auto;
             margin-right:auto;
+            z-index: 2000;
         }
 
+        .inner-circle{
+            position: absolute;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            background-color : #fff;
+            border-bottom: solid 3px rgb(195, 195, 195);
+
+            bottom : -35px;
+            left: 0;
+            right : 0;
+            margin-left:auto;
+            margin-right:auto;
+            z-index: 3000;
+        }
+
+        .demo h3{
+            text-align: center;
+            margin-top: 100px;
+
+        }
+
+        .demo .container{
+            margin-top: 100px;
+        }
+        .demo .start-code{
+            border : solid 1px rgb(195, 195, 195);
+            border-radius: 4px;
+            width: 400px;
+            height: 220px;
+            padding: 20px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .demo .demo-modal{
+            border : solid 1px rgb(195, 195, 195);
+            border-radius: 4px;
+            width: 400px;
+            height: 220px;
+            padding: 20px;
+            background-color: rgb(195, 195, 195);
+            margin-right: auto;
+            margin-left: auto;
+
+        }
+
+        .down-arrow{
+            margin-top: 100px;
+            margin-bottom: 100px;
+            text-align: center;
+            font-size: 2em;
+        }
         .feature{
             text-align: center;
             margin-top : 50px;
@@ -71,28 +114,44 @@
     </style>
 {% endblock %}
 {% block jumbotron %}
-    <div class="jumbotron jumbotron-wrapper">
+    <div class="my-jumbotron">
         <div class="container">
-            <div class="main-logo">
-                <h2>빠른 조사, 쉬운 관리</h2>
-            </div>
-        </div>
         <div class="main-info row">
-            <div class="main-info-left col-sm-6">
-                <span class="glyphicon glyphicon-list-alt" aria-hidden="true"></span>
-                <p>실시간 설문 등록</p>
-                <p>14개</p>
-            </div>
-            <div class="main-info-right col-sm-6">
-                <span class="glyphicon glyphicon-check" aria-hidden="true"></span>
-                <p>실시간 득표 현황</p>
-                <p>297개</p>
-            </div>
         </div>
-        <div class="circle"></div>
+        </div>
+        <div class="outer-circle"></div>
+        <div class="inner-circle"></div>
     </div>
 {% endblock %}
 {% block content %}
+    <div class="demo">
+        <h3>의견이 모이고 있습니다!</h3>
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div class="start-code">
+                        <ol class="code">
+                            <li><span class="code"><span class="v">var</span> io = <span class="io">require('socket.io')(80)</span>;</span></li>
+                            <li><span class="code"><span class="v">var</span> cfg = require('./config.json');</span></li>
+                            <li><span class="code"><span class="v">var</span> tw = require('node-tweet-stream')(cfg);</span></li>
+                            <li><span class="code">tw.track('socket.io');</span></li>
+                            <li><span class="code">tw.track('javascript');</span></li>
+                            <li><span class="code">tw.on('tweet', <span class="fn">function</span>(tweet){</span></li>
+                            <li><span class="code">&nbsp;&nbsp;<span class="io">io.emit('tweet', tweet)</span>;</span></li>
+                            <li><span class="code">});</span></li>
+                        </ol>
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div class="demo-modal">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="down-arrow">
+        <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+    </div>
     <div class="feature">
         <div class="row">
             <div class="col-sm-6 feature-element">
@@ -117,6 +176,7 @@
             </div>
         </div>
     </div>
+
     <div class="usecase">
         <div class="row">
             <div class="col-sm-6 usecase-element">
@@ -135,4 +195,29 @@
     </div>
 {% endblock %}
 
-{% block script %}{% endblock %}
+{% block script %}
+    <script>
+    $(document).ready(function(){
+{#        var scroll_start = 0;#}
+{#        var startchange = $('#startchange');#}
+{#        var offset = startchange.offset();#}
+{#        if (true){#}
+{#            $(document).scroll(function() {#}
+{#                scroll_start = $(this).scrollTop();#}
+{#                if(scroll_start > 57) {#}
+{#                    $(".navbar-default").css('background', 'url("/static/images/red.jpg")');#}
+{#                    $(".navbar-default").css('height', '30px');#}
+{##}
+{##}
+{#                } else {#}
+{#                    $('.navbar-default').css('background-color', 'transparent');#}
+{#                    $(".outer-circle").css('z-index', '0.5');#}
+{#                    $(".inner-circle").css('z-index', '1');#}
+{#                    $(".navbar-default").css('z-index', '0.3');#}
+{##}
+{#                }#}
+{#            });#}
+{#        }#}
+    });
+    </script>
+{% endblock %}

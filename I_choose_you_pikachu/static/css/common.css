@@ -1,33 +1,51 @@
-.nav_class_outline_section{
-    margin-bottom: 100px;
+body{
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
 }
 
 .navbar-default{
     margin-bottom: 0;
-    background-color: #8c2625;
+    /*background-color: transparent;*/
+    background: url("/static/images/red.jpg");
     border-color: transparent;
 }
 
 .navbar-default .navbar-brand{
-    color : #F5CF5A;
+    color : #fff;
+    padding: 5px;
+    margin-top: 5px;
 }
 
 .navbar-default .navbar-nav>li>a {
     color : #fff;
     padding: 5px;
     margin: 5px 20px;
-    font-size: 1.1em;
-
 }
 
 .navbar-default .navbar-brand:hover{
     color: #fff;
 }
 
+.navbar-default .navbar-brand:focus{
+    color : #fff;
+}
+
 .navbar-default .navbar-nav>li>a:hover{
     color:#fff;
 }
 
-.navbar-default .navbar-nav>li>a.login {
-    border: solid #fff;
+.navbar-default .navbar-nav>li>a:focus{
+    color: #fff
 }
+
+.navbar-default .navbar-nav>li>a.login {
+    border: solid 1px #fff;
+    border-radius : 2px;
+}
+
+.navbar-nav > li > a, .navbar-brand {
+    padding-top:5px !important;
+    padding-bottom:0 !important;
+    height: 28px;
+}
+.navbar {min-height:28px !important;}
