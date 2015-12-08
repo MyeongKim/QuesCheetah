@@ -133,3 +133,7 @@ from django.core.urlresolvers import reverse_lazy
 # LOGIN_REDIRECT_URL = reverse_lazy('main:index')
 LOGIN_URL = reverse_lazy('main:user_login')
 LOGOUT_URL = '/logout'
+
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'asdf@gmail.com'
+EMAIL_HOST_PASSWORD = "password"

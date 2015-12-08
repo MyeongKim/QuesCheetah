@@ -1,7 +1,9 @@
 import json
+from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth.views import password_reset
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from main.forms import UserForm, UserCreationForm
 from main.models import User, ApiKey
@@ -21,14 +23,23 @@ def user_signup(request):
 
     }
     if request.is_ajax():
+        response_data = {}
+
         postEmail = request.POST.get('email')
         postUsername = request.POST.get('username')
         postPassword = request.POST.get('password')
 
         user = User(email=postEmail, username=postUsername, password=postPassword)
-        user.save()
+        try:
+            user.save()
 
-        response_data = {}
+        except IntegrityError as e:
+            response_data['status'] = False
+            response_data['msg'] = '이미 가입되어있는 이메일입니다.'
+            return HttpResponse(json.dumps(response_data),
+                                content_type="application/json"
+                                )
+        response_data['status'] = True
         response_data['msg'] = '가입이 완료되었습니다.'
 
         return HttpResponse(
@@ -76,7 +87,8 @@ def user_login(request):
             # Return an 'invalid login' error message.
             return HttpResponse('로그인 실패')
     else:
-        next = request.GET['next']
+
+        next = request.GET.get('next')
         context.update({'next':next})
         return render(request, 'main/pages/login.html', context)
 
@@ -87,6 +99,10 @@ def user_logout(request):
 
 # TODO Unicode-objects must be encoded before hashing 에러 처리
 
+
+def password_reset(request):
+
+    return
 
 @login_required
 def apikey_new(request):

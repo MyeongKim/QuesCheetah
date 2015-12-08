@@ -59,7 +59,7 @@
                             <input type="submit" id='' value="login" />
                             <input type="hidden" name="next" value="{{ next }}" />
                             </form>
-
+                            <a href="{% url 'password_reset' %}">forgot password?</a>
                         </div>
                         <div role="tabpanel" class="tab-pane" id="signup">
                             {% if form.errors %}

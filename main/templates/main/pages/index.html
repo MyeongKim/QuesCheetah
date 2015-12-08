@@ -237,18 +237,30 @@
                 type : "POST",
                 data : {email : email ,username:username, password : password},
                 success : function(json){
-                    alert("성공했습니다.");
-                    alert("json :"+json.msg);
-                    $('#login-tab a').tab('show')
-                    $('#signup-email').val('');
-                    $('#signup-username').val('');
-                    $('#signup-password').val('');
-                    $('#signup-passowrd2').val('');
+
+                    if(json.status){
+                        $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>"+json.msg+
+                        "</div>");
+                        $('#login-tab a').tab('show')
+                        $('#signup-email').val('');
+                        $('#signup-username').val('');
+                        $('#signup-password').val('');
+                        $('#signup-password2').val('');
+                    } else {
+                        $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>"+json.msg+
+                        "</div>");
+                    }
+
+
                 },
                 error : function(xhr, errmsg, err){
                     $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
                         "</div>");
                     console.log(xhr.status + ": " + xhr.responseText);
+                    console.log('---------------');
+                    console.log(xhr);
+                    console.log('---------------');
+                    console.log(err);
                 }
             });
         }
@@ -264,7 +276,7 @@
                 user_signup(email, username, password);
 
             } else {
-                alert("비밀번호가 일치하지 않습니다.");
+                $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>비밀번호가 일치하지 않습니다.</div>");
                 $('#signup-password').val('');
                 $('#signup-password2').val('');
             }
