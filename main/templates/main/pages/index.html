@@ -19,33 +19,33 @@
             border-radius: 50%;
             width: 100px;
             height: 100px;
-            background-color : #fff;
+            background-color : transparent;
             border: solid 3px #6a070b;
             bottom : -50px;
             left: 0;
             right : 0;
             margin-left:auto;
             margin-right:auto;
-            z-index: 2000;
+            z-index: 1031;
         }
 
         .inner-circle{
             position: absolute;
             border-radius: 50%;
-            width: 70px;
-            height: 70px;
+            width: 30px;
+            height: 30px;
             background-color : #fff;
-            border-bottom: solid 3px rgb(195, 195, 195);
+            border: solid 3px #6a070b;
 
-            bottom : -35px;
+            bottom : -15px;
             left: 0;
             right : 0;
             margin-left:auto;
             margin-right:auto;
-            z-index: 3000;
+            z-index: 1032;
         }
 
-        .demo h3{
+        .demo h1{
             text-align: center;
             margin-top: 100px;
 
@@ -125,7 +125,7 @@
 {% endblock %}
 {% block content %}
     <div class="demo">
-        <h3>의견이 모이고 있습니다!</h3>
+        <h1>의견이 모이고 있습니다!</h1>
         <div class="container">
             <div class="row">
                 <div class="col-sm-6">
@@ -194,30 +194,82 @@
         </div>
     </div>
 {% endblock %}
-
+{% block modal %}
+    {% include "main/pages/modal_login.html" %}
+{% endblock %}
 {% block script %}
     <script>
     $(document).ready(function(){
-{#        var scroll_start = 0;#}
-{#        var startchange = $('#startchange');#}
-{#        var offset = startchange.offset();#}
-{#        if (true){#}
-{#            $(document).scroll(function() {#}
-{#                scroll_start = $(this).scrollTop();#}
-{#                if(scroll_start > 57) {#}
-{#                    $(".navbar-default").css('background', 'url("/static/images/red.jpg")');#}
-{#                    $(".navbar-default").css('height', '30px');#}
-{##}
-{##}
-{#                } else {#}
-{#                    $('.navbar-default').css('background-color', 'transparent');#}
-{#                    $(".outer-circle").css('z-index', '0.5');#}
-{#                    $(".inner-circle").css('z-index', '1');#}
-{#                    $(".navbar-default").css('z-index', '0.3');#}
-{##}
-{#                }#}
-{#            });#}
-{#        }#}
+        function getCookie(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie != '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = jQuery.trim(cookies[i]);
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        var csrftoken = getCookie('csrftoken');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        function user_signup(email, username, password){
+            $.ajax({
+                url : "signup",
+                type : "POST",
+                data : {email : email ,username:username, password : password},
+                success : function(json){
+                    alert("성공했습니다.");
+                    alert("json :"+json.msg);
+                    $('#login-tab a').tab('show')
+                    $('#signup-email').val('');
+                    $('#signup-username').val('');
+                    $('#signup-password').val('');
+                    $('#signup-passowrd2').val('');
+                },
+                error : function(xhr, errmsg, err){
+                    $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                        "</div>");
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        }
+
+        $('#signup-form').on('submit', function(e){
+            e.preventDefault();
+            var email = $('#signup-email').val();
+            var username = $('#signup-username').val();
+            var password = $('#signup-password').val();
+            var password2 = $('#signup-password2').val();
+
+            if (password === password2 ){
+                user_signup(email, username, password);
+
+            } else {
+                alert("비밀번호가 일치하지 않습니다.");
+                $('#signup-password').val('');
+                $('#signup-password2').val('');
+            }
+        });
+
     });
     </script>
 {% endblock %}

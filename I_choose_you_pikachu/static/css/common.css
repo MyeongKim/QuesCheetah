@@ -1,6 +1,7 @@
 body{
     font-family: 'Open Sans', sans-serif;
     font-weight: 300;
+    color : #6a070b;
 }
 
 .navbar-default{
@@ -8,6 +9,7 @@ body{
     /*background-color: transparent;*/
     background: url("/static/images/red.jpg");
     border-color: transparent;
+    font-weight: 600;
 }
 
 .navbar-default .navbar-brand{
@@ -41,6 +43,7 @@ body{
 .navbar-default .navbar-nav>li>a.login {
     border: solid 1px #fff;
     border-radius : 2px;
+    font-weight: 600;
 }
 
 .navbar-nav > li > a, .navbar-brand {

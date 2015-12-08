@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse, HttpResponseRedirect
@@ -19,17 +20,34 @@ def user_signup(request):
     context = {
 
     }
+    if request.is_ajax():
+        postEmail = request.POST.get('email')
+        postUsername = request.POST.get('username')
+        postPassword = request.POST.get('password')
 
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('main:index')
+        user = User(email=postEmail, username=postUsername, password=postPassword)
+        user.save()
+
+        response_data = {}
+        response_data['msg'] = '가입이 완료되었습니다.'
+
+        return HttpResponse(
+                    json.dumps(response_data),
+                    content_type="application/json"
+                )
+
+
     else:
-        form = UserCreationForm()
+        if request.method == 'POST':
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                form.save()
 
-    context.update({'form': form})
-    return render(request, 'main/pages/signup.html', context)
+        else:
+            form = UserCreationForm()
+
+        context.update({'form': form})
+        return render(request, 'main/pages/signup.html', context)
 
 
 def user_login(request):
@@ -37,6 +55,7 @@ def user_login(request):
     context = {
 
     }
+
     next = ""
     if request.method == 'POST':
         email = request.POST['email']
@@ -56,7 +75,7 @@ def user_login(request):
         else:
             # Return an 'invalid login' error message.
             return HttpResponse('로그인 실패')
-    else :
+    else:
         next = request.GET['next']
         context.update({'next':next})
         return render(request, 'main/pages/login.html', context)

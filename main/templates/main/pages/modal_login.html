@@ -1,0 +1,131 @@
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <div class="user-account-tab">
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active" id="login-tab">
+                            <a href="#login" aria-controls="login" role="tab" data-toggle="tab">Login</a>
+                        </li>
+                        <li role="presentation" id="signup-tab">
+                            <a href="#signup" aria-controls="signup" role="tab" data-toggle="tab">New Account</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab-helper-msg">
+
+                        </div>
+                        <div role="tabpanel" class="tab-pane active" id="login">
+                            {% if form.errors %}
+                                <p>Your username and password didn't match. Please try again.</p>
+                            {% endif %}
+
+                            {% if next %}
+                                {% if user.is_authenticated %}
+                                    <p>Your account doesn't have access to this page. To proceed,
+                                        please login with an account that has access.</p>
+                                {% else %}
+                                    <p>Please login to see this page.</p>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if next %}
+                                <form action="/login/?next={{next}}" method="post" >
+                            {%else%}
+                                <form action="/login/" method="post" >
+                            {% endif %}
+                            {% csrf_token %}
+                            <table>
+                                <tr>
+                                    <th>
+                                        <label for="email">Email:</label>
+                                    </th>
+                                    <td>
+                                        <input id="email" maxlength="254" name="email" type="text" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label for="password">Password:</label>
+                                    </th>
+                                    <td>
+                                        <input id="password" name="password" type="password" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="submit" id='' value="login" />
+                            <input type="hidden" name="next" value="{{ next }}" />
+                            </form>
+
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="signup">
+                            {% if form.errors %}
+                                <p>Your username and password didn't match. Please try again.</p>
+                            {% endif %}
+
+                            {% if next %}
+                                {% if user.is_authenticated %}
+                                    <p>Your account doesn't have access to this page. To proceed,
+                                        please login with an account that has access.</p>
+                                {% else %}
+                                    <p>Please login to see this page.</p>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if next %}
+                                <form action="/signup/?next={{next}}" method="post" >
+                            {%else%}
+                                <form action="/signup/" method="post" id="signup-form">
+                            {% endif %}
+                            {% csrf_token %}
+                            <table>
+                                <tr>
+                                    <th>
+                                        <label for="signup-email">Email:</label>
+                                    </th>
+                                    <td>
+                                        <input id="signup-email" maxlength="254" name="email" type="text" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label for="signup-username">Nickname:</label>
+                                    </th>
+                                    <td>
+                                        <input id="signup-username" maxlength="254" name="username" type="text" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label for="signup-password">Password:</label>
+                                    </th>
+                                    <td>
+                                        <input id="signup-password" name="password" type="password" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label for="signup-password2">Password2:</label>
+                                    </th>
+                                    <td>
+                                        <input id="signup-password2" name="password2" type="password" />
+                                    </td>
+                                </tr>
+                            </table>
+                            <input type="submit" id="user_signup_button" value="가입하기" />
+                            <input type="hidden" name="next" value="{{ next }}" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
