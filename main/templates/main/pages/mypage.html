@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}{% endblock %}
+{% block content %}
+    <h3>This is user page. Thank you!</h3>
+    {{ user.email }}
+    {{ userId }}
+    <div>
+    <p>This user has these api keys</p>
+    {% for i in apikey_all %}
+        {{ i | linebreaks}}
+    {% endfor %}
+    </div>
+    <a href="/apikey/new" class="btn btn-default">new api key </a>
+{% endblock %}
+
+{% block script %}{% endblock %}

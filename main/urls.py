@@ -6,5 +6,6 @@ urlpatterns = [
     url(r'^login/$', views.user_login, name='user_login'),
     url(r'^logout', views.user_logout, name='user_logout'),
     url(r'^signup$', views.user_signup, name='user_signup'),
+    url(r'^user/(?P<id>\w+)', views.user_mypage, name='user_mypage'),
     url(r'^apikey/new', views.apikey_new, name='apikey_new'),
 ]

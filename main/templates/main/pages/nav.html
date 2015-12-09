@@ -8,7 +8,11 @@
                 <li><a href="#">Feature</a></li>
                 <li><a href="#">Usecase</a></li>
                 <li><a href="#">Document</a></li>
-                <li><a href="#" class="btn login" data-toggle="modal" data-target="#myModal">Login</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'main:user_mypage' user.id %}" class="btn login">{{ user.username }}</a></li>
+                {% else %}
+                    <li><a href="#" class="btn login" data-toggle="modal" data-target="#myModal">Login</a></li>
+                {% endif %}
             </ul>
         </div>
     </div>

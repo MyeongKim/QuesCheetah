@@ -97,12 +97,19 @@ def user_logout(request):
     logout(request)
     return redirect('main:index')
 
-# TODO Unicode-objects must be encoded before hashing 에러 처리
 
+@login_required
+def user_mypage(request, id):
+    context = {
+        'userId': id
+    }
 
-def password_reset(request):
+    u = User.objects.get(id=id)
+    apikey_all = ApiKey.objects.filter(user=u)
 
-    return
+    context['apikey_all'] = apikey_all
+    return render(request, 'main/pages/mypage.html', context)
+
 
 @login_required
 def apikey_new(request):
@@ -110,7 +117,7 @@ def apikey_new(request):
 
     }
     if request.method == 'POST':
-        #ApiKey.objects.generate(request.user)
+        ApiKey.objects.generate(request.user)
         return HttpResponse('발급완료')
     else:
         return render(request, 'main/pages/apikey_new.html', context)

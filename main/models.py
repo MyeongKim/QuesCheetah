@@ -22,18 +22,18 @@ class UserManager(BaseUserManager):
 class User(AbstractBaseUser, PermissionsMixin):
 
     email = models.EmailField(max_length=250, unique=True)
-    username = models.CharField(max_length=20, null=True)
+    username = models.CharField(max_length=250, null=True)
 
-    created_date = models.DateTimeField(auto_now_add=True)
+    created_date = models.DateTimeField(auto_now_add=True, null=True)
 
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    is_active = models.NullBooleanField(default=True, null=True)
+    is_staff = models.NullBooleanField(default=False, null=True)
 
     USERNAME_FIELD = 'email'
 
     REQUIRED_FIELDS = ['username']
 
-    object = UserManager()
+    objects = UserManager()
 
     def get_full_name(self):
         return self.email
@@ -44,11 +44,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return '{} ( {} )'.format(self.email, self.username)
 
+    class Meta:
+        swappable = 'AUTH_USER_MODEL'
+
 
 class ApiKeyManager(models.Manager):
 
     def _generate_key(self):
-        return sha1(str(randint(0, (16 ** 40) - 1))).hexdigest()
+        return sha1(str(randint(0, (16 ** 40) - 1)).encode('utf-8')).hexdigest()
 
     def generate(self, user):
         key = self._generate_key()

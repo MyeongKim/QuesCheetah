@@ -15,7 +15,10 @@
         {% include "main/pages/nav.html" %}
     </div>
     {% block jumbotron %}{% endblock %}
-    {% block content %}{% endblock %}
+
+    <div class="block-content-wrapper">
+        {% block content %}{% endblock %}
+    </div>
     {% block modal %}{% endblock %}
     <script src="{% static "jquery/jquery-2.1.4.min.js" %}"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
