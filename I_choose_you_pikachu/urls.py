@@ -9,5 +9,9 @@ urlpatterns = [
     url(r'^password/reset/$', auth_view.password_reset, name='password_reset'),
     url(r'^password/reset/confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)', auth_view.password_reset_confirm, name='password_reset_confirm'),
     url(r'^password/reset/confirm/complete/$', auth_view.password_reset_complete, name='password_reset_complete'),
+
+    url(r'^accounts/', include('allauth.urls')),
+
     url(r'', include('main.urls', namespace='main')),
+
 ]

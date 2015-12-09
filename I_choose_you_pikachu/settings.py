@@ -37,6 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.google',
+
     'main',
 ]
 
@@ -56,8 +64,7 @@ ROOT_URLCONF = 'I_choose_you_pikachu.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -126,7 +133,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'I_choose_you_pikachu', 'static'),
 ]
 
-AUTH_USER_MODEL = 'main.User'
+
 
 from django.core.urlresolvers import reverse_lazy
 
@@ -137,3 +144,50 @@ LOGOUT_URL = '/logout'
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'asdf@gmail.com'
 EMAIL_HOST_PASSWORD = "password"
+
+AUTH_USER_MODEL = 'main.User'
+
+# django-allauth settings
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SITE_ID = 1
+
+SOCIALACCOUNT_QUERY_EMAIL = True
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+SOCIALACCOUNT_PROVIDERS = {
+
+    'facebook':
+         {'METHOD': 'oauth2',
+          'SCOPE': ['email'],
+          'FIELDS': [
+              'email',
+              'name',
+              'first_name',
+              'last_name',
+              'verified',
+              'updated_time'],
+          'VERIFIED_EMAIL': False,
+          'VERSION': 'v2.4'},
+
+    'google':
+        {'SCOPE': ['profile', 'email', 'https://www.googleapis.com/auth/userinfo.email'],
+             'AUTH_PARAMS': {
+                 'access_type': 'online'
+            }
+        }
+}
+
+
+
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_USERNAME_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+
+LOGIN_REDIRECT_URL = '/'

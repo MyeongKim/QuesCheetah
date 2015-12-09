@@ -1,3 +1,5 @@
+{% load socialaccount %}
+
 <div class="modal fade" id="myModal" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -5,7 +7,8 @@
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
             <div class="modal-body">
-                <div class="user-account-tab">
+                <div class="row">
+                <div class="user-account-tab col-sm-6">
                     <ul class="nav nav-tabs" role="tablist">
                         <li role="presentation" class="active" id="login-tab">
                             <a href="#login" aria-controls="login" role="tab" data-toggle="tab">Login</a>
@@ -121,10 +124,12 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
+                    <div class="social-login col-sm-6">
+                        <a href="{% provider_login_url "facebook" method="oauth2" %}"><p>Login with Facebook<p></a>
+                        <a href="{% provider_login_url "google" method="oauth2" %}"><p>Login with Google<p></a>
+{#                        <a href="/accounts/google/login"><p>Login with Google</p></a>#}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
