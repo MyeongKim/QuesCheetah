@@ -10,7 +10,7 @@
     <div>
     <p>This user has these api keys</p>
     {% for i in apikey_all %}
-        {{ i | linebreaks}}
+        <a href="{% url 'vote:new' i %}">{{ i | linebreaks}}</a>
     {% endfor %}
     </div>
     <a href="/apikey/new" class="btn btn-default">new api key </a>

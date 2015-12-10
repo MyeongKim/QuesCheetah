@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     'main',
+    'vote',
 ]
 
 MIDDLEWARE_CLASSES = [

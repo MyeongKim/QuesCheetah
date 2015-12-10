@@ -12,6 +12,8 @@ urlpatterns = [
 
     url(r'^accounts/', include('allauth.urls')),
 
+    url(r'vote/', include('vote.urls', namespace='vote')),
     url(r'', include('main.urls', namespace='main')),
+
 
 ]
