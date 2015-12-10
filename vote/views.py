@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.db.models import F
+from django.http import JsonResponse
+from django.shortcuts import render, redirect
 from main.models import ApiKey
 from vote.models import Question, Answer
 # Create your views here.
@@ -29,3 +31,34 @@ def new(request, api_key):
         context.update({'msg': '투표가 저장되었습니다.'})
 
     return render(request, 'vote/pages/new.html', context)
+
+
+def action(request, api_key):
+    context = {
+
+    }
+
+    a = ApiKey.objects.get(key=api_key)
+
+    if not a.question_key:
+        return redirect('vote:new')
+
+    question = Question.objects.get(api_key=a)
+    answers = Answer.objects.filter(question=question)
+
+    context.update({'question':question, 'answers':answers})
+    return render(request, 'vote/pages/action.html', context)
+
+
+def update(request):
+
+    q_key = request.POST.get('q_key')
+    update_num = request.POST.get('update_num')
+
+    a = ApiKey.objects.get(key=q_key)
+    question = Question.objects.get(api_key=a)
+
+    Answer.objects.filter(question=question, answer_num=update_num).update(count=F('count')+1)
+
+    return JsonResponse({})
+

@@ -1,0 +1,90 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}{% endblock %}
+{% block content %}
+    {{ msg }}
+    <h3>You can vote here.</h3>
+    <div id="helper-msg"></div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">{{ question.question_text }}</h3>
+                </div>
+                <div class="panel-body">
+                    {% for a in answers %}
+                        <div>
+                            <button class="btn btn-primary answerBtn" type="button" a_num="{{ a.answer_num }}" q_key="{{ question.api_key }}">
+                                {{ a.answer_text }}<span class="badge">{{ a.count }}</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script>
+        $(document).ready(function(){
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            function update(q_key, answer_num){
+                $.ajax({
+                    url : "/vote/update",
+                    type : "POST",
+                    data : {q_key : q_key, update_num : answer_num},
+                    success : function(json){
+                        location.reload()
+                    },
+                    error : function(xhr, errmsg, err){
+                        $('#helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                                "</div>");
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        console.log('---------------');
+                        console.log(xhr);
+                        console.log('---------------');
+                        console.log(err);
+                    }
+                });
+            }
+
+            $('.answerBtn').click(function () {
+                var a_num = $(this).attr('a_num');
+                var q_key = $(this).attr('q_key');
+                update(q_key, a_num);
+            })
+        });
+    </script>
+{% endblock %}
