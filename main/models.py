@@ -63,10 +63,9 @@ class ApiKeyManager(models.Manager):
 
 
 class ApiKey(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='api_keys')
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='api_keys')
     key = models.CharField(max_length=40)
-    is_active = models.BooleanField(default=True)
     objects = ApiKeyManager()
 
     def __str__(self):
-        return self.key
+        return 'id:{}, {}'.format(self.id, self.key)
