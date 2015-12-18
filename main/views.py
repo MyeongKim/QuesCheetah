@@ -118,7 +118,7 @@ def apikey_new(request):
     }
     if request.method == 'POST':
         ApiKey.objects.generate(request.user)
-        return HttpResponse('발급완료')
+        return redirect('main:user_mypage')
     else:
         return render(request, 'main/pages/apikey_new.html', context)
 

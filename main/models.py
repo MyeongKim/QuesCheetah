@@ -62,9 +62,14 @@ class ApiKeyManager(models.Manager):
         return self.create(user=user, key=key)
 
 
+# todo secret key 추가?
+
 class ApiKey(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='api_keys')
     key = models.CharField(max_length=40)
+    # secret_key = models.CharField(_('Secret Key'), max_length = 25)
+    created_dt = models.DateTimeField(auto_now_add=True)
+
     objects = ApiKeyManager()
 
     def __str__(self):

@@ -40,8 +40,11 @@ def action(request, api_key):
 
     a = ApiKey.objects.get(key=api_key)
 
-    if not a.question_key:
-        return redirect('vote:new')
+    try:
+        a.question_key
+
+    except Question.DoesNotExist:
+        return redirect('vote:new', api_key=api_key)
 
     question = Question.objects.get(api_key=a)
     answers = Answer.objects.filter(question=question)
@@ -62,3 +65,10 @@ def update(request):
 
     return JsonResponse({})
 
+
+# def result(request):
+
+    # q_key = request.GET.get('q_key')
+    # a = ApiKey.objects.get(key=q_key)
+    #
+    # q = Question.objects.get()
