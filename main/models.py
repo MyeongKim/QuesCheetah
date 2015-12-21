@@ -30,7 +30,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.NullBooleanField(default=False, null=True)
 
     USERNAME_FIELD = 'email'
-
     REQUIRED_FIELDS = ['username']
 
     objects = UserManager()
@@ -42,7 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.email
 
     def __str__(self):
-        return '{} ( {} )'.format(self.email, self.username)
+        return '[{}]{} ( {} )'.format(self.id, self.email, self.username)
 
     class Meta:
         swappable = 'AUTH_USER_MODEL'
@@ -62,12 +61,11 @@ class ApiKeyManager(models.Manager):
         return self.create(user=user, key=key)
 
 
-# todo secret key 추가?
+# todo secret key 대신에 accept_url (마지막에 추가)
 
 class ApiKey(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='api_keys')
     key = models.CharField(max_length=40)
-    # secret_key = models.CharField(_('Secret Key'), max_length = 25)
     created_dt = models.DateTimeField(auto_now_add=True)
 
     objects = ApiKeyManager()
