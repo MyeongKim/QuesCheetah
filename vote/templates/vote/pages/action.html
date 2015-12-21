@@ -11,13 +11,15 @@
         <div class="col-sm-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    <h3 class="panel-title">{{ question.question_text }}</h3>
+                    <h3 class="panel-title">
+                        {{ question.question_text }}
+                    </h3>
                 </div>
                 <div class="panel-body">
                     {% for a in answers %}
                         <div>
-                            <button class="btn btn-primary answerBtn" type="button" a_num="{{ a.answer_num }}" q_key="{{ question.api_key }}">
-                                {{ a.answer_text }}<span class="badge">{{ a.count }}</span>
+                            <button class="btn btn-primary answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ question.id }}">
+                                {{ a.answer_text }}<span class="badge">{{ a.get_answer_count }}</span>
                             </button>
                         </div>
                     {% endfor %}
@@ -60,13 +62,13 @@
                     }
                 }
             });
-            function update(q_key, answer_num){
+            function update(q_id, answer_num, unique_id){
                 $.ajax({
                     url : "/vote/update",
                     type : "POST",
-                    data : {q_key : q_key, update_num : answer_num},
+                    data : {q_id : q_id, update_num : answer_num, uniqueId : unique_id},
                     success : function(json){
-                        location.reload()
+                        location.reload();
                     },
                     error : function(xhr, errmsg, err){
                         $('#helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
@@ -80,10 +82,18 @@
                 });
             }
 
+            function unique_set(myType){
+                //if (myType === "default"){
+                    var d = new Date();
+                    return d.getTime();
+                //}
+            }
+
             $('.answerBtn').click(function () {
                 var a_num = $(this).attr('a_num');
-                var q_key = $(this).attr('q_key');
-                update(q_key, a_num);
+                var q_id = $(this).attr('q_id');
+                var unique_id = unique_set("default");
+                update(q_id, a_num, unique_id);
             })
         });
     </script>

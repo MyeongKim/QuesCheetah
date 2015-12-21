@@ -9,11 +9,12 @@
     {{ userId }}
     <div>
     <p>This user has these api keys</p>
-    {% for i in apikey_all %}
-        <a href="{% url 'vote:action' i %}">{{ i | linebreaks}}</a>
-    {% endfor %}
+    {% if api_key %}
+        <a href="{% url 'vote:select_question' api_key.key %}">{{ api_key.key }}</a>
+    {% else %}
+        <a href="/apikey/new" class="btn btn-default">new api key </a>
+    {% endif %}
     </div>
-    <a href="/apikey/new" class="btn btn-default">new api key </a>
 {% endblock %}
 
 {% block script %}{% endblock %}

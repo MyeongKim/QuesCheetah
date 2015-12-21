@@ -4,7 +4,12 @@ from django.db.models import ManyToManyField
 from main.models import ApiKey
 
 from datetime import datetime, timedelta
+from django.utils import timezone
 # Create your models here.
+
+
+def thirty_day_hence():
+    return timezone.now() + timezone.timedelta(days=30)
 
 
 class MultiQuestion(models.Model):
@@ -39,8 +44,8 @@ class Question(models.Model):
 
     ''' question available '''
     is_closed = models.BooleanField(default=False)
-    start_dt = models.DateTimeField(default=datetime.now())
-    end_dt = models.DateTimeField(default=datetime.now()+timedelta(days=30))
+    start_dt = models.DateTimeField(default=timezone.now)
+    end_dt = models.DateTimeField(default=thirty_day_hence)
     is_editable = models.BooleanField(default=True)
 
     created_dt = models.DateTimeField(auto_now_add=True)
@@ -87,7 +92,7 @@ class Answer(models.Model):
 
     @property
     def get_answer_count(self):
-        return self.userAnswers.count()
+        return self.user_answers.count()
 
 
 # user vote info 따로 관리

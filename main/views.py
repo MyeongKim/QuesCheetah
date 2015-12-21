@@ -105,9 +105,9 @@ def user_mypage(request, id):
     }
 
     u = User.objects.get(id=id)
-    apikey_all = ApiKey.objects.filter(user=u)
+    api_key = ApiKey.objects.get(user=u)
 
-    context['apikey_all'] = apikey_all
+    context.update({'api_key': api_key})
     return render(request, 'main/pages/mypage.html', context)
 
 
@@ -118,7 +118,7 @@ def apikey_new(request):
     }
     if request.method == 'POST':
         ApiKey.objects.generate(request.user)
-        return redirect('main:user_mypage')
+        return redirect('main:user_mypage request.user.id')
     else:
         return render(request, 'main/pages/apikey_new.html', context)
 

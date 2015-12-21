@@ -1,0 +1,34 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}{% endblock %}
+{% block content %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <h3>Question select</h3>
+    <div id="helper-msg"></div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <a href="{% url 'vote:new' api_key %}"><button class="btn btn-default">make a new question?</button></a>
+                {% for q in question %}
+                    {{ forloop.counter }}
+                    <a href="{% url 'vote:get_vote' api_key q.question_title %}">
+                        <div>{{ q.question_text }}</div>
+                        <div>{{ q.question_title }}</div>
+                    </a>
+                    <hr>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+{% endblock %}
