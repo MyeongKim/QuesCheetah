@@ -39,14 +39,15 @@ class Question(models.Model):
     multi_question = models.ForeignKey(MultiQuestion, related_name='question_elements', null=True)
 
     ''' question '''
-    question_text = models.CharField(max_length=100)
     question_title = models.CharField(max_length=50)
+    question_text = models.CharField(max_length=100)
 
     ''' question available '''
     is_closed = models.BooleanField(default=False)
     start_dt = models.DateTimeField(default=timezone.now)
     end_dt = models.DateTimeField(default=thirty_day_hence)
-    is_editable = models.BooleanField(default=True)
+    is_editable = models.BooleanField(default=True)  # if answer can be changed
+    is_private = models.BooleanField(default=False)
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
@@ -77,6 +78,18 @@ class Question(models.Model):
     # def set_group_number(cls, api):
     #     max_group_number = cls.objects.filter(api_key=api).order_by('-group_number').last()
     #     return int(max_group_number) + 1
+
+
+class Url(models.Model):
+    question = models.ForeignKey(Question, related_name='authenticated_urls')
+    url_name = models.CharField(max_length=100, null=True, blank=True)
+    full_url = models.CharField(max_length=200)
+
+    created_dt = models.DateTimeField(auto_now_add=True)
+    updated_dt = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '{}-({})'.format(self.url_name, self.full_url)
 
 
 class Answer(models.Model):

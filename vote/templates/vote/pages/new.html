@@ -12,6 +12,7 @@
 
         <form class="form-horizontal" action="" method="post">
             {% csrf_token %}
+            <input type="hidden" value="{{ api_key }}" name="api_key">
             <div class="form-group">
                 <label for="question_title" class="col-sm-2 control-label">질문 제목</label>
                 <div class="col-sm-10">
@@ -24,6 +25,29 @@
                     <input type="text" class="form-control" id="question_text" name="question_text" placeholder="질문을 입력하세요.">
                 </div>
             </div>
+            <div class="form-group">
+                <label for="start_dt" class="col-sm-2 control-label">start_time(optional)</label>
+                <div class="col-sm-10">
+                    <input type="datetime-local" class="form-control" id="start_dt" name="start_dt">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="end_dt" class="col-sm-2 control-label">end_time(optional)</label>
+                <div class="col-sm-10">
+                    <input type="datetime-local" class="form-control" id="end_dt" name="end_dt">
+                </div>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_editable" value="True"> is_editable(optional)
+                </label>
+            </div>
+            <div class="checkbox">
+                <label>
+                    <input type="checkbox" name="is_private" value="True"> is_private(optional)
+                </label>
+            </div>
+            <hr>
             <div class="answer-wrapper">
                 <div class="form-group answer">
                     <label for="answer1" class="col-sm-2 control-label">보기1</label>
