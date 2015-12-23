@@ -6,5 +6,5 @@ urlpatterns = [
     url(r'^get/(?P<api_key>\w+)/(?P<question_title>\w+)$', views.get_vote, name='get_vote'),
     # url(r'^action/(?P<api_key>\w+)$', views.action, name='action'),
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
-    url(r'^update', views.update, name='update'),
+    url(r'^useranswer/create', views.create_useranswer, name='create_useranswer'),
 ]

@@ -13,35 +13,6 @@ from vote.models import Question, Answer, UserAnswer, Url
 # Create your views here.
 
 
-# def new(request, api_key):
-#     context = {
-#         'api_key': api_key
-#     }
-#
-#     if request.method == 'POST':
-#
-#         # save question first
-#         question_text = request.POST.get('question_text')
-#         question_title = request.POST.get('question_title')
-#
-#         q_api_key = ApiKey.objects.get(key=api_key)
-#
-#         new_question = Question(api_key=q_api_key, question_text=question_text, question_title=question_title)
-#         new_question.save()
-#
-#         # save answers
-#         for i in range(9):
-#             name = 'answer'+str(i)
-#             if request.POST.get(name):
-#                 new_answer = Answer(question=new_question, answer_text=request.POST.get(name), answer_num=i)
-#                 new_answer.save()
-#
-#         messages.add_message(request, messages.INFO, '투표가 저장되었습니다.')
-#         return redirect('vote:select_question', api_key= api_key)
-#
-#     return render(request, 'vote/pages/new.html', context)
-
-
 def new(request, api_key):
     context = {
         'api_key': api_key
@@ -50,25 +21,21 @@ def new(request, api_key):
     if request.method == 'POST':
 
         # save question first
-        question_create(request)
-
+        create_question(request)
 
         # save answers
-        # for i in range(9):
-        #     name = 'answer'+str(i)
-        #     if request.POST.get(name):
-        #         new_answer = Answer(question=new_question, answer_text=request.POST.get(name), answer_num=i)
-        #         new_answer.save()
-        #
-        # messages.add_message(request, messages.INFO, '투표가 저장되었습니다.')
-        # return redirect('vote:select_question', api_key= api_key)
+        create_answer(request)
+
+        messages.add_message(request, messages.INFO, '투표가 저장되었습니다.')
+
+        return redirect('vote:select_question', api_key=api_key)
 
     return render(request, 'vote/pages/new.html', context)
 
 
 def select_question(request, api_key):
     context = {
-        'api_key' : api_key
+        'api_key': api_key
     }
 
     q_api_key = ApiKey.objects.get(key=api_key)
@@ -85,30 +52,9 @@ def select_question(request, api_key):
     return render(request, 'vote/pages/question_select.html', context)
 
 
-def update(request):
-
-    q_id = request.POST.get('q_id')
-    update_num = request.POST.get('update_num')
-    unique_id = request.POST.get('uniqueId')
-
-    question = Question.objects.get(id=q_id)
-    answer = Answer.objects.get(question=question, answer_num=update_num)
-
-    response_dict = {}
-
-    try:
-        new_answer = UserAnswer(answer=answer, unique_user=unique_id)
-        new_answer.save()
-    except Exception as e:
-        response_dict.update({'exception_msg': "theres a problem."})
-        response_dict.update({'msg': e.message})
-
-    return JsonResponse(response_dict)
-
-
 def get_vote(request, api_key, question_title):
     context = {
-
+        'api_key' : api_key
     }
     question = Question.objects.get(api_key=ApiKey.objects.get(key=api_key), question_title=question_title)
     if question:
@@ -139,12 +85,16 @@ def delete(request, api_key, question_title):
 
 # todo url 맨 처음 /v1/ 붙이기.
 
-# todo track event POST /v1/appusers/{appUserId|userId}/events
-# todo question - create, list, update, delete, view, simple_view, full_view
-# todo admin -
-# todo api -
+# todo question - list, update, delete
+# todo answer -  update, delete, simple_view, full_view
+# todo useranswer -  update,
+# todo api - get, create,
 
 # ======================================
+
+'''
+question management
+'''
 
 
 @require_POST
@@ -166,10 +116,10 @@ def to_private(request):
     a = ApiKey.objects.get(key=api_key)
 
     if question_title and question_id:
-        q = Question.objects.get(api_key=a, question_title=question_title, question_id=question_id)
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
 
     elif question_id:
-        q = Question.objects.get(api_key=a, question_id=question_id)
+        q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
@@ -205,10 +155,10 @@ def to_public(request):
     a = ApiKey.objects.get(key=api_key)
 
     if question_title and question_id:
-        q = Question.objects.get(api_key=a, question_title=question_title, question_id=question_id)
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
 
     elif question_id:
-        q = Question.objects.get(api_key=a, question_id=question_id)
+        q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
@@ -244,10 +194,10 @@ def get_url_list(request):
     a = ApiKey.objects.get(key=api_key)
 
     if question_title and question_id:
-        q = Question.objects.get(api_key=a, question_title=question_title, question_id=question_id)
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
 
     elif question_id:
-        q = Question.objects.get(api_key=a, question_id=question_id)
+        q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
@@ -290,10 +240,10 @@ def add_url(request):
     a = ApiKey.objects.get(key=api_key)
 
     if question_title and question_id:
-        q = Question.objects.get(api_key=a, question_title=question_title, question_id=question_id)
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
 
     elif question_id:
-        q = Question.objects.get(api_key=a, question_id=question_id)
+        q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
@@ -320,7 +270,7 @@ def add_url(request):
 
 
 @require_POST
-def question_create(request):
+def create_question(request):
     """
     POST - /v1/question/create
 
@@ -336,10 +286,15 @@ def question_create(request):
     end_dt = request.POST.get('end_dt')
     is_editable = request.POST.get('is_editable')
     is_private = request.POST.get('is_private')
-    if is_editable is not True:
-        is_editable = False
 
-    if is_private is not True:
+    if is_editable:
+        is_editable = True
+    else:
+        is_editable = True
+
+    if is_private:
+        is_private = True
+    else:
         is_private = False
 
     response_dict = {}
@@ -368,39 +323,39 @@ def question_create(request):
 
 
 @require_POST
-def answer_create(request):
+def create_answer(request):
     """
     POST - /v1/answer/create
 
     새 answer 를 생성합니다.
     answer_num은 list index 순서로 지정됩니다.
-    :parameter - api_key, ( question_title / question_id ), [answer_text]
+    :parameter - api_key, ( question_title / question_id ), answer1, answer2, answer3, ...
     :return - answers
     """
     api_key = request.POST.get('api_key')
     question_title = request.POST.get('question_title')
     question_id = request.POST.get('question_id')
-    answer_text = request.POST.get('answer_text')
 
     response_dict = {}
 
     a = ApiKey.objects.get(key=api_key)
 
     if question_title and question_id:
-        q = Question.objects.get(api_key=a, question_title=question_title, question_id=question_id)
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
 
     elif question_id:
-        q = Question.objects.get(api_key=a, question_id=question_id)
+        q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
-    if answer_text:
-        for index, text in enumerate(answer_text, start=1):
-            new_answer = Answer(question=q, answer_text=text, answer_num=index)
+    for i in range(9):
+        answer_text = request.POST.get('answer'+str(i))
+        if answer_text:
+            new_answer = Answer(question=q, answer_text=answer_text, answer_num=i)
             new_answer.save()
 
-        for index, answer in enumerate(q.answers, start=1):
-            response_dict['answer'+str(index)] = answer
+        for index, answer in enumerate(q.answers.all(), start=1):
+            response_dict['answer'+str(index)] = serializers.serialize('json', [answer])
     else:
         response_dict.update({
             'error': "Can't find the answer_text."
@@ -409,3 +364,150 @@ def answer_create(request):
     return JsonResponse(response_dict)
 
 
+@require_POST
+def get_question(request):
+    """
+    POST - /v1/question/get
+
+    question을 가져옵니다.
+    :parameter - api_key, ( question_title / question_id )
+    :return - question
+    """
+    api_key = request.POST.get('api_key')
+    question_title = request.POST.get('question_title')
+    question_id = request.POST.get('question_id')
+
+    response_dict = {}
+
+    a = ApiKey.objects.get(key=api_key)
+
+    if question_title and question_id:
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+
+    elif question_id:
+        q = Question.objects.get(api_key=a,id=question_id)
+    elif question_title:
+        q = Question.objects.get(api_key=a, question_title=question_title)
+
+    if q:
+        response_dict.update({
+            'question': serializers.serialize('json', [q])
+        })
+    else:
+        response_dict.update({
+            'error': "Can't find the question."
+        })
+
+    return JsonResponse(response_dict)
+
+
+@require_POST
+def get_answer(request):
+    """
+    POST - /v1/answer/get
+
+    answer 들을 가져옵니다.
+    :parameter - api_key, ( question_title / question_id )
+    :return - answer
+    """
+    api_key = request.POST.get('api_key')
+    question_title = request.POST.get('question_title')
+    question_id = request.POST.get('question_id')
+    response_dict = {}
+
+    a = ApiKey.objects.get(key=api_key)
+
+    if question_title and question_id:
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+
+    elif question_id:
+        q = Question.objects.get(api_key=a, id=question_id)
+    elif question_title:
+        q = Question.objects.get(api_key=a, question_title=question_title)
+
+    if q:
+        if q.answers:
+            response_dict.update({
+                'answer': serializers.serialize('json', [q.answers.all()])
+            })
+        else:
+            response_dict.update({
+                'error': "Can't find the answer"
+            })
+    else:
+        response_dict.update({
+            'error': "Can't find the question."
+        })
+
+    return JsonResponse(response_dict)
+
+
+@require_POST
+def create_useranswer(request):
+    """
+    POST - /v1/useranswer/create
+
+    새로운 useranswer instance 를 만듭니다.
+    :parameter - api_key, ( question_title / question_id ), update_num, unique_user
+    :return - useranswer
+    """
+    api_key = request.POST.get('api_key')
+    question_title = request.POST.get('question_title')
+    question_id = request.POST.get('question_id')
+    update_num = request.POST.get('update_num')
+    unique_user = request.POST.get('unique_user')
+
+    response_dict = {}
+
+    a = ApiKey.objects.get(key=api_key)
+
+    if question_title and question_id:
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+
+    elif question_id:
+        q = Question.objects.get(api_key=a, id=question_id)
+    elif question_title:
+        q = Question.objects.get(api_key=a, question_title=question_title)
+
+    if q:
+        if q.answers:
+            a = Answer.objects.get(question=q, answer_num=update_num)
+            new_useranswer = UserAnswer(answer=a, unique_user=unique_user)
+            new_useranswer.save()
+
+            response_dict.update({
+                'useranswer': serializers.serialize('json', [UserAnswer.objects.get(id=new_useranswer.id)])
+            })
+        else:
+            response_dict.update({
+                'error': "Can't find the answer"
+            })
+
+    else:
+        response_dict.update({
+            'error': "Can't find the question."
+        })
+
+    return JsonResponse(response_dict)
+
+
+
+# def update(request):
+#
+#     q_id = request.POST.get('q_id')
+#     update_num = request.POST.get('update_num')
+#     unique_id = request.POST.get('uniqueId')
+#
+#     question = Question.objects.get(id=q_id)
+#     answer = Answer.objects.get(question=question, answer_num=update_num)
+#
+#     response_dict = {}
+#
+#     try:
+#         new_answer = UserAnswer(answer=answer, unique_user=unique_id)
+#         new_answer.save()
+#     except Exception as e:
+#         response_dict.update({'exception_msg': "theres a problem."})
+#         response_dict.update({'msg': e.message})
+#
+#     return JsonResponse(response_dict)

@@ -62,13 +62,13 @@
                     }
                 }
             });
-            function update(q_id, answer_num, unique_id){
+            function update(api_key, question_title, question_id, update_num, unique_user){
                 $.ajax({
-                    url : "/vote/update",
+                    url : "/vote/useranswer/create",
                     type : "POST",
-                    data : {q_id : q_id, update_num : answer_num, uniqueId : unique_id},
+                    data : {api_key: api_key, question_title : question_title, question_id: question_id, update_num : update_num, unique_user : unique_user},
                     success : function(json){
-                        location.reload();
+                        console.log(json)
                     },
                     error : function(xhr, errmsg, err){
                         $('#helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
@@ -90,10 +90,12 @@
             }
 
             $('.answerBtn').click(function () {
-                var a_num = $(this).attr('a_num');
-                var q_id = $(this).attr('q_id');
-                var unique_id = unique_set("default");
-                update(q_id, a_num, unique_id);
+                var api_key = "{{ api_key }}";
+                var update_num = $(this).attr('a_num');
+                var question_title = "";
+                var question_id = $(this).attr('q_id');
+                var unique_user = unique_set("default");
+                update(api_key, question_title, question_id, update_num, unique_user);
             })
         });
     </script>

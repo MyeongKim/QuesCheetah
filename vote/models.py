@@ -1,15 +1,13 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ManyToManyField
+from django.utils.translation import ugettext as _
+import re
 from main.models import ApiKey
 
 from datetime import datetime, timedelta
 from django.utils import timezone
 # Create your models here.
-
-
-def thirty_day_hence():
-    return timezone.now() + timezone.timedelta(days=30)
 
 
 class MultiQuestion(models.Model):
@@ -44,8 +42,8 @@ class Question(models.Model):
 
     ''' question available '''
     is_closed = models.BooleanField(default=False)
-    start_dt = models.DateTimeField(default=timezone.now)
-    end_dt = models.DateTimeField(default=thirty_day_hence)
+    start_dt = models.DateTimeField()
+    end_dt = models.DateTimeField()
     is_editable = models.BooleanField(default=True)  # if answer can be changed
     is_private = models.BooleanField(default=False)
 
@@ -57,9 +55,9 @@ class Question(models.Model):
 
     @classmethod
     def check_same_title(cls, api_key, new_title):
-        if cls.objects.filter(api_key=api_key, title=new_title):
-            return False
-        return True
+        if cls.objects.filter(api_key=api_key, question_title=new_title):
+            return True
+        return False
 
     def clean(self):
         # clean question_title
@@ -67,12 +65,24 @@ class Question(models.Model):
             raise ValidationError({'question_title': _('This question_title is already exist in same api_key')})
 
         # clean start_dt
-        if self.start_dt < datetime.now():
-            raise ValidationError({'start_dt': _('Start date should be later than now')})
-
+        if self.start_dt:
+            if datetime.strptime(self.start_dt, '%Y-%m-%dT%H:%M') < datetime.now():
+                raise ValidationError({'start_dt': _('Start date should be later than now')})
+        else:
+            self.start_dt = timezone.now()
         # clean end_dt
-        if self.end_dt <= self.start_dt:
-            raise ValidationError({'end_dt': _('End date should be later than start date')})
+        if self.end_dt:
+            if datetime.strptime(self.end_dt, '%Y-%m-%dT%H:%M') <= datetime.strptime(self.start_dt, '%Y-%m-%dT%H:%M'):
+                raise ValidationError({'end_dt': _('End date should be later than start date')})
+        else:
+            self.end_dt = timezone.now() + timezone.timedelta(days=30)
+
+        if re.match(r'^[a-zA-Z0-9]*$', self.question_title):
+            raise ValidationError({'question_title': _('question_title has to be consisted of characters ans numbers.')})
+
+    def save(self, **kwargs):
+        self.clean()
+        return super(Question, self).save(**kwargs)
 
     # @classmethod
     # def set_group_number(cls, api):
