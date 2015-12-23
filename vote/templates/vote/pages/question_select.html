@@ -19,10 +19,10 @@
                 <a href="{% url 'vote:new' api_key %}"><button class="btn btn-default">make a new question?</button></a>
                 {% for q in question %}
                     {{ forloop.counter }}
-                    <a href="{% url 'vote:get_vote' api_key q.question_title %}">
-                        <div>{{ q.question_text }}</div>
-                        <div>{{ q.question_title }}</div>
-                    </a>
+                    <div>{{ q.question_text }}</div>
+                    <div>{{ q.question_title }}</div>
+                    <a href="{% url 'vote:get_vote' api_key q.question_title %}"><button class="btn btn-default">투표하기</button></a>
+                    <a href="{% url 'vote:dashboard' api_key q.id %}"><button class="btn btn-default">Dashboard 보기</button></a>
                     <hr>
                 {% endfor %}
             </div>

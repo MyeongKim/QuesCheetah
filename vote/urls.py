@@ -7,4 +7,7 @@ urlpatterns = [
     # url(r'^action/(?P<api_key>\w+)$', views.action, name='action'),
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
     url(r'^useranswer/create', views.create_useranswer, name='create_useranswer'),
+    url(r'^answer/simple_view', views.simple_view_answer, name='simple_view_answer'),
+    url(r'^dashboard/(?P<api_key>\w+)/(?P<question_id>\w+)$', views.dashboard, name='dashboard'),
+
 ]

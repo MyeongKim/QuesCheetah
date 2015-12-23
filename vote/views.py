@@ -6,7 +6,10 @@ from django.db.models import F
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
+import urllib.request, urllib.error, urllib.parse
+import json
 from main.models import ApiKey
 from vote.models import Question, Answer, UserAnswer, Url
 
@@ -81,12 +84,37 @@ def delete(request, api_key, question_title):
 
     return JsonResponse({})
 
+
+def dashboard(request, api_key, question_id):
+    context = {
+        'api_key': api_key
+    }
+
+    '''
+    request to simple_view_answer rest api
+    '''
+    url = 'http://localhost:8000/vote/answer/simple_view'
+    param = {
+        'api_key': api_key,
+        'question_id': question_id
+    }
+
+    data = urllib.parse.urlencode(param).encode("utf-8")
+    req = urllib.request.Request(url)
+
+    response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
+    response_json = json.loads(response_json)
+
+    context.update(response_json)
+
+    return render(request, 'vote/pages/dashboard.html', context)
+
 # todo update 하는 api 는 PUT method로.
 
 # todo url 맨 처음 /v1/ 붙이기.
 
 # todo question - list, update, delete
-# todo answer -  update, delete, simple_view, full_view
+# todo answer -  update, delete, full_view
 # todo useranswer -  update,
 # todo api - get, create,
 
@@ -406,7 +434,7 @@ def get_answer(request):
     """
     POST - /v1/answer/get
 
-    answer 들을 가져옵니다.
+    한 question의 모든 answer 들을 가져옵니다.
     :parameter - api_key, ( question_title / question_id )
     :return - answer
     """
@@ -490,6 +518,63 @@ def create_useranswer(request):
 
     return JsonResponse(response_dict)
 
+
+@csrf_exempt
+@require_POST
+def simple_view_answer(request):
+    """
+    POST - /v1/answer/simple_view
+
+    answer 의 중요 정보만을 제공합니다.
+    :parameter - api_key, ( question_title / question_id )
+    :return - question_title, question_text, answer([{answer_num, answer_text, answer_count}])
+    """
+    api_key = request.POST.get('api_key')
+    question_title = request.POST.get('question_title')
+    question_id = request.POST.get('question_id')
+
+    response_dict = {}
+    answer_list = []
+
+    a = ApiKey.objects.get(key=api_key)
+
+    if question_title and question_id:
+        q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+
+    elif question_id:
+        q = Question.objects.get(api_key=a, id=question_id)
+    elif question_title:
+        q = Question.objects.get(api_key=a, question_title=question_title)
+
+    if q:
+        response_dict.update({
+            'question_title': q.question_title,
+            'question_text': q.question_text
+        })
+
+        a = q.answers.all()
+        if a:
+            for answer in a:
+                answer_list.append({
+                    'answer_num': answer.answer_num,
+                    'answer_text': answer.answer_text,
+                    'answer_count': answer.get_answer_count
+                })
+
+            response_dict.update({
+                'answer': answer_list
+            })
+
+        else:
+            response_dict.update({
+                'error': "Can't find the answers."
+            })
+    else:
+        response_dict.update({
+            'error': "Can't find the question."
+        })
+
+    return JsonResponse(response_dict)
 
 
 # def update(request):

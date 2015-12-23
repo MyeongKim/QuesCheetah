@@ -1,0 +1,133 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}{% endblock %}
+{% block content %}
+    {{ msg }}
+    <h3>Welcome to dashboard page</h3>
+    <div id="helper-msg"></div>
+    <div class="row">
+        <div class="col-sm-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <p>question text : {{ question_text }}</p>
+                        <p>question title : {{ question_title }}</p>
+                    </h3>
+                </div>
+                <div class="panel-body">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>answer_text</th>
+                                <th>answer_count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a in answer %}
+                                <tr>
+                                    <th scope="row">{{ a.answer_num }}</th>
+                                    <td>{{ a.answer_text }}</td>
+                                    <td>{{ a.answer_count }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                <canvas id="myChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static "js/Chart.min.js" %}"></script>
+    <script>
+        $(document).ready(function(){
+            // Get context with jQuery - using jQuery's .get() method.
+            var ctx = $("#myChart").get(0).getContext("2d");
+            // This will get the first returned node in the jQuery collection.
+            var colors = ["#F7464A", "#46BFBD", "#FDB45C", "#C47AC4", "#3759F0", "#2AD487", "#869091", "#721EC7", "#29E8F2"];
+            var highlights = ["#FF5A5E", "#5AD3D1", "#FFC870", "#C79DC7", "#7189F5", "#6FD9A9", "#9EA7A8", "#8E47D6", "#83EDF2"];
+
+            var data = [];
+            {% for a in answer %}
+                data.push({
+                    'value': {{ a.answer_count }},
+                    'color': colors[{{ forloop.counter0 }}],
+                    'highlight': highlights[{{ forloop.counter0 }}],
+                    'label': {{ a.answer_text }}
+                });
+            {% endfor %}
+            var myPieChart = new Chart(ctx).Pie(data,{animateScale: true});
+
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+
+            var csrftoken = getCookie('csrftoken');
+
+            function csrfSafeMethod(method) {
+                // these HTTP methods do not require CSRF protection
+                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+            }
+
+            $.ajaxSetup({
+                beforeSend: function(xhr, settings) {
+                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                    }
+                }
+            });
+            function update(api_key, question_title, question_id, update_num, unique_user){
+                $.ajax({
+                    url : "/vote/useranswer/create",
+                    type : "POST",
+                    data : {api_key: api_key, question_title : question_title, question_id: question_id, update_num : update_num, unique_user : unique_user},
+                    success : function(json){
+                        console.log(json)
+                    },
+                    error : function(xhr, errmsg, err){
+                        $('#helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
+                                "</div>");
+                        console.log(xhr.status + ": " + xhr.responseText);
+                        console.log('---------------');
+                        console.log(xhr);
+                        console.log('---------------');
+                        console.log(err);
+                    }
+                });
+            }
+
+            function unique_set(myType){
+                //if (myType === "default"){
+                    var d = new Date();
+                    return d.getTime();
+                //}
+            }
+
+            $('.answerBtn').click(function () {
+                var api_key = "{{ api_key }}";
+                var update_num = $(this).attr('a_num');
+                var question_title = "";
+                var question_id = $(this).attr('q_id');
+                var unique_user = unique_set("default");
+                update(api_key, question_title, question_id, update_num, unique_user);
+            })
+        });
+    </script>
+{% endblock %}

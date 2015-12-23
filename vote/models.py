@@ -77,7 +77,7 @@ class Question(models.Model):
         else:
             self.end_dt = timezone.now() + timezone.timedelta(days=30)
 
-        if re.match(r'^[a-zA-Z0-9]*$', self.question_title):
+        if re.match(r'^[~!@#$%<>^&()-=+_\'?]*$', self.question_title):
             raise ValidationError({'question_title': _('question_title has to be consisted of characters ans numbers.')})
 
     def save(self, **kwargs):
