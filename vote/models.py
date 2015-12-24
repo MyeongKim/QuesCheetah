@@ -11,8 +11,8 @@ from django.utils import timezone
 
 
 class MultiQuestion(models.Model):
-
-    group_name = models.CharField(max_length=100)
+    api_key = models.ForeignKey(ApiKey, related_name='multiquestions', null=True)
+    group_name = models.CharField(max_length=100, unique=True)
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
@@ -77,7 +77,7 @@ class Question(models.Model):
         else:
             self.end_dt = timezone.now() + timezone.timedelta(days=30)
 
-        if re.match(r'^[~!@#$%<>^&()-=+_\'?]*$', self.question_title):
+        if re.match(r'[@#$//%^&+=]*$', self.question_title):
             raise ValidationError({'question_title': _('question_title has to be consisted of characters ans numbers.')})
 
     def save(self, **kwargs):

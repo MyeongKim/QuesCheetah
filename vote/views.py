@@ -6,12 +6,12 @@ from django.db.models import F
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 import urllib.request, urllib.error, urllib.parse
 import json
 from main.models import ApiKey
-from vote.models import Question, Answer, UserAnswer, Url
+from vote.models import Question, Answer, UserAnswer, Url, MultiQuestion
 
 # Create your views here.
 
@@ -109,6 +109,16 @@ def dashboard(request, api_key, question_id):
 
     return render(request, 'vote/pages/dashboard.html', context)
 
+
+@ensure_csrf_cookie
+def new_multiple(request, api_key):
+    context = {
+        'api_key': api_key
+    }
+
+    return render(request, 'vote/pages/multi_new.html', context)
+
+
 # todo update 하는 api 는 PUT method로.
 
 # todo url 맨 처음 /v1/ 붙이기.
@@ -118,6 +128,8 @@ def dashboard(request, api_key, question_id):
 # todo useranswer -  update,
 # todo api - get, create,
 
+# todo list -> dictionary 로 모두 수정
+# todo is_editable, is_private 입력값과 default 로직 수정
 # ======================================
 
 '''
@@ -576,6 +588,88 @@ def simple_view_answer(request):
 
     return JsonResponse(response_dict)
 
+
+@require_POST
+def create_multiple_question(request):
+    """
+    POST - /v1/multiple/create
+
+    multiquestion 그룹을 생성하고
+    같이 생성된 복수 질문들을 그룹에 추가합니다.
+    질문의 보기들도 같이 저장됩니다.
+    :parameter - api_key, group_name, questions([question_title, question_text, (start_dt, end_dt, is_editable, is_private)]), answers([answer_text, answer_num])
+    :return - multiquestion, question
+    """
+
+    # def question_to_array(post, name):
+    #     dic = {}
+    #     for k in post.keys():
+    #         if k.startswith(name):
+    #             rest = k[len(name):]
+    #
+    #             # split the string into different components
+    #             parts = [p[:-1] for p in rest.split('[')][1:]
+    #             id = int(parts[0])
+    #
+    #             # add a new dictionary if it doesn't exist yet
+    #             if id not in dic:
+    #                 dic[id] = {}
+    #
+    #             # add the information to the dictionary
+    #             dic[id][parts[1]] = post.get(k)
+    #     print(dic)
+    #     return dic
+
+    api_key = request.POST.get('api_key')
+    group_name = request.POST.get('group_name')
+
+    response_dict = {}
+
+    a = ApiKey.objects.get(key=api_key)
+
+    new_multiq = MultiQuestion(api_key=a, group_name=group_name)
+    new_multiq.save()
+
+    for e1 in range(1,11):
+        i = str(e1)
+        question_title = request.POST.get('questions['+i+'][question_title]')
+        question_text = request.POST.get('questions['+i+'][question_text]')
+        start_dt = request.POST.get('questions['+i+'][start_dt]')
+        end_dt = request.POST.get('questions['+i+'][end_dt]')
+        is_editable = request.POST.get('questions['+i+'][is_editable]') == 'true'
+        is_private = request.POST.get('questions['+i+'][is_private]') == 'true'
+
+        if question_title:
+            new_question = Question(
+                api_key=a,
+                multi_question=new_multiq,
+                question_title=question_title,
+                question_text=question_text,
+                start_dt=start_dt,
+                end_dt=end_dt,
+                is_editable=is_editable,
+                is_private=is_private
+            )
+
+            new_question.save()
+
+            for e2 in range(1,10):
+                j = str(e2)
+                answer_text = request.POST.get('answers['+i+']['+j+'][answer_text]')
+                answer_num = request.POST.get('answers['+i+']['+j+'][answer_num]')
+                if answer_text:
+                    new_answer = Answer(question=new_question, answer_text=answer_text, answer_num=answer_num)
+                    new_answer.save()
+
+    mq = MultiQuestion.objects.get(id=new_multiq.id)
+    q = mq.question_elements.all()
+
+    response_dict.update({
+        'multiquestion': serializers.serialize('json', [mq]),
+        'question': serializers.serialize('json', q),
+    })
+
+    return JsonResponse(response_dict)
 
 # def update(request):
 #
