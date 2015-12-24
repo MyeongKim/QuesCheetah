@@ -19,7 +19,17 @@
                 <a href="{% url 'vote:new' api_key %}"><button class="btn btn-default">make a new question?</button></a>
                 <a href="{% url 'vote:new_multiple' api_key %}"><button class="btn btn-info">make a new Multiple question?</button></a>
             <hr>
-                {% for q in question %}
+                <h3>Group Questions</h3>
+                {% for m in multi_question %}
+                    {{ forloop.counter }}
+                    <div>{{ m.group_name }}</div>
+                    <a href="{% url 'vote:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">투표하기</button></a>
+                    <a href="{% url 'vote:dashboard' api_key q.id %}"><button class="btn btn-default">Dashboard 보기</button></a>
+                    <hr>
+                {% endfor %}
+                <hr>
+                <h3>Single Questions</h3>
+                {% for q in single_question %}
                     {{ forloop.counter }}
                     <div>{{ q.question_text }}</div>
                     <div>{{ q.question_title }}</div>

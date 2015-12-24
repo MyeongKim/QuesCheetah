@@ -44,13 +44,15 @@ def select_question(request, api_key):
     q_api_key = ApiKey.objects.get(key=api_key)
 
     try:
-        question = Question.objects.filter(api_key=q_api_key)
+        single_question = Question.objects.filter(api_key=q_api_key, multi_question=None)
 
     except Question.DoesNotExist:
         return render(request, 'vote/pages/question_select.html', context)
 
-    answers = Answer.objects.filter(question=question)
-    context.update({'question': question, 'answers': answers})
+    m = MultiQuestion.objects.filter(api_key=q_api_key)
+
+    # answers = Answer.objects.filter(question=single_question)
+    context.update({'multi_question': m, 'single_question': single_question})
 
     return render(request, 'vote/pages/question_select.html', context)
 
@@ -68,6 +70,22 @@ def get_vote(request, api_key, question_title):
 
     else:
         return HttpResponse("question is not exist")
+
+
+def get_multiple_vote(request, api_key, group_name):
+    context = {
+        'api_key': api_key
+    }
+    a = ApiKey.objects.get(key=api_key)
+    m = MultiQuestion.objects.get(api_key=a, group_name=group_name)
+    questions = m.question_elements.all()
+
+    for q in questions:
+        answers = q.answers.all()
+        q['answers'] = answers
+
+    context.update({'group_name': m.group_name, 'questions': questions})
+    return render(request, 'vote/pages/multi_action.html', context)
 
 
 # todo bring graph data.. etc
@@ -108,6 +126,42 @@ def dashboard(request, api_key, question_id):
     context.update(response_json)
 
     return render(request, 'vote/pages/dashboard.html', context)
+
+
+def multiple_dashboard(request, api_key, group_name):
+    context = {
+        'api_key' : api_key
+    }
+
+    a = ApiKey.objects.get(key=api_key)
+    m = MultiQuestion.objects.get(api_key=a, group_name=group_name)
+
+    questions = m.question_elements.all()
+    length = questions.count()
+    questions_all = {}
+
+    for index, q in enumerate(questions):
+        '''
+        request to simple_view_answer rest api
+        '''
+        url = 'http://localhost:8000/vote/answer/simple_view'
+        param = {
+            'api_key': api_key,
+            'question_id': q.id
+        }
+
+        data = urllib.parse.urlencode(param).encode("utf-8")
+        req = urllib.request.Request(url)
+
+        response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
+        response_json = json.loads(response_json)
+
+        questions_all[index] = response_json
+
+    context.update(questions_all)
+    context.update({'loop_times': range(length)})
+
+    return render(request, 'vote/pages/multi_dashboard.html', context)
 
 
 @ensure_csrf_cookie
