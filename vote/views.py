@@ -113,7 +113,7 @@ def dashboard(request, api_key, question_id):
     '''
     request to simple_view_answer rest api
     '''
-    url = 'http://localhost:8000/vote/answer/simple_view'
+    url = 'http://localhost:8000/vote/answer/view/simple'
     param = {
         'api_key': api_key,
         'question_id': question_id
@@ -146,7 +146,7 @@ def multiple_dashboard(request, api_key, group_name):
         '''
         request to simple_view_answer rest api
         '''
-        url = 'http://localhost:8000/vote/answer/simple_view'
+        url = 'http://localhost:8000/vote/answer/view/simple'
         param = {
             'api_key': api_key,
             'question_id': q.id
@@ -172,7 +172,7 @@ def new_multiple(request, api_key):
         'api_key': api_key
     }
 
-    return render(request, 'vote/pages/multi_new.html', context)
+    return render(request, 'vote/pages/new.html', context)
 
 
 # todo update 하는 api 는 PUT method로.
@@ -189,6 +189,7 @@ def new_multiple(request, api_key):
 # todo request.POST.get('title', None) 바꾸기
 # todo request.POST.get() -> json.loads(decode) 형태로 바꾸기
 # todo data[] -> data.get() 으로 바꾸기.
+# todo single question 만드는 view에서 Httpresponse로 리턴됨.
 # ======================================
 
 '''
@@ -584,7 +585,7 @@ def create_useranswer(request):
 @require_POST
 def simple_view_answer(request):
     """
-    POST - /v1/answer/simple_view
+    POST - /v1/answer/view/simple
 
     answer 의 중요 정보만을 제공합니다.
     :parameter - api_key, ( question_title / question_id )
@@ -710,13 +711,27 @@ def create_single_question(request):
     :parameter - api_key, questions(question_title, question_text, (start_dt, end_dt, is_editable, is_private)), answers(answer_text, answer_num)
     :return - question
     """
-    # save question first
-    create_question(request)
+    '''
+    request to create_question, create_answer rest api
+    '''
+    data = json.loads(request.body.decode('utf-8'))
+    url = 'http://localhost:8000/vote/question/create'
 
-    # save answers
-    create_answer(request)
+    data = urllib.parse.urlencode(data).encode("utf-8")
+    req = urllib.request.Request(url)
 
-    return JsonResponse({})
+    question_response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
+    question_response_json = json.loads(question_response_json)
+
+    url = 'http://localhost:8000/vote/answer/create'
+
+    data = urllib.parse.urlencode(data).encode("utf-8")
+    req = urllib.request.Request(url)
+
+    answer_response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
+    answer_response_json = json.loads(answer_response_json)
+
+    return JsonResponse(question_response_json)
 
 
 def error_return(desc):

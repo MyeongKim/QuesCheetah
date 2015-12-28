@@ -17,7 +17,6 @@
         <div class="col-sm-6">
             <div class="panel panel-default">
                 <a href="{% url 'vote:new' api_key %}"><button class="btn btn-default">make a new question?</button></a>
-                <a href="{% url 'vote:new_multiple' api_key %}"><button class="btn btn-info">make a new Multiple question?</button></a>
             <hr>
                 <h3>Group Questions</h3>
                 {% for m in multi_question %}
