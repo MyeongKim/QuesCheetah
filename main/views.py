@@ -63,10 +63,7 @@ def user_signup(request):
 
 def user_login(request):
 
-    context = {
-
-    }
-
+    context = {}
     next = ""
     if request.method == 'POST':
         email = request.POST['email']
@@ -87,7 +84,6 @@ def user_login(request):
             # Return an 'invalid login' error message.
             return HttpResponse('로그인 실패')
     else:
-
         next = request.GET.get('next')
         context.update({'next':next})
         return render(request, 'main/pages/login.html', context)
@@ -113,9 +109,7 @@ def user_mypage(request, id):
 
 @login_required
 def apikey_new(request):
-    context = {
-
-    }
+    context = {}
     if request.method == 'POST':
         ApiKey.objects.generate(request.user)
         return redirect('main:user_mypage request.user.id')

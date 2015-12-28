@@ -1,7 +1,7 @@
 from datetime import timezone
 from http.cookiejar import request_path
 from django.core import serializers
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db.models import F
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
@@ -37,15 +37,19 @@ def new(request, api_key):
 
 
 def select_question(request, api_key):
+    q_api_key = single_question = None
+
     context = {
         'api_key': api_key
     }
-
-    q_api_key = ApiKey.objects.get(key=api_key)
-
     try:
+        q_api_key = ApiKey.objects.get(key=api_key)
         single_question = Question.objects.filter(api_key=q_api_key, multi_question=None)
 
+        if not single_question:
+            pass
+    except ObjectDoesNotExist:
+        pass
     except Question.DoesNotExist:
         return render(request, 'vote/pages/question_select.html', context)
 
@@ -65,9 +69,7 @@ def get_vote(request, api_key, question_title):
     if question:
         answers = Answer.objects.filter(question=question)
         context.update({'question': question, 'answers': answers})
-
         return render(request, 'vote/pages/action.html', context)
-
     else:
         return HttpResponse("question is not exist")
 
@@ -184,6 +186,9 @@ def new_multiple(request, api_key):
 
 # todo list -> dictionary 로 모두 수정
 # todo is_editable, is_private 입력값과 default 로직 수정
+# todo request.POST.get('title', None) 바꾸기
+# todo request.POST.get() -> json.loads(decode) 형태로 바꾸기
+# todo data[] -> data.get() 으로 바꾸기.
 # ======================================
 
 '''
@@ -211,17 +216,14 @@ def to_private(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
     if q:
-
         q.is_private = True
         q.save()
-
     else:
         response_dict.update({
             'error': "Can't find the question."
@@ -250,17 +252,14 @@ def to_public(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
     if q:
-
         q.is_private = False
         q.save()
-
     else:
         response_dict.update({
             'error': "Can't find the question."
@@ -289,14 +288,12 @@ def get_url_list(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
     if q:
-
         u = q.authenticated_urls
         if u:
             response_dict.update({
@@ -335,7 +332,6 @@ def add_url(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
@@ -373,13 +369,15 @@ def create_question(request):
     :parameter - api_key, question_title, question_text, (start_dt, end_dt, is_editable, is_private)
     :return - question
     """
-    api_key = request.POST.get('api_key')
-    question_title = request.POST.get('question_title')
-    question_text = request.POST.get('question_text')
-    start_dt = request.POST.get('start_dt')
-    end_dt = request.POST.get('end_dt')
-    is_editable = request.POST.get('is_editable')
-    is_private = request.POST.get('is_private')
+    data = json.loads(request.body.decode('utf-8'))
+
+    api_key = data['api_key']
+    question_title = data['question_title']
+    question_text = data['question_text']
+    start_dt = data['start_dt']
+    end_dt = data['end_dt']
+    is_editable = data['is_editable']
+    is_private = data['is_private']
 
     if is_editable:
         is_editable = True
@@ -423,12 +421,14 @@ def create_answer(request):
 
     새 answer 를 생성합니다.
     answer_num은 list index 순서로 지정됩니다.
-    :parameter - api_key, ( question_title / question_id ), answer1, answer2, answer3, ...
+    :parameter - api_key, ( question_title / question_id ), answers(answer_text, answer_num)
     :return - answers
     """
-    api_key = request.POST.get('api_key')
-    question_title = request.POST.get('question_title')
-    question_id = request.POST.get('question_id')
+    data = json.loads(request.body.decode('utf-8'))
+
+    api_key = data['api_key']
+    question_title = data['question_title']
+    question_id = data.get('question_id')
 
     response_dict = {}
 
@@ -436,24 +436,23 @@ def create_answer(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
         q = Question.objects.get(api_key=a, question_title=question_title)
 
-    for i in range(9):
-        answer_text = request.POST.get('answer'+str(i))
+    for key, value in data['answers'].items():
+        answer_text = value['answer_text']
         if answer_text:
-            new_answer = Answer(question=q, answer_text=answer_text, answer_num=i)
+            new_answer = Answer(question=q, answer_text=answer_text, answer_num=key)
             new_answer.save()
 
-        for index, answer in enumerate(q.answers.all(), start=1):
-            response_dict['answer'+str(index)] = serializers.serialize('json', [answer])
-    else:
-        response_dict.update({
-            'error': "Can't find the answer_text."
-        })
+            for index, answer in enumerate(q.answers.all(), start=1):
+                response_dict['answer'+str(index)] = serializers.serialize('json', [answer])
+        else:
+            response_dict.update({
+                'error': "Can't find the answer_text."
+            })
 
     return JsonResponse(response_dict)
 
@@ -477,7 +476,6 @@ def get_question(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a,id=question_id)
     elif question_title:
@@ -513,7 +511,6 @@ def get_answer(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
@@ -557,7 +554,6 @@ def create_useranswer(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
@@ -576,7 +572,6 @@ def create_useranswer(request):
             response_dict.update({
                 'error': "Can't find the answer"
             })
-
     else:
         response_dict.update({
             'error': "Can't find the question."
@@ -606,7 +601,6 @@ def simple_view_answer(request):
 
     if question_title and question_id:
         q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
-
     elif question_id:
         q = Question.objects.get(api_key=a, id=question_id)
     elif question_title:
@@ -617,7 +611,6 @@ def simple_view_answer(request):
             'question_title': q.question_title,
             'question_text': q.question_text
         })
-
         a = q.answers.all()
         if a:
             for answer in a:
@@ -630,7 +623,6 @@ def simple_view_answer(request):
             response_dict.update({
                 'answer': answer_list
             })
-
         else:
             response_dict.update({
                 'error': "Can't find the answers."
@@ -654,28 +646,9 @@ def create_multiple_question(request):
     :parameter - api_key, group_name, questions([question_title, question_text, (start_dt, end_dt, is_editable, is_private)]), answers([answer_text, answer_num])
     :return - multiquestion, question
     """
-
-    # def question_to_array(post, name):
-    #     dic = {}
-    #     for k in post.keys():
-    #         if k.startswith(name):
-    #             rest = k[len(name):]
-    #
-    #             # split the string into different components
-    #             parts = [p[:-1] for p in rest.split('[')][1:]
-    #             id = int(parts[0])
-    #
-    #             # add a new dictionary if it doesn't exist yet
-    #             if id not in dic:
-    #                 dic[id] = {}
-    #
-    #             # add the information to the dictionary
-    #             dic[id][parts[1]] = post.get(k)
-    #     print(dic)
-    #     return dic
-
-    api_key = request.POST.get('api_key')
-    group_name = request.POST.get('group_name')
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data['api_key']
+    group_name = data['group_name']
 
     response_dict = {}
 
@@ -684,14 +657,13 @@ def create_multiple_question(request):
     new_multiq = MultiQuestion(api_key=a, group_name=group_name)
     new_multiq.save()
 
-    for e1 in range(1,11):
-        i = str(e1)
-        question_title = request.POST.get('questions['+i+'][question_title]')
-        question_text = request.POST.get('questions['+i+'][question_text]')
-        start_dt = request.POST.get('questions['+i+'][start_dt]')
-        end_dt = request.POST.get('questions['+i+'][end_dt]')
-        is_editable = request.POST.get('questions['+i+'][is_editable]') == 'true'
-        is_private = request.POST.get('questions['+i+'][is_private]') == 'true'
+    for question_key, question_value in data['questions'].items():
+        question_title = question_value['question_title']
+        question_text = question_value['question_text']
+        start_dt = question_value['start_dt']
+        end_dt = question_value['end_dt']
+        is_editable = question_value['is_editable'] == 'true'
+        is_private = question_value['is_private'] == 'true'
 
         if question_title:
             new_question = Question(
@@ -704,26 +676,54 @@ def create_multiple_question(request):
                 is_editable=is_editable,
                 is_private=is_private
             )
-
             new_question.save()
 
-            for e2 in range(1,10):
-                j = str(e2)
-                answer_text = request.POST.get('answers['+i+']['+j+'][answer_text]')
-                answer_num = request.POST.get('answers['+i+']['+j+'][answer_num]')
+            for answer_key, answer_value in data['answers'][question_key].items():
+                answer_text = answer_value['answer_text']
+                answer_num = answer_value['answer_num']
+
                 if answer_text:
                     new_answer = Answer(question=new_question, answer_text=answer_text, answer_num=answer_num)
                     new_answer.save()
 
-    mq = MultiQuestion.objects.get(id=new_multiq.id)
-    q = mq.question_elements.all()
+    try:
+        mq = MultiQuestion.objects.get(id=new_multiq.id)
+        q = mq.question_elements.all()
 
-    response_dict.update({
-        'multiquestion': serializers.serialize('json', [mq]),
-        'question': serializers.serialize('json', q),
+        response_dict.update({
+            'multiquestion': serializers.serialize('json', [mq]),
+            'question': serializers.serialize('json', q),
+        })
+
+        return JsonResponse(response_dict)
+    except ObjectDoesNotExist:
+        desc = 'MultiQuestion does not exist by new_multiq.id'
+        return error_return(desc)
+
+
+@require_POST
+def create_single_question(request):
+    """
+    POST - /v1/single/create
+
+    복수 질문이 아닌 하나의 질문에 따른 보기들을 저장합니다.
+    :parameter - api_key, questions(question_title, question_text, (start_dt, end_dt, is_editable, is_private)), answers(answer_text, answer_num)
+    :return - question
+    """
+    # save question first
+    create_question(request)
+
+    # save answers
+    create_answer(request)
+
+    return JsonResponse({})
+
+
+def error_return(desc):
+    return JsonResponse({
+        'error': True,
+        'description': desc,
     })
-
-    return JsonResponse(response_dict)
 
 # def update(request):
 #

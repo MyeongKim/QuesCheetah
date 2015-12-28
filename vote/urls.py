@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
     url(r'^useranswer/create', views.create_useranswer, name='create_useranswer'),
     url(r'^multiple/create', views.create_multiple_question, name='create_multiple_question'),
+    url(r'^single/create', views.create_single_question, name='create_single_question'),
     url(r'^answer/simple_view', views.simple_view_answer, name='simple_view_answer'),
     url(r'^dashboard/(?P<api_key>\w+)/(?P<question_id>\w+)$', views.dashboard, name='dashboard'),
     url(r'^dashboard/multiple/(?P<api_key>\w+)/(?P<group_name>\w+)$', views.multiple_dashboard, name='multiple_dashboard'),
