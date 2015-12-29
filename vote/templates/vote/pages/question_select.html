@@ -23,7 +23,7 @@
                     {{ forloop.counter }}
                     <div>{{ m.group_name }}</div>
                     <a href="{% url 'vote:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">투표하기</button></a>
-                    <a href="{% url 'vote:dashboard' api_key m.id %}"><button class="btn btn-default">Dashboard 보기</button></a>
+                    <a href="{% url 'vote:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard 보기</button></a>
                     <hr>
                 {% endfor %}
                 <hr>

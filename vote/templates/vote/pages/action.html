@@ -16,7 +16,7 @@
                     </h3>
                 </div>
                 <div class="panel-body">
-                    {% for a in answers %}
+                    {% for a in answers|dictsort:"answer_num" %}
                         <div>
                             <button class="btn btn-primary answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ question.id }}">
                                 {{ a.answer_text }}<span class="badge">{{ a.get_answer_count }}</span>
@@ -65,8 +65,16 @@
             function update(api_key, question_title, question_id, update_num, unique_user){
                 $.ajax({
                     url : "/vote/useranswer/create",
+                    contentType: "application/json",
                     type : "POST",
-                    data : {api_key: api_key, question_title : question_title, question_id: question_id, update_num : update_num, unique_user : unique_user},
+                    dataType: 'json',
+                    data : JSON.stringify({
+                                api_key: api_key,
+                                question_title : question_title,
+                                question_id: question_id,
+                                update_num : update_num,
+                                unique_user : unique_user
+                            }),
                     success : function(json){
                         console.log(json)
                     },

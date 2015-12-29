@@ -6,6 +6,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
 import urllib.request, urllib.error, urllib.parse
+from urllib.error import HTTPError
 import json
 from main.models import ApiKey
 from vote.models import Question, Answer, UserAnswer, Url, MultiQuestion
@@ -84,11 +85,15 @@ def get_multiple_vote(request, api_key, group_name):
         desc = 'The MultiQuestion does not exist in followed api key.'
         return error_return(desc)
 
-    for q in questions:
-        answers = q.answers.all()
-        q['answers'] = answers
+    answers = {}
+    for index, q in enumerate(questions):
+        answers[index] = q.answers.all()
 
-    context.update({'group_name': m.group_name, 'questions': questions})
+    context.update({
+        'group_name': m.group_name,
+        'questions': questions,
+        'answers': answers
+    })
     return render(request, 'vote/pages/multi_action.html', context)
 
 
@@ -118,11 +123,15 @@ def dashboard(request, api_key, question_id):
         'question_id': question_id
     }
 
-    data = urllib.parse.urlencode(param).encode("utf-8")
+    data = json.dumps(param).encode('utf-8')
     req = urllib.request.Request(url)
 
-    response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
-    response_json = json.loads(response_json)
+    try:
+        response_json = urllib.request.urlopen(req, data=data).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError as e:
+        content = e.read()
+        return HttpResponse(content)
 
     context.update(response_json)
 
@@ -131,7 +140,7 @@ def dashboard(request, api_key, question_id):
 
 def multiple_dashboard(request, api_key, group_name):
     context = {
-        'api_key' : api_key
+        'api_key': api_key
     }
 
     try:
@@ -155,16 +164,16 @@ def multiple_dashboard(request, api_key, group_name):
             'question_id': q.id
         }
 
-        data = urllib.parse.urlencode(param).encode("utf-8")
+        data = json.dumps(param).encode('utf-8')
         req = urllib.request.Request(url)
 
-        response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
-        response_json = json.loads(response_json)
+        response_json = urllib.request.urlopen(req, data=data).read()
+        response_json = json.loads(response_json.decode('utf-8'))
 
         questions_all[index] = response_json
 
-    context.update(questions_all)
-    context.update({'loop_times': range(length)})
+    context.update({'questions_all': questions_all})
+    context.update({'length': length})
 
     return render(request, 'vote/pages/multi_dashboard.html', context)
 
