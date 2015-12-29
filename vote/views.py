@@ -197,6 +197,7 @@ def new_multiple(request, api_key):
 # todo api - get, create,
 
 # todo single question 만드는 view에서 Httpresponse로 리턴됨.
+# todo cors access-control-allow-origin 헤더 문제
 # ======================================
 
 '''
@@ -655,6 +656,7 @@ def simple_view_answer(request):
     return JsonResponse(response_dict)
 
 
+@csrf_exempt
 @require_POST
 def create_multiple_question(request):
     """
@@ -725,6 +727,7 @@ def create_multiple_question(request):
         return error_return(desc)
 
 
+@csrf_exempt
 @require_POST
 def create_single_question(request):
     """

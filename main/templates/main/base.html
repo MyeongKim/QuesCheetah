@@ -22,6 +22,15 @@
     {% block modal %}{% endblock %}
     <script src="{% static "jquery/jquery-2.1.4.min.js" %}"></script>
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "js/sdk.js" %}"></script>
+    <script type="application/javascript">
+        var self = this;
+        var config = {
+            'apiKey': 'ee9c63a4b947cdbc2b6759e655c7e175a8a1dca2',
+            'callBackUrl': 'http://localhost:8000',
+        };
+        var pkc = new PKC(config);
+    </script>
     {% block script %}{% endblock %}
     </body>
 </html>
