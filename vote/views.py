@@ -14,26 +14,6 @@ from vote.models import Question, Answer, UserAnswer, Url, MultiQuestion
 # Create your views here.
 
 
-def new(request, api_key):
-    context = {
-        'api_key': api_key
-    }
-
-    if request.method == 'POST':
-
-        # save question first
-        create_question(request)
-
-        # save answers
-        create_answer(request)
-
-        messages.add_message(request, messages.INFO, '투표가 저장되었습니다.')
-
-        return redirect('vote:select_question', api_key=api_key)
-
-    return render(request, 'vote/pages/new.html', context)
-
-
 def select_question(request, api_key):
     q_api_key = single_question = None
 
@@ -95,18 +75,6 @@ def get_multiple_vote(request, api_key, group_name):
         'answers': answers
     })
     return render(request, 'vote/pages/multi_action.html', context)
-
-
-def delete(request, api_key, question_title):
-    try:
-        question = Question.objects.get(api_key=api_key, question_title=question_title)
-    except ObjectDoesNotExist:
-        desc = 'The Question does not exist in followed api key.'
-        return error_return(desc)
-
-    question.delete()
-
-    return JsonResponse({})
 
 
 def dashboard(request, api_key, question_id):
@@ -176,16 +144,6 @@ def multiple_dashboard(request, api_key, group_name):
     context.update({'length': length})
 
     return render(request, 'vote/pages/multi_dashboard.html', context)
-
-
-@ensure_csrf_cookie
-def new_multiple(request, api_key):
-    context = {
-        'api_key': api_key
-    }
-
-    return render(request, 'vote/pages/new.html', context)
-
 
 # todo update 하는 api 는 PUT method로.
 
@@ -758,6 +716,158 @@ def create_single_question(request):
     answer_response_json = json.loads(answer_response_json)
 
     return JsonResponse(question_response_json)
+
+
+@require_POST
+def delete_question(request):
+    """
+    POST - /v1/question/delete
+
+    해당하는 question 을 삭제합니다.
+    :parameter - api_key, ( question_title / question_id )
+    :return -
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    question_title = data.get('question_title')
+    question_id = data.get('question_id')
+
+    response_dict = {}
+
+    try:
+        a = ApiKey.objects.get(key=api_key)
+        if question_title and question_id:
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+        elif question_id:
+            q = Question.objects.get(api_key=a, id=question_id)
+        elif question_title:
+            q = Question.objects.get(api_key=a, question_title=question_title)
+
+    except ObjectDoesNotExist:
+            desc = 'The Question does not exist in followed api_key.'
+            return error_return(desc)
+    q.delete()
+
+    return JsonResponse(response_dict)
+
+
+@require_POST
+def delete_answer(request):
+    """
+    POST - /v1/answer/delete
+
+    해당하는 answer 를 삭제합니다.
+    :parameter - api_key, ( question_title / question_id ), answer_num
+    :return -
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    question_title = data.get('question_title')
+    question_id = data.get('question_id')
+    answer_num = data.get('answer_num')
+
+    response_dict = {}
+
+    try:
+        a = ApiKey.objects.get(key=api_key)
+        if question_title and question_id:
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+        elif question_id:
+            q = Question.objects.get(api_key=a, id=question_id)
+        elif question_title:
+            q = Question.objects.get(api_key=a, question_title=question_title)
+
+    except ObjectDoesNotExist:
+            desc = 'The Question does not exist in followed api_key.'
+            return error_return(desc)
+
+    answer = q.answers.filter(answer_num=answer_num)
+    answer.delete()
+
+    return JsonResponse(response_dict)
+
+
+@require_POST
+def delete_useranswer(request):
+    """
+    POST - /v1/useranswer/delete
+
+    해당하는 useranswer 를 삭제합니다.
+    :parameter - api_key, ( question_title / question_id ), answer_num, unique_user
+    :return -
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    question_title = data.get('question_title')
+    question_id = data.get('question_id')
+    answer_num = data.get('answer_num')
+    unique_user = data.get('unique_user')
+
+    response_dict = {}
+
+    try:
+        a = ApiKey.objects.get(key=api_key)
+        if question_title and question_id:
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+        elif question_id:
+            q = Question.objects.get(api_key=a, id=question_id)
+        elif question_title:
+            q = Question.objects.get(api_key=a, question_title=question_title)
+
+    except ObjectDoesNotExist:
+            desc = 'The Question does not exist in followed api_key.'
+            return error_return(desc)
+
+    answer = q.answers.filter(answer_num=answer_num)
+    unique_user = str(unique_user) + api_key
+
+    try:
+        useranswer = UserAnswer.objects.get(answer=answer, unique_user=unique_user)
+        useranswer.delete()
+    except ObjectDoesNotExist:
+            desc = 'The UserAnswer does not exist in followed unique_user.'
+            return error_return(desc)
+
+    return JsonResponse(response_dict)
+
+
+@require_POST
+def delete_question_set(request):
+    """
+    POST - /v1/question/set/delete
+
+    question 의 answer 와 useranswer 를 모두 삭제합니다.
+    :parameter - api_key, ( question_title / question_id )
+    :return -
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    question_title = data.get('question_title')
+    question_id = data.get('question_id')
+
+    response_dict = {}
+
+    try:
+        a = ApiKey.objects.get(key=api_key)
+        if question_title and question_id:
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+        elif question_id:
+            q = Question.objects.get(api_key=a, id=question_id)
+        elif question_title:
+            q = Question.objects.get(api_key=a, question_title=question_title)
+
+    except ObjectDoesNotExist:
+            desc = 'The Question does not exist in followed api_key.'
+            return error_return(desc)
+
+    answers = q.answers.all()
+    useranswers = answers.user_answers.all()
+
+    useranswers.delete()
+    answers.delete()
+    q.delete()
+
+    return JsonResponse(response_dict)
 
 
 def error_return(desc):
