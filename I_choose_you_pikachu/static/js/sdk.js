@@ -16,6 +16,11 @@ PKC.prototype.createAnswer = function (params, success, error) {
     this.doPost(url, params, error, success)
 };
 
+PKC.prototype.createUserAnswer = function (params, success, error) {
+    var url = this.baseUrl+'useranswer/create';
+    this.doPost(url, params, error, success)
+};
+
 PKC.prototype.createMultipleQuestion = function (params, success, error) {
     if ( params['group_name'] === ""){
         this.createSingleQuestion(params, success, error);

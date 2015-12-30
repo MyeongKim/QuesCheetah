@@ -11,7 +11,7 @@ import json
 from main.models import ApiKey
 from vote.models import Question, Answer, UserAnswer, Url, MultiQuestion
 
-# Create your views here.
+''' server view function '''
 
 
 def select_question(request, api_key):
@@ -38,42 +38,141 @@ def select_question(request, api_key):
     return render(request, 'vote/pages/question_select.html', context)
 
 
-def get_vote(request, api_key, question_title):
+def new(request, api_key):
     context = {
         'api_key' : api_key
     }
-    try:
-        question = Question.objects.get(api_key=ApiKey.objects.get(key=api_key), question_title=question_title)
-    except ObjectDoesNotExist:
-        desc = 'The Question does not exist in followed api key.'
-        return error_return(desc)
 
-    answers = Answer.objects.filter(question=question)
-    context.update({'question': question, 'answers': answers})
+    return render(request, 'vote/pages/new.html', context)
+
+
+def get_vote(request, api_key, question_title):
+    context = {
+        'api_key': api_key
+    }
+
+    '''
+    1. request to get_question rest api
+    '''
+    url = 'http://localhost:8000/vote/question/get'
+    param = {
+        'api_key': api_key,
+        'question_title': question_title
+    }
+
+    data = json.dumps(param).encode('utf-8')
+    req = urllib.request.Request(url)
+
+    try:
+        response_json = urllib.request.urlopen(req, data=data).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError as e:
+        content = e.read()
+        return HttpResponse(content)
+
+    question_json_response = response_json
+    # context.update({
+    #     # 'question': json.loads(question_json_response['question'])[0]
+    #
+    # })
+    context.update(question_json_response)
+    '''
+    2. request to get_answer rest api
+    '''
+    url = 'http://localhost:8000/vote/answer/get'
+    param = {
+        'api_key': api_key,
+        'question_title': question_title
+    }
+
+    data = json.dumps(param).encode('utf-8')
+    req = urllib.request.Request(url)
+
+    try:
+        response_json = urllib.request.urlopen(req, data=data).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError as e:
+        content = e.read()
+        return HttpResponse(content)
+
+    answer_json_response = response_json
+    # context.update({
+    #     'answers': answer_json_response['answers']
+    # })
+    context.update(answer_json_response)
+
     return render(request, 'vote/pages/action.html', context)
 
 
 def get_multiple_vote(request, api_key, group_name):
     context = {
-        'api_key': api_key
+        'api_key': api_key,
+        'group_name': group_name
     }
+    questions = {}
+    answers = {}
+
     try:
         a = ApiKey.objects.get(key=api_key)
         m = MultiQuestion.objects.get(api_key=a, group_name=group_name)
-        questions = m.question_elements.all()
     except ObjectDoesNotExist:
         desc = 'The MultiQuestion does not exist in followed api key.'
         return error_return(desc)
 
-    answers = {}
-    for index, q in enumerate(questions):
-        answers[index] = q.answers.all()
+    for index, q in enumerate(m.question_elements.all()):
+        '''
+        1. request to get_question rest api
+        '''
+        url = 'http://localhost:8000/vote/question/get'
+        param = {
+            'api_key': api_key,
+            'question_title': q.question_title
+        }
 
-    context.update({
-        'group_name': m.group_name,
-        'questions': questions,
-        'answers': answers
-    })
+        data = json.dumps(param).encode('utf-8')
+        req = urllib.request.Request(url)
+
+        try:
+            response_json = urllib.request.urlopen(req, data=data).read()
+            response_json = json.loads(response_json.decode('utf-8'))
+        except HTTPError as e:
+            content = e.read()
+            return HttpResponse(content)
+
+        question_json_response = response_json
+        questions[index] = question_json_response
+
+        '''
+        2. request to get_answer rest api
+        '''
+        url = 'http://localhost:8000/vote/answer/get'
+        param = {
+            'api_key': api_key,
+            'question_title': q.question_title
+        }
+
+        data = json.dumps(param).encode('utf-8')
+        req = urllib.request.Request(url)
+
+        try:
+            response_json = urllib.request.urlopen(req, data=data).read()
+            response_json = json.loads(response_json.decode('utf-8'))
+        except HTTPError as e:
+            content = e.read()
+            return HttpResponse(content)
+
+        answer_json_response = response_json
+        answers[index] = answer_json_response['answers']
+
+        context.update({
+            'questions': questions
+        })
+        context.update({
+            'answers': answers
+        })
+
+        print(context)
+
     return render(request, 'vote/pages/multi_action.html', context)
 
 
@@ -158,9 +257,7 @@ def multiple_dashboard(request, api_key, group_name):
 # todo cors access-control-allow-origin 헤더 문제
 # ======================================
 
-'''
-question management
-'''
+''' rest api function '''
 
 
 @require_POST
@@ -423,6 +520,7 @@ def create_answer(request):
     return JsonResponse(response_dict)
 
 
+@csrf_exempt
 @require_POST
 def get_question(request):
     """
@@ -454,7 +552,10 @@ def get_question(request):
 
     if q:
         response_dict.update({
-            'question': serializers.serialize('json', [q])
+            # 'question': serializers.serialize('json', [q])
+            'question_title': q.question_title,
+            'question_text': q.question_text,
+            'question_id': q.id,
         })
     else:
         desc = 'The Question does not exist.'
@@ -463,6 +564,7 @@ def get_question(request):
     return JsonResponse(response_dict)
 
 
+@csrf_exempt
 @require_POST
 def get_answer(request):
     """
@@ -478,6 +580,7 @@ def get_answer(request):
     question_id = data.get('question_id')
 
     response_dict = {}
+    answer_list = []
 
     try:
         a = ApiKey.objects.get(key=api_key)
@@ -492,9 +595,18 @@ def get_answer(request):
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
 
-    if q.answers:
+    a = q.answers.all()
+    if a:
+        for answer in a:
+            answer_list.append({
+                'answer_num': answer.answer_num,
+                'answer_text': answer.answer_text,
+                'answer_count': answer.get_answer_count
+            })
+
         response_dict.update({
-            'answer': serializers.serialize('json', [q.answers.all()])
+            # 'answers': serializers.serialize('json', q.answers.all())
+            'answers': answer_list
         })
     else:
         desc = 'The Answer does not exist.'

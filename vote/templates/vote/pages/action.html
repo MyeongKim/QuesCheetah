@@ -12,14 +12,14 @@
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        {{ question.question_text }}
+                        {{ question_text }}
                     </h3>
                 </div>
                 <div class="panel-body">
                     {% for a in answers|dictsort:"answer_num" %}
                         <div>
-                            <button class="btn btn-primary answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ question.id }}">
-                                {{ a.answer_text }}<span class="badge">{{ a.get_answer_count }}</span>
+                            <button class="btn btn-primary answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ question_id }}">
+                                {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
                             </button>
                         </div>
                     {% endfor %}
@@ -32,63 +32,6 @@
 {% block script %}
     <script>
         $(document).ready(function(){
-            function getCookie(name) {
-                var cookieValue = null;
-                if (document.cookie && document.cookie != '') {
-                    var cookies = document.cookie.split(';');
-                    for (var i = 0; i < cookies.length; i++) {
-                        var cookie = jQuery.trim(cookies[i]);
-                        // Does this cookie string begin with the name we want?
-                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
-                }
-                return cookieValue;
-            }
-
-            var csrftoken = getCookie('csrftoken');
-
-            function csrfSafeMethod(method) {
-                // these HTTP methods do not require CSRF protection
-                return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-            }
-
-            $.ajaxSetup({
-                beforeSend: function(xhr, settings) {
-                    if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-                        xhr.setRequestHeader("X-CSRFToken", csrftoken);
-                    }
-                }
-            });
-            function update(api_key, question_title, question_id, update_num, unique_user){
-                $.ajax({
-                    url : "/vote/useranswer/create",
-                    contentType: "application/json",
-                    type : "POST",
-                    dataType: 'json',
-                    data : JSON.stringify({
-                                api_key: api_key,
-                                question_title : question_title,
-                                question_id: question_id,
-                                update_num : update_num,
-                                unique_user : unique_user
-                            }),
-                    success : function(json){
-                        console.log(json)
-                    },
-                    error : function(xhr, errmsg, err){
-                        $('#helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
-                                "</div>");
-                        console.log(xhr.status + ": " + xhr.responseText);
-                        console.log('---------------');
-                        console.log(xhr);
-                        console.log('---------------');
-                        console.log(err);
-                    }
-                });
-            }
 
             function unique_set(myType){
                 //if (myType === "default"){
@@ -103,7 +46,14 @@
                 var question_title = "";
                 var question_id = $(this).attr('q_id');
                 var unique_user = unique_set("default");
-                update(api_key, question_title, question_id, update_num, unique_user);
+                var params = {
+                    'api_key': api_key,
+                    'question_title': question_title,
+                    'question_id': question_id,
+                    'update_num': update_num,
+                    'unique_user': unique_user,
+                };
+                self.pkc.createUserAnswer(params);
             })
         });
     </script>
