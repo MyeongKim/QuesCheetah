@@ -248,8 +248,8 @@ def multiple_dashboard(request, api_key, group_name):
 
 # todo url 맨 처음 /v1/ 붙이기.
 
-# todo question - list, update, delete
-# todo answer -  update, delete, full_view
+# todo question - list, update
+# todo answer -  update, full_view
 # todo useranswer -  update,
 # todo api - get, create,
 
@@ -421,6 +421,7 @@ def add_url(request):
     return JsonResponse(response_dict)
 
 
+@csrf_exempt
 @require_POST
 def create_question(request):
     """
@@ -474,6 +475,7 @@ def create_question(request):
     return JsonResponse(response_dict)
 
 
+@csrf_exempt
 @require_POST
 def create_answer(request):
     """
@@ -811,23 +813,51 @@ def create_single_question(request):
     request to create_question, create_answer rest api
     '''
     data = json.loads(request.body.decode('utf-8'))
-    url = 'http://localhost:8000/vote/question/create'
+    api_key = data['api_key']
+    question_data = data['questions']['1']
+    answers_data = data['answers']['1']
 
-    data = urllib.parse.urlencode(data).encode("utf-8")
+    url = 'http://localhost:8000/vote/question/create'
+    # todo json 형태인데 b'{ } is not serializable error 발생.
+    data = {
+        'question_title': question_data['question_title'],
+        'question_text': question_data['question_text'],
+        'is_editable': question_data['is_editable'],
+        'is_private': question_data['is_private'],
+        'start_dt': question_data['start_dt'],
+        'end_dt': question_data['end_dt'],
+        'api_key': api_key
+    }
+
+    data = json.dumps(data).encode("utf-8")
     req = urllib.request.Request(url)
 
-    question_response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
-    question_response_json = json.loads(question_response_json)
+    try:
+        question_response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
+        question_response_json = json.loads(question_response_json)
+    except HTTPError as e:
+        content = e.read()
+        return HttpResponse(content)
 
     url = 'http://localhost:8000/vote/answer/create'
 
-    data = urllib.parse.urlencode(data).encode("utf-8")
+    data = {
+        'api_key': api_key,
+        'question_title': question_data['question_title'],
+        'answers': answers_data
+    }
+
+    data = json.dumps(data).encode("utf-8")
     req = urllib.request.Request(url)
 
-    answer_response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
-    answer_response_json = json.loads(answer_response_json)
+    try:
+        answer_response_json = urllib.request.urlopen(req, data=data).read().decode("utf-8")
+        answer_response_json = json.loads(answer_response_json)
+    except HTTPError as e:
+        content = e.read()
+        return HttpResponse(content)
 
-    return JsonResponse(question_response_json)
+    return JsonResponse({})
 
 
 @require_POST
@@ -973,11 +1003,49 @@ def delete_question_set(request):
             return error_return(desc)
 
     answers = q.answers.all()
-    useranswers = answers.user_answers.all()
+    for answer in answers:
+        useranswers = answer.user_answers.all()
+        useranswers.delete()
 
-    useranswers.delete()
     answers.delete()
     q.delete()
+
+    return JsonResponse(response_dict)
+
+
+@require_POST
+def delete_multi_question_set(request):
+    """
+    POST - /v1/multiple/delete
+
+    한 group 에 속한 모든 question 을 삭제합니다.
+    question 에 속하는 answer, useranswer 도 모두 삭제됩니다.
+    :parameter - api_key, group_name
+    :return -
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    group_name = data.get('group_name')
+
+    response_dict = {}
+
+    try:
+        a = ApiKey.objects.get(key=api_key)
+        m = MultiQuestion.objects.get(api_key=a, group_name=group_name)
+    except ObjectDoesNotExist:
+            desc = 'The Question does not exist in followed api_key.'
+            return error_return(desc)
+
+    questions = m.question_elements.all()
+    for q in questions:
+        answers = q.answers.all()
+        for answer in answers:
+            useranswers = answer.user_answers.all()
+            useranswers.delete()
+        answers.delete()
+        q.delete()
+
+    m.delete()
 
     return JsonResponse(response_dict)
 

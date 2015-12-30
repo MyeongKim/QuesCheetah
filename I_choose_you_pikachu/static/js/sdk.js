@@ -5,35 +5,60 @@ function PKC(config){
     this.callBackUrl = config.callBackUrl;
 }
 
-
-PKC.prototype.createQuestion = function (params, success, error) {
-    var url = this.baseUrl+'question/create';
-    this.doPost(url, params, error, success)
-};
-
-PKC.prototype.createAnswer = function (params, success, error) {
-    var url = this.baseUrl+'answer/create';
-    this.doPost(url, params, error, success)
-};
-
-PKC.prototype.createUserAnswer = function (params, success, error) {
-    var url = this.baseUrl+'useranswer/create';
-    this.doPost(url, params, error, success)
-};
-
 PKC.prototype.createMultipleQuestion = function (params, success, error) {
     if ( params['group_name'] === ""){
         this.createSingleQuestion(params, success, error);
     }else{
         var url = this.baseUrl+'multiple/create';
-        this.doPost(url, params, error, success);
+        this.doPost(url, params, success, error);
     }
 };
 
 PKC.prototype.createSingleQuestion = function (params, success, error) {
     var url = this.baseUrl+'single/create';
-    this.doPost(url, params, error, success)
+    this.doPost(url, params, success, error)
 };
+
+PKC.prototype.createQuestion = function (params, success, error) {
+    var url = this.baseUrl+'question/create';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.createAnswer = function (params, success, error) {
+    var url = this.baseUrl+'answer/create';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.createUserAnswer = function (params, success, error) {
+    var url = this.baseUrl+'useranswer/create';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.deleteQuestion = function (params, success, error) {
+    var url = this.baseUrl+'question/delete';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.deleteAnswer = function (params, success, error) {
+    var url = this.baseUrl+'answer/delete';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.deleteUserAnswer = function (params, success, error) {
+    var url = this.baseUrl+'useranswer/delete';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.deleteQuestionSet = function (params, success, error) {
+    var url = this.baseUrl+'question/set/delete';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.deleteMultiQuestionSet = function (params, success, error) {
+    var url = this.baseUrl+'multiple/delete';
+    this.doPost(url, params, success, error)
+};
+
 
 PKC.prototype.doRequest = function (url, success, errorCallback) {
     $.ajax({
@@ -63,7 +88,7 @@ PKC.prototype.doRequest = function (url, success, errorCallback) {
 };
 
 // todo error 함수 실행시 error json body 받아서 처리
-PKC.prototype.doPost = function (url, post_body, errorCallback, success) {
+PKC.prototype.doPost = function (url, post_body, success, errorCallback) {
     $.ajax({
         url : url,
         contentType: "application/json",

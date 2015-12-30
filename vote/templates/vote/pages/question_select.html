@@ -24,6 +24,7 @@
                     <div>{{ m.group_name }}</div>
                     <a href="{% url 'vote:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">투표하기</button></a>
                     <a href="{% url 'vote:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard 보기</button></a>
+                    <button class="btn btn-danger multi-delete-btn" gn="{{ m.group_name }}">Delete</button>
                     <hr>
                 {% endfor %}
                 <hr>
@@ -34,12 +35,37 @@
                     <div>{{ q.question_title }}</div>
                     <a href="{% url 'vote:get_vote' api_key q.question_title %}"><button class="btn btn-default">투표하기</button></a>
                     <a href="{% url 'vote:dashboard' api_key q.id %}"><button class="btn btn-default">Dashboard 보기</button></a>
+                    <button class="btn btn-danger single-delete-btn" qid="{{ q.id }}" qt="{{ q.question_title }}">Delete</button>
                     <hr>
                 {% endfor %}
             </div>
         </div>
     </div>
 {% endblock %}
-
 {% block script %}
+    <script type="application/javascript">
+        $(document).ready(function(){
+            function reload(){
+                location.reload();
+            }
+
+            $('.multi-delete-btn').click(function(){
+
+                var params = {
+                    'api_key': "{{ api_key }}",
+                    'group_name': $(this).attr('gn')
+                };
+                self.pkc.deleteMultiQuestionSet(params, reload);
+            });
+
+            $('.single-delete-btn').click(function(){
+                var params = {
+                    'api_key': "{{ api_key }}",
+                    'question_id': $(this).attr('qid'),
+                    'question_title': $(this).attr('qt'),
+                };
+                self.pkc.deleteQuestionSet(params, reload);
+            });
+        });
+    </script>
 {% endblock %}
