@@ -81,7 +81,7 @@ REST API URL = ```"single/create"```
 
 ###**create many question**
 
-Create many questions. These questions are group together.
+Create many questions. These questions are grouped together.
 If the ```group_name```is empty in requested data, It's redirected to creating single question function.
 
 REST API URL = ```"multiple/create"```
@@ -166,7 +166,7 @@ The response will be always JSON object. It depends on the context.
 
 ###**Error response**
 
-``` json
+``` 
     {
         'error'      : True,
         'description': desc     // this data depends on the context.
@@ -181,7 +181,7 @@ POST - (http://quescheetah.com/v1/question/private)
 Change question state to private.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -191,7 +191,7 @@ Change question state to private.
 ```
 
 **return**
-``` json
+``` 
     {}
 ```
     
@@ -203,7 +203,7 @@ POST - (http://quescheetah.com/v1/question/public)
 Change question state to public.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -213,7 +213,7 @@ Change question state to public.
 ```
 
 **return**
-``` json
+``` 
     {}
 ```
     
@@ -225,7 +225,7 @@ POST - (http://quescheetah.com/v1/question/url/list)
 Get authenticated urls of the question.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -235,7 +235,7 @@ Get authenticated urls of the question.
 ```
 
 **return**
-``` json
+``` 
     {
         'urls': {0:{"https://naver.com"},
                  1:{"https://google.com"},
@@ -253,7 +253,7 @@ POST - (http://quescheetah.com/v1/question/url/add)
 Add an authenticated url.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -264,7 +264,7 @@ Add an authenticated url.
 ```
 
 **return**
-``` json
+``` 
     {
         'urls': {0:{"https://naver.com"},
                  1:{"https://google.com"},
@@ -282,7 +282,7 @@ POST - (http://quescheetah.com/v1/question/create)
 Create one question. Not any related answers.
 
 **request**
-``` json
+``` 
     {
         'api_key'           : "Your api key",
         'question_title'    : "Your question title",
@@ -296,7 +296,7 @@ Create one question. Not any related answers.
 ```
 
 **return**
-``` json
+``` 
     {
         'api_key'           : "Your api key",
         'question_title'    : "Your question title",
@@ -316,7 +316,7 @@ POST - (http://quescheetah.com/v1/answer/create)
 Create answers related to one question.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -332,7 +332,7 @@ Create answers related to one question.
 ```
 
 **return**
-``` json
+``` 
     {
         'answers': {
                         1:{'answer_num':"1", 'answer_text': "answer1"},
@@ -351,7 +351,7 @@ POST - (http://quescheetah.com/v1/question/get)
 Get question data. Not related answers.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -361,7 +361,7 @@ Get question data. Not related answers.
 ```
 
 **return**
-``` json
+``` 
     {
         'api_key'           : "Your api key",
         'question_title'    : "Your question title",
@@ -381,7 +381,7 @@ POST - (http://quescheetah.com/v1/answer/get)
 Get all answer data related with one question.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -391,7 +391,7 @@ Get all answer data related with one question.
 ```
 
 **return**
-``` json
+``` 
     {
         'answers': {
                         1:{'answer_num':"1", 'answer_text': "answer1"},
@@ -410,7 +410,7 @@ POST - (http://quescheetah.com/v1/useranswer/create)
 Make a new useranswer.
 
 **request**
-``` json
+``` 
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -422,7 +422,7 @@ Make a new useranswer.
 ```
 
 **return**
-``` json
+``` 
     {
         'useranswer':  {
                             'update_num' : "1",
@@ -449,8 +449,260 @@ Provide the main information of question.
 ```
 
 **return**
-``` json
-    {
-        'answer'
+```
+    {   
+        'question_title':
+        'question_text' :
+        'answer'        : [
+                            // 'answer_count' means how many useranswers are made with this answer. 
+                            {'answer_num': "1", 'answer_text': "answer1", 'answer_count': 2},
+                            {'answer_num': "2", 'answer_text': "answer2", 'answer_count': 4},
+                            {'answer_num': "3", 'answer_text': "answer3", 'answer_count': 1},
+                            {'answer_num': "4", 'answer_text': "answer4", 'answer_count': 2}
+                          ]
     }
+```
+
+###**create_multiple_question**
+
+
+POST - (http://quescheetah.com/v1/multiple/create)
+
+Create many question. These questions are grouped together.
+The answers within each question are created also.
+
+**request**
+```
+    {
+        'api_key'       : "Your api key",
+        'group_name'    : "This Group name",
+        'questions'     : {
+                            1: {
+                                    'question_title': "Your question title 1",
+                                    'question_text' : "Your question text 1",
+                                    'start_dt'      : "",       //optional
+                                    'end_dt'        : "",       //optional
+                                    'is_editable'   : "True",   // optional
+                                    'is_private'    : "True"    // optional
+                                    }
+                            2: {
+                                    'question_title': "Your question title 2",
+                                    'question_text' : "Your question text 2",
+                                    'start_dt'      : "",       //optional
+                                    'end_dt'        : "",       //optional
+                                    'is_editable'   : "True",   // optional
+                                    'is_private'    : "True"    // optional
+                                    }
+                                    
+                            ...        
+                            
+                           }
+        'answers'     : {
+                            // Answers for the first question.
+                            1:  {   
+                                    // First answer of the first question.
+                                    1:  {
+                                            'answer_num': "1",
+                                            'answer_text' : "Answer 1"
+                                        },
+                                    2:  {
+                                            'answer_num': "2",
+                                            'answer_text' : "Answer 2"
+                                    },
+                                    
+                                    ...
+                                    
+                                    
+                                },
+                            // Answers for the second question.
+                            2:  {   
+                                    // First answer of the second question.
+                                    1:  {
+                                            'answer_num': "1",
+                                            'answer_text' : "Answer 1"
+                                        },
+                                    2:  {
+                                            'answer_num': "2",
+                                            'answer_text' : "Answer 2"
+                                    },
+                                    
+                                    ...
+                                    
+                                    
+                                },
+            
+                           }
+    }
+
+```
+
+**return**
+```
+    {   
+        'multiquestion' :   {
+                                'group_name':   "Your group name"
+                            },
+        'questions'      :   {
+                                0:  {
+                                        'question_title': "Your question title",
+                                        'question_text': "Your question text"
+                                    },
+                                1:  {
+                                        'question_title': "Your question title",
+                                        'question_text': "Your question text"
+                                    }
+                                
+                                ...
+                                
+                            }
+        
+    }
+```
+
+
+###**create_single_question**
+
+
+POST - (http://quescheetah.com/v1/single/create)
+
+Create single question.
+The answers of the question are created also.
+
+**request**
+```
+    {
+        'api_key'       : "Your api key",
+        'group_name'    : "This Group name",
+        'questions'     : {
+                            1: {
+                                    'question_title': "Your question title 1",
+                                    'question_text' : "Your question text 1",
+                                    'start_dt'      : "",       //optional
+                                    'end_dt'        : "",       //optional
+                                    'is_editable'   : "True",   // optional
+                                    'is_private'    : "True"    // optional
+                                    }       
+                           }
+        'answers'     : {
+                            1:  {   
+                                    // First answer of the first question.
+                                    1:  {
+                                            'answer_num': "1",
+                                            'answer_text' : "Answer 1"
+                                        },
+                                    2:  {
+                                            'answer_num': "2",
+                                            'answer_text' : "Answer 2"
+                                    },
+                                    
+                                    ...
+                                    
+                                    
+                                },
+                           }
+    }
+
+```
+
+**return**
+```
+    {   
+        
+        
+    }
+```
+
+
+###**delete_question**
+
+
+POST - (http://quescheetah.com/v1/question/delete)
+
+Delete one question. Not including related data.
+
+**request**
+```
+    {
+        'api_key'       : "Your api key",
+        'question_title': "Your question title",
+        'question_id'   : "Your question id",    // Either question_title and question_id is required.
+    }
+
+```
+
+**return**
+```
+    {}
+```
+
+###**delete_answer**
+
+
+POST - (http://quescheetah.com/v1/answer/delete)
+
+Delete one answer. Not including related data.
+
+**request**
+```
+    {
+        'api_key'       : "Your api key",
+        'question_title': "Your question title",
+        'question_id'   : "Your question id",    // Either question_title and question_id is required.
+        'answer_num'    : "Your answer number"
+    }
+
+```
+
+**return**
+```
+    {}
+```
+
+
+###**delete_useranswer**
+
+
+POST - (http://quescheetah.com/v1/useranswer/delete)
+
+Delete one useranswer.
+
+**request**
+```
+    {
+        'api_key'       : "Your api key",
+        'question_title': "Your question title",
+        'question_id'   : "Your question id",    // Either question_title and question_id is required.
+        'answer_num'    : "Your answer number",
+        'unique_user'   : "Unique Id"
+    }
+
+```
+
+**return**
+```
+    {}
+```
+
+###**delete_question_set**
+
+
+POST - (http://quescheetah.com/v1/question/set/delete)
+
+Delete one question 
+
+**request**
+```
+    {
+        'api_key'       : "Your api key",
+        'question_title': "Your question title",
+        'question_id'   : "Your question id",    // Either question_title and question_id is required.
+        'answer_num'    : "Your answer number",
+        'unique_user'   : "Unique Id"
+    }
+
+```
+
+**return**
+```
+    {}
 ```
