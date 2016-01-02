@@ -6,8 +6,8 @@ Web SDK for the Q&A
 To start QuesCheetah, you need jQuery first. Put jQuery script tag first and then put sdk script behind.
 
 ``` javascript
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="libs/sdk.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="libs/sdk.js"></script>
 ```
 
 
@@ -43,6 +43,69 @@ You should get a api key to use the API. You can get it from [here](http://quesc
 
 # Functions
 
+**make one question only**
+
+Not making any related answers, make one question only.
+
+```javascript
+    qs.createQuestion(params, successCallback, errorCallback);
+```
+
+**make one answer only**
+
+Make one answer
+
+```javascript
+    qs.createAnswer(params, successCallback, errorCallback);
+```
+
+**create single question**
+
+Create one question and related answers at once.
+
+```javascript
+    qs.createSingleQuestion(params, successCallback, errorCallback);
+```
+
+**create many question**
+
+Create many questions. These questions are group together.
+
+```javascript
+    qs.createQuestion(params, successCallback, errorCallback);
+```
+
+**create user answer**
+
+Used when new user answers the question. 
+
+```javascript
+    qs.createUserAnswer(params, successCallback, errorCallback);
+```
+
+**delete one question only**
+
+Not removing any related answers, delete one question only.
+
+```javascript
+    qs.deleteQuestion(params, successCallback, errorCallback);
+```
+
+**delete one answer only**
+
+Delete one answer only.
+
+```javascript
+    qs.deleteAnswer(params, successCallback, errorCallback);
+```
+
+**delete an user's answer**
+
+Delete specific user's answer.
+
+```javascript
+    qs.deleteUserAnswer(params, successCallback, errorCallback);
+```
 
 
 
@@ -58,10 +121,10 @@ The response will be always JSON object. It depends on the context.
 **Error response**
 
 ``` json
-{
-    'error'      : True,
-    'description': desc     // this data depends on the context.
-}
+    {
+        'error'      : True,
+        'description': desc     // this data depends on the context.
+    }
 ```
 
 **Make one Question only**
