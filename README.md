@@ -688,7 +688,7 @@ Delete one useranswer.
 
 POST - (http://quescheetah.com/v1/question/set/delete)
 
-Delete one question 
+Delete one question with all related answers, useranswers.
 
 **request**
 ```
@@ -696,8 +696,6 @@ Delete one question
         'api_key'       : "Your api key",
         'question_title': "Your question title",
         'question_id'   : "Your question id",    // Either question_title and question_id is required.
-        'answer_num'    : "Your answer number",
-        'unique_user'   : "Unique Id"
     }
 
 ```
@@ -706,3 +704,25 @@ Delete one question
 ```
     {}
 ```
+
+###**delete_multi_question_set**
+
+
+POST - (http://quescheetah.com/v1/multiple/delete)
+
+Delete one group with all related questions, answers, useranswers.
+
+**request**
+```
+    {
+        'api_key'       : "Your api key",
+        'group_name'    : "Your group name"
+    }
+
+```
+
+**return**
+```
+    {}
+```
+
