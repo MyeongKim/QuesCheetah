@@ -439,7 +439,7 @@ POST - (http://quescheetah.com/v1/answer/view/simple)
 Provide the main information of question.
 
 **request**
-``` json
+```
     {
         'api_key'       : "Your api key",
         'question_title': "Your question title",
@@ -451,8 +451,6 @@ Provide the main information of question.
 **return**
 ``` json
     {
-        'question_title':
-        'question_text':
-        'answer':{0:{},}
+        'answer'
     }
 ```
