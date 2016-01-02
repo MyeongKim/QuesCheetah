@@ -1,5 +1,5 @@
 # QuesCheetah
-Web SDK for the Q&A
+Web SDK for the easy Q&A of your site.
 
 # Installation
 
