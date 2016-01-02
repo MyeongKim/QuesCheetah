@@ -134,7 +134,7 @@ REST API URL = ```"useranswer/delete"```
     qs.deleteUserAnswer(params, successCallback, errorCallback);
 ```
 
-###**delete an question and all related answers, useranswers. **
+###**delete an question and all related answers, useranswers.**
 
 Delete an question with all related data.
 
@@ -144,7 +144,7 @@ REST API URL = ```"question/set/delete"```
     qs.deleteQuestionSet(params, successCallback, errorCallback);
 ```
 
-###**delete many question and all related answers, useranswers. **
+###**delete many question and all related answers, useranswers.**
 
 Delete one group with all related data.
 
