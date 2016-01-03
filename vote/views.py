@@ -617,6 +617,7 @@ def get_answer(request):
     return JsonResponse(response_dict)
 
 
+@csrf_exempt
 @require_POST
 def create_useranswer(request):
     """
@@ -973,6 +974,7 @@ def delete_useranswer(request):
     return JsonResponse(response_dict)
 
 
+@csrf_exempt
 @require_POST
 def delete_question_set(request):
     """

@@ -34,6 +34,16 @@ PKC.prototype.createUserAnswer = function (params, success, error) {
     this.doPost(url, params, success, error)
 };
 
+PKC.prototype.getQuestion = function (params, success, error) {
+    var url = this.baseUrl+'question/get';
+    this.doPost(url, params, success, error)
+};
+
+PKC.prototype.getAnswer = function (params, success, error) {
+    var url = this.baseUrl+'answer/get';
+    this.doPost(url, params, success, error)
+};
+
 PKC.prototype.deleteQuestion = function (params, success, error) {
     var url = this.baseUrl+'question/delete';
     this.doPost(url, params, success, error)
