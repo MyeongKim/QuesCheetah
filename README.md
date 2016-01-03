@@ -2,7 +2,7 @@
 Web SDK for the easy Q&A of your site.
 
 # Download SDK
-You can download QuesCheetah JavaScript file [here]()
+You can download QuesCheetah JavaScript file [here](QuesCheetah/static/js/sdk.js)
 
 # Installation
 
