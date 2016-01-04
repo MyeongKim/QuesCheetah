@@ -1,4 +1,5 @@
-# QuesCheetah
+<img src="./QuesCheetah/static/images/quescheetah-logo.png" width="400">
+
 Web SDK for the easy Q&A of your site.
 
 # Download SDK
