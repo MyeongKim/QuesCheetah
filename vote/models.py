@@ -16,6 +16,7 @@ class MultiQuestion(models.Model):
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
+    is_removed = models.BooleanField(default=False)
 
     def __str__(self):
         return 'id:{},{}'.format(self.id, self.group_name)
@@ -46,6 +47,7 @@ class Question(models.Model):
     end_dt = models.DateTimeField()
     is_editable = models.BooleanField(default=True)  # if answer can be changed
     is_private = models.BooleanField(default=False)
+    is_removed = models.BooleanField(default=False)
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
@@ -97,6 +99,7 @@ class Url(models.Model):
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
+    is_removed = models.BooleanField(default=False)
 
     def __str__(self):
         return '{}-({})'.format(self.url_name, self.full_url)
@@ -109,6 +112,7 @@ class Answer(models.Model):
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
+    is_removed = models.BooleanField(default=False)
 
     def __str__(self):
         return '{}-({})'.format(self.answer_text, self.answer_num)
@@ -126,6 +130,7 @@ class UserAnswer(models.Model):
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
+    is_removed = models.BooleanField(default=False)
 
     def __str__(self):
         return '{}-{}'.format(self.answer, self.unique_user)

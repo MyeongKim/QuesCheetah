@@ -22,7 +22,7 @@ def select_question(request, api_key):
     }
     try:
         q_api_key = ApiKey.objects.get(key=api_key)
-        single_question = Question.objects.filter(api_key=q_api_key, multi_question=None)
+        single_question = Question.objects.filter(api_key=q_api_key, multi_question=None, is_removed=False)
 
         if not single_question:
             pass
@@ -30,7 +30,7 @@ def select_question(request, api_key):
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
 
-    m = MultiQuestion.objects.filter(api_key=q_api_key)
+    m = MultiQuestion.objects.filter(api_key=q_api_key, is_removed=False)
 
     # answers = Answer.objects.filter(question=single_question)
     context.update({'multi_question': m, 'single_question': single_question})
@@ -114,7 +114,7 @@ def get_multiple_vote(request, api_key, group_name):
 
     try:
         a = ApiKey.objects.get(key=api_key)
-        m = MultiQuestion.objects.get(api_key=a, group_name=group_name)
+        m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The MultiQuestion does not exist in followed api key.'
         return error_return(desc)
@@ -212,7 +212,7 @@ def multiple_dashboard(request, api_key, group_name):
 
     try:
         a = ApiKey.objects.get(key=api_key)
-        m = MultiQuestion.objects.get(api_key=a, group_name=group_name)
+        m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The MultiQuestion does not exist in followed api key.'
         return error_return(desc)
@@ -281,11 +281,11 @@ def to_private(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
@@ -317,11 +317,11 @@ def to_public(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
@@ -353,11 +353,11 @@ def get_url_list(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
@@ -396,18 +396,18 @@ def add_url(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
 
     if new_urls:
         for url in new_urls:
-            new_u = Url(question=q, full_url=url)
+            new_u = Url(question=q, full_url=url, is_removed=False)
             new_u.save()
 
         u = q.authenticated_urls
@@ -463,7 +463,7 @@ def create_question(request):
     new_question.save()
 
     try:
-        q = Question.objects.get(api_key=a, id=new_question.id)
+        q = Question.objects.get(api_key=a, id=new_question.id, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
@@ -498,11 +498,11 @@ def create_answer(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
@@ -543,11 +543,11 @@ def get_question(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a,id=question_id)
+            q = Question.objects.get(api_key=a,id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
@@ -588,11 +588,11 @@ def get_answer(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
@@ -640,18 +640,18 @@ def create_useranswer(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
 
     if q.answers:
         try:
-            a = Answer.objects.get(question=q, answer_num=update_num)
+            a = Answer.objects.get(question=q, answer_num=update_num, is_removed=False)
         except ObjectDoesNotExist:
             desc = 'The Answer does not exist in followed answer_num.'
             return error_return(desc)
@@ -660,7 +660,7 @@ def create_useranswer(request):
         new_useranswer.save()
 
         try:
-            curr_useranswer = UserAnswer.objects.get(id=new_useranswer.id)
+            curr_useranswer = UserAnswer.objects.get(id=new_useranswer.id, is_removed=False)
         except ObjectDoesNotExist:
             desc = 'The UserAnswer does not exist in followed id.'
             return error_return(desc)
@@ -697,11 +697,11 @@ def simple_view_answer(request):
         a = ApiKey.objects.get(key=api_key)
 
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
     except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api_key.'
             return error_return(desc)
@@ -786,7 +786,7 @@ def create_multiple_question(request):
                     new_answer.save()
 
     try:
-        mq = MultiQuestion.objects.get(id=new_multiq.id)
+        mq = MultiQuestion.objects.get(id=new_multiq.id, is_removed=False)
         q = mq.question_elements.all()
 
         response_dict.update({
@@ -880,16 +880,17 @@ def delete_question(request):
     try:
         a = ApiKey.objects.get(key=api_key)
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
 
     except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api_key.'
             return error_return(desc)
-    q.delete()
+    q.is_removed = True
+    q.save()
 
     return JsonResponse(response_dict)
 
@@ -914,18 +915,20 @@ def delete_answer(request):
     try:
         a = ApiKey.objects.get(key=api_key)
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
 
     except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api_key.'
             return error_return(desc)
 
-    answer = q.answers.filter(answer_num=answer_num)
-    answer.delete()
+    answer = q.answers.filter(answer_num=answer_num, is_removed=False)
+    for a in answer:
+        a.is_removed = True
+        a.save()
 
     return JsonResponse(response_dict)
 
@@ -951,22 +954,24 @@ def delete_useranswer(request):
     try:
         a = ApiKey.objects.get(key=api_key)
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
 
     except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api_key.'
             return error_return(desc)
 
-    answer = q.answers.filter(answer_num=answer_num)
+    answer = q.answers.filter(answer_num=answer_num, is_removed=False)
     unique_user = str(unique_user) + api_key
 
     try:
-        useranswer = UserAnswer.objects.get(answer=answer, unique_user=unique_user)
-        useranswer.delete()
+        useranswer = UserAnswer.objects.get(answer=answer, unique_user=unique_user, is_removed=False)
+        useranswer.is_removed = True
+        useranswer.save()
+
     except ObjectDoesNotExist:
             desc = 'The UserAnswer does not exist in followed unique_user.'
             return error_return(desc)
@@ -994,11 +999,11 @@ def delete_question_set(request):
     try:
         a = ApiKey.objects.get(key=api_key)
         if question_title and question_id:
-            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id)
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
         elif question_id:
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         elif question_title:
-            q = Question.objects.get(api_key=a, question_title=question_title)
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
 
     except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api_key.'
@@ -1007,10 +1012,15 @@ def delete_question_set(request):
     answers = q.answers.all()
     for answer in answers:
         useranswers = answer.user_answers.all()
-        useranswers.delete()
+        for useranswer in useranswers:
+            useranswer.is_removed = True
+            useranswer.save()
 
-    answers.delete()
-    q.delete()
+        answer.is_removed = True
+        answer.save()
+
+    q.is_removed = True
+    q.save()
 
     return JsonResponse(response_dict)
 
@@ -1033,7 +1043,7 @@ def delete_multi_question_set(request):
 
     try:
         a = ApiKey.objects.get(key=api_key)
-        m = MultiQuestion.objects.get(api_key=a, group_name=group_name)
+        m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
     except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api_key.'
             return error_return(desc)
@@ -1043,11 +1053,18 @@ def delete_multi_question_set(request):
         answers = q.answers.all()
         for answer in answers:
             useranswers = answer.user_answers.all()
-            useranswers.delete()
-        answers.delete()
-        q.delete()
+            for useranswer in useranswers:
+                useranswer.is_removed = True
+                useranswer.save()
 
-    m.delete()
+            answer.is_removed = True
+            answer.save()
+
+        q.is_removed = True
+        q.save()
+
+    m.is_removed = True
+    m.save()
 
     return JsonResponse(response_dict)
 

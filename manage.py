@@ -3,7 +3,7 @@ import os
 import sys
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "I_choose_you_pikachu.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "QuesCheetah.settings")
 
     from django.core.management import execute_from_command_line
 
