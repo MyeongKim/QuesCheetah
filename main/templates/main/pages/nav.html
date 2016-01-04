@@ -1,13 +1,19 @@
 <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <a class="navbar-brand" href="{% url 'main:index' %}">I choose you - Pikachu!</a>
+            <a class="navbar-brand" href="{% url 'main:index' %}">QuesCheetah</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">Feature</a></li>
-                <li><a href="#">Usecase</a></li>
-                <li><a href="#">Document</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Document <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">JavaScript SDK docs</a></li>
+                        <li><a href="https://mingkim.gitbooks.io/quescheetah-document/content/" target="_blank">REST API docs</a></li>
+                    </ul>
+                </li>
+                <li><a href="#">Dashboard</a></li>
                 {% if user.is_authenticated %}
                     <li><a href="{% url 'main:user_mypage' user.id %}" class="btn login">{{ user.username }}</a></li>
                 {% else %}

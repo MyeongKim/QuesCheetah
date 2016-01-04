@@ -858,7 +858,10 @@ def create_single_question(request):
         content = e.read()
         return HttpResponse(content)
 
-    return JsonResponse({})
+    return JsonResponse({
+        'question': question_response_json,
+        'answers': answer_response_json
+    })
 
 
 @require_POST
@@ -1020,7 +1023,7 @@ def delete_question_set(request):
         answer.save()
 
     q.is_removed = True
-    q.save()
+    q.save(is_update=True)
 
     return JsonResponse(response_dict)
 

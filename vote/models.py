@@ -63,6 +63,7 @@ class Question(models.Model):
 
     def clean(self):
         # clean question_title
+        # todo question_title must be unique in same api_key
         if self.check_same_title(self.api_key, self.question_title):
             raise ValidationError({'question_title': _('This question_title is already exist in same api_key')})
 
@@ -83,8 +84,12 @@ class Question(models.Model):
             raise ValidationError({'question_title': _('question_title has to be consisted of characters ans numbers.')})
 
     def save(self, **kwargs):
-        self.clean()
-        return super(Question, self).save(**kwargs)
+        my_value = kwargs.pop('is_update', None)
+        if my_value:
+            return super(Question, self).save(**kwargs)
+        else:
+            self.clean()
+            return super(Question, self).save(**kwargs)
 
     # @classmethod
     # def set_group_number(cls, api):

@@ -4,78 +4,36 @@
 
 {% block stylesheet %}
     <style rel="stylesheet" >
-        .my-jumbotron{
+        .info-div{
             text-align: center;
-            background: url("/static/images/red.jpg");
-            color: #fff;
-            border-bottom: solid 3px #6a070b;
-            position: relative;
-            padding-bottom: 0;
-            padding-top: 60px;
         }
 
-        .outer-circle {
-            position: absolute;
-            border-radius: 50%;
-            width: 100px;
-            height: 100px;
-            background-color : transparent;
-            border: solid 3px #6a070b;
-            bottom : -50px;
-            left: 0;
-            right : 0;
-            margin-left:auto;
-            margin-right:auto;
-            z-index: 1031;
-        }
-
-        .inner-circle{
-            position: absolute;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            background-color : #fff;
-            border: solid 3px #6a070b;
-
-            bottom : -15px;
-            left: 0;
-            right : 0;
-            margin-left:auto;
-            margin-right:auto;
-            z-index: 1032;
-        }
-
-        .demo h1{
+        .info-div h1{
             text-align: center;
             margin-top: 100px;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 80px;
 
+            -webkit-text-stroke: 1px black;
+            color: #e4dd34;
+            text-shadow:
+            3px 3px 0 #000,
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px 1px 0 #000,
+            1px 1px 0 #000;
         }
 
-        .demo .container{
-            margin-top: 100px;
-        }
-        .demo .start-code{
-            border : solid 1px rgb(195, 195, 195);
-            border-radius: 4px;
-            width: 400px;
-            height: 220px;
-            padding: 20px;
-            margin-left: auto;
-            margin-right: auto;
+        .download-div{
+            text-align: center;
+            margin-top: 50px;
         }
 
-        .demo .demo-modal{
-            border : solid 1px rgb(195, 195, 195);
-            border-radius: 4px;
-            width: 400px;
-            height: 220px;
-            padding: 20px;
-            background-color: rgb(195, 195, 195);
-            margin-right: auto;
-            margin-left: auto;
-
+        .download-div a{
+            margin: 30px;
         }
-
+        
         .down-arrow{
             margin-top: 100px;
             margin-bottom: 100px;
@@ -85,7 +43,6 @@
         .feature{
             text-align: center;
             margin-top : 50px;
-            margin-bottom: 50px;
         }
 
         .feature .feature-element {
@@ -98,17 +55,13 @@
             font-size: 2em;
         }
 
-        .usecase{
-            background-color: #919191;
-            color : #fff;
-            text-align: center;
-            margin-bottom: 50px;
+        .sample-div{
+{#            background-color: #042927;#}
+            background-color: #efefef;
         }
-    
-        .usecase .usecase-element{
-            height: 400px;
-            font-size: 1.3em;
-            margin-top: 30px;
+
+        .sample-div a{
+            color: #757575;
         }
 
     </style>
@@ -124,30 +77,13 @@
     </div>
 {% endblock %}
 {% block content %}
-    <div class="demo">
-        <h1>의견이 모이고 있습니다!</h1>
-        <div class="container">
-            <div class="row">
-                <div class="col-sm-6">
-                    <div class="start-code">
-                        <ol class="code">
-                            <li><span class="code"><span class="v">var</span> io = <span class="io">require('socket.io')(80)</span>;</span></li>
-                            <li><span class="code"><span class="v">var</span> cfg = require('./config.json');</span></li>
-                            <li><span class="code"><span class="v">var</span> tw = require('node-tweet-stream')(cfg);</span></li>
-                            <li><span class="code">tw.track('socket.io');</span></li>
-                            <li><span class="code">tw.track('javascript');</span></li>
-                            <li><span class="code">tw.on('tweet', <span class="fn">function</span>(tweet){</span></li>
-                            <li><span class="code">&nbsp;&nbsp;<span class="io">io.emit('tweet', tweet)</span>;</span></li>
-                            <li><span class="code">});</span></li>
-                        </ol>
-                    </div>
-                </div>
-                <div class="col-sm-6">
-                    <div class="demo-modal">
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="info-div">
+        <h1>QuesCheetah</h1>
+        <h4>Web SDK for the easy Q&A of your site.</h4>
+    </div>
+    <div class="download-div">
+        <a href="https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/sdk.js" download><button class="btn btn-lg btn-default"><i class="fa fa-download"></i> Download SDK File</button></a>
+        <a href="https://github.com/mingkim/QuesCheetah" target="_blank"><button class="btn btn-lg btn-default"><i class="fa fa-github"></i> Github repository</button></a>
     </div>
     <div class="down-arrow">
         <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
@@ -156,40 +92,23 @@
         <div class="row">
             <div class="col-sm-6 feature-element">
                 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                <p>단 두줄의 코드로 실행할 수 있습니다.</p>
+                <p>You can install QuesCheetah easily to your app.</p>
             </div>
             <div class="col-sm-6 feature-element">
                 <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
-                <p>Dashboard에서 결과를 편하게 관리하세요.</p>
+                <p>Manage your results in our Dashboard.</p>
             </div>
 
             <div class="col-sm-6 feature-element">
                 <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
-                <p>질문과 보기화면 커스텀이 자유롭습니다.</p>
+                <p>Customize your Q&A freely.</p>
             </div>
             <div class="col-sm-6 feature-element">
                 <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
-                <p>실시간으로 설문 결과가 반영됩니다.</p>
+                <p>Real-time Q&A result will be provided.</p>
             </div>
-            <div class="col-sm-12">
-                <a href="#">데모 페이지 바로가기</a>
-            </div>
-        </div>
-    </div>
-
-    <div class="usecase">
-        <div class="row">
-            <div class="col-sm-6 usecase-element">
-                <p>USECASE1</p>
-                <p>서비스 만족도 체크</p>
-                <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSXwYIr6yyoMGJ_9bSFgmXJF4cAVtqH_3UPCT1Hf4KlcUPcuLlNWw">
-            </div>
-            <div class="col-sm-6 usecase-element">
-                <div class="usecase-text">
-                    <p>USECASE2</p>
-                    <p>고객 선호도 체크</p>
-                </div>
-                <img src="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcSXwYIr6yyoMGJ_9bSFgmXJF4cAVtqH_3UPCT1Hf4KlcUPcuLlNWw">
+            <div class="col-sm-12 sample-div">
+                <a href="#"><h3>Check the sample project</h3></a>
             </div>
         </div>
     </div>

@@ -1,34 +1,50 @@
 body{
-    font-family: 'Open Sans', sans-serif;
+    font-family: 'Bitter', serif;
     font-weight: 300;
-    color : #6a070b;
 }
 
 .block-content-wrapper{
     margin-top: 100px;
 }
+
 .navbar-default{
     margin-bottom: 0;
     /*background-color: transparent;*/
-    background: url("/static/images/red.jpg");
+    /*background: url("/static/images/red.jpg");*/
+    background-color: #075651;
     border-color: transparent;
-    font-weight: 600;
+
+    font-size: 1.3em;
 }
 
+.navbar{
+    border-bottom: solid #e4dd34 5px ;
+}
+
+.navbar-right .dropdown-menu{
+    left: 0;
+    right: auto;
+    border-left-width: 0px;
+}
 .navbar-default .navbar-brand{
     color : #fff;
-    padding: 5px;
-    margin-top: 5px;
+
+    font-size: 1.3em;
 }
 
 .navbar-default .navbar-nav>li>a {
     color : #fff;
-    padding: 5px;
-    margin: 5px 20px;
+    font-size: 1.02em;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+    color : #fff;
+    opacity: 0.8;
 }
 
 .navbar-default .navbar-brand:hover{
     color: #fff;
+    opacity: 0.8;
 }
 
 .navbar-default .navbar-brand:focus{
@@ -44,14 +60,5 @@ body{
 }
 
 .navbar-default .navbar-nav>li>a.login {
-    border: solid 1px #fff;
-    border-radius : 2px;
-    font-weight: 600;
-}
 
-.navbar-nav > li > a, .navbar-brand {
-    padding-top:5px !important;
-    padding-bottom:0 !important;
-    height: 28px;
 }
-.navbar {min-height:28px !important;}

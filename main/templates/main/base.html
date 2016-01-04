@@ -4,16 +4,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>I Choose You - Pikachu!</title>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,600,400italic,600italic,700,700italic' rel='stylesheet' type='text/css'>
+    <title>QuesCheetah</title>
+    <link href='https://fonts.googleapis.com/css?family=Bitter:400,400italic,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "css/common.css" %}">
     {% block stylesheet %}{% endblock %}
 </head>
 <body>
-    <div class="nav_class_outline_section">
-        {% include "main/pages/nav.html" %}
-    </div>
+    {% include "main/pages/nav.html" %}
     {% block jumbotron %}{% endblock %}
 
     <div class="block-content-wrapper">
