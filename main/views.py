@@ -1,4 +1,5 @@
 import json
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
@@ -101,9 +102,12 @@ def user_mypage(request, id):
     }
 
     u = User.objects.get(id=id)
-    api_key = ApiKey.objects.get(user=u)
+    try:
+        api_key = ApiKey.objects.get(user=u)
+        context.update({'api_key': api_key})
+    except ObjectDoesNotExist:
+        pass
 
-    context.update({'api_key': api_key})
     return render(request, 'main/pages/mypage.html', context)
 
 

@@ -3,14 +3,17 @@ body{
     font-weight: 300;
 }
 
+h1{
+    text-align: center;
+    margin-bottom: 30px;
+}
+
 .block-content-wrapper{
     margin-top: 100px;
 }
 
 .navbar-default{
     margin-bottom: 0;
-    /*background-color: transparent;*/
-    /*background: url("/static/images/red.jpg");*/
     background-color: #075651;
     border-color: transparent;
 
@@ -60,5 +63,46 @@ body{
 }
 
 .navbar-default .navbar-nav>li>a.login {
+    border-radius: 0px;
+    background-color: #059A47;
+}
 
+.login-modal-close-btn{
+    display: inline-block;
+    width: 100%;
+}
+
+.login-modal-close-btn button{
+    right: 0px;
+}
+
+.social-login button{
+    margin-bottom: 20px;
+}
+
+.social-login button.facebook{
+    color: #13198c;
+
+}
+
+.social-login button.google{
+    color: #a50001;
+}
+
+/*mypage.html css*/
+.account-info-dev{
+    text-align: center;
+}
+
+.account-info-dev button{
+    margin-bottom: 5px;
+}
+
+.api-key-info{
+    margin-top: 20px;
+}
+
+/*question_select.html*/
+.question-select-div{
+    text-align: center;
 }

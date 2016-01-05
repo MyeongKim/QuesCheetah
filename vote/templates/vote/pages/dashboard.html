@@ -2,18 +2,24 @@
 
 {% load staticfiles %}
 
-{% block stylesheet %}{% endblock %}
+{% block stylesheet %}
+    <style>
+        .chart-div{
+            text-align: center;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     {{ msg }}
-    <h3>Welcome to dashboard page</h3>
+    <h1>Welcome to dashboard page</h1>
     <div id="helper-msg"></div>
     <div class="row">
-        <div class="col-sm-6">
+        <div class="col-sm-6 col-sm-offset-3">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h3 class="panel-title">
-                        <p>question text : {{ question_text }}</p>
-                        <p>question title : {{ question_title }}</p>
+                        <p>Question text : {{ question_text }}</p>
+                        <p>Question title : {{ question_title }}</p>
                     </h3>
                 </div>
                 <div class="panel-body">
@@ -35,7 +41,9 @@
                             {% endfor %}
                         </tbody>
                     </table>
-                <canvas id="myChart" width="400" height="400"></canvas>
+                <div class="chart-div">
+                    <canvas id="myChart" width="400" height="400"></canvas>
+                </div>
                 </div>
             </div>
         </div>

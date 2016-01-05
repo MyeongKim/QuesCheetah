@@ -4,16 +4,30 @@
 
 {% block stylesheet %}{% endblock %}
 {% block content %}
-    <h3>This is user page. Thank you!</h3>
-    {{ user.email }}
-    {{ userId }}
-    <div>
-    <p>This user has these api keys</p>
-    {% if api_key %}
-        <a href="{% url 'vote:select_question' api_key.key %}">{{ api_key.key }}</a>
-    {% else %}
-        <a href="/apikey/new" class="btn btn-default">new api key </a>
-    {% endif %}
+    <h1>This is user page. Thank you!</h1>
+    <div class="row account-info-dev">
+        <div class="col-sm-6 col-sm-offset-3">
+            <div class="col-sm-12">
+                <button class="btn btn-default col-sm-2">Email</button>
+                {{ user.email }}
+            </div>
+            <div class="col-sm-12">
+                <button class="btn btn-default col-sm-2">Id</button>
+                {{ userId }}
+            </div>
+            {% if api_key %}
+                <div class="col-sm-12">
+                    <button class="btn btn-default col-sm-2">Api key</button>
+                    <a href="{% url 'vote:select_question' api_key.key %}">{{ api_key.key }}</a>
+                </div>
+            {% else %}
+                <div class="col-sm-12 api-key-info">
+                    <p class="text-primary">You don't have a api key.</p>
+                    <a href="/apikey/new" class="btn btn-primary btn-lg">new api key </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
     </div>
 {% endblock %}
 

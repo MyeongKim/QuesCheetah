@@ -201,6 +201,23 @@
             }
         });
 
+        $('#signup-form').on('submit', function(e){
+            e.preventDefault();
+            var email = $('#signup-email').val();
+            var username = $('#signup-username').val();
+            var password = $('#signup-password').val();
+            var password2 = $('#signup-password2').val();
+
+            if (password === password2 ){
+                user_signup(email, username, password);
+
+            } else {
+                $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>비밀번호가 일치하지 않습니다.</div>");
+                $('#signup-password').val('');
+                $('#signup-password2').val('');
+            }
+        });
+
     });
     </script>
 {% endblock %}
