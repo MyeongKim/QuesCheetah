@@ -4,7 +4,7 @@
 
 {% block stylesheet %}
     <style>
-        .single-question-div{
+        .question-div{
             margin-top: 10px;
             margin-bottom: 20px;
         }
@@ -33,17 +33,36 @@
                 <div class="">
                     <h3>Group Questions</h3>
                     {% for m in multi_question %}
-                        {{ forloop.counter }}
-                        <div>{{ m.group_name }}</div>
-                        <a href="{% url 'vote:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">투표하기</button></a>
-                        <a href="{% url 'vote:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard 보기</button></a>
-                        <button class="btn btn-danger multi-delete-btn" gn="{{ m.group_name }}">Delete</button>
+                        <div class="question-div col-sm-10 col-sm-offset-1">
+                            <div class="panel panel-default">
+                                <div class="panel-heading">
+                                    <a href="{% url 'vote:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">Answer</button></a>
+                                    <a href="{% url 'vote:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard</button></a>
+                                    <button class="btn btn-danger multi-delete-btn" gn="{{ m.group_name }}">Delete</button>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-default col-sm-5">#</button>
+                                        {{ forloop.counter }}
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-default col-sm-5">group_name</button>
+                                        {{ m.group_name }}
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-default col-sm-5">question_count</button>
+                                        {{ m.get_question_count }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <hr>
                     {% endfor %}
                     <hr>
                     <h3>Single Questions</h3>
                     {% for q in single_question %}
-                        <div class="single-question-div col-sm-10 col-sm-offset-1">
+                        <div class="question-div col-sm-10 col-sm-offset-1">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
                                     <a href="{% url 'vote:get_vote' api_key q.question_title %}"><button class="btn btn-default">Answer</button></a>
@@ -81,21 +100,27 @@
             }
 
             $('.multi-delete-btn').click(function(){
+                var choice = confirm("Are you sure?");
+                if (choice){
+                    var params = {
+                        'api_key': "{{ api_key }}",
+                        'group_name': $(this).attr('gn')
+                    };
+                    self.pkc.deleteMultiQuestionSet(params, reload);
+                }
 
-                var params = {
-                    'api_key': "{{ api_key }}",
-                    'group_name': $(this).attr('gn')
-                };
-                self.pkc.deleteMultiQuestionSet(params, reload);
             });
 
             $('.single-delete-btn').click(function(){
-                var params = {
-                    'api_key': "{{ api_key }}",
-                    'question_id': $(this).attr('qid'),
-                    'question_title': $(this).attr('qt'),
-                };
-                self.pkc.deleteQuestionSet(params, reload);
+                var choice = confirm("Are you sure?");
+                if (choice){
+                    var params = {
+                        'api_key': "{{ api_key }}",
+                        'question_id': $(this).attr('qid'),
+                        'question_title': $(this).attr('qt'),
+                    };
+                    self.pkc.deleteQuestionSet(params, reload);
+                }
             });
         });
     </script>

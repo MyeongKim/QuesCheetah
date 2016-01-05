@@ -3,34 +3,49 @@
 {% load staticfiles %}
 {% load vote_extras %}
 
-{% block stylesheet %}{% endblock %}
+{% block stylesheet %}
+    <style>
+        .panel-body{
+            text-align: center;
+        }
+
+        .answerBtn{
+            width: 45%;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     {{ msg }}
-    <h3>Group name : {{ group_name }}</h3>
-    <h3>You can vote here.</h3>
+    <h1>Group name : {{ group_name }}</h1>
+    <h1>You can vote here.</h1>
     <div id="helper-msg"></div>
     <div class="row">
-        <div class="col-sm-6">
-            {% for key, value in questions.items %}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            {{ value.question_text }}
-                        </h3>
+        <div class="col-sm-4 col-sm-offset-4">
+            <ul class="nav nav-tabs" role="tablist">
+                {% for key, value in questions.items %}
+                    <li role="presentation" q_id="{{ value.question_id }}"><a href="#q{{ value.question_id }}" aria-controls="q{{ value.question_id }}" role="tab" data-toggle="tab">Q{{ forloop.counter }}</a></li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content">
+                {% for key, value in questions.items %}
+                    <div role="tabpanel" class="tab-pane" id="q{{ value.question_id }}">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">{{ value.question_text }}</h3>
+                            </div>
+                            <div class="panel-body">
+                                {% with answerDict=answers|get_value:key %}
+                                    {% for a in answerDict %}
+                                        <button class="btn btn-default answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ value.question_id }}">
+                                            {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
+                                        </button>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+                        </div>
                     </div>
-                    <div class="panel-body">
-                        {% with answerDict=answers|get_value:key %}
-                            {% for a in answerDict %}
-                                <div>
-                                    <button class="btn btn-primary answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ value.question_id }}">
-                                        {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
-                                    </button>
-                                </div>
-                            {% endfor %}
-                        {% endwith %}
-                    </div>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -59,7 +74,11 @@
                     'unique_user': unique_user,
                 };
                 self.pkc.createUserAnswer(params);
-            })
+            });
+
+            $('.nav-tabs li:first').addClass('active');
+            $('.tab-pane:first').addClass('active');
+            $('#myTabs a:first').tab('show');
         });
     </script>
 {% endblock %}

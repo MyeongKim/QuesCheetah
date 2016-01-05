@@ -21,6 +21,10 @@ class MultiQuestion(models.Model):
     def __str__(self):
         return 'id:{},{}'.format(self.id, self.group_name)
 
+    @property
+    def get_question_count(self):
+        return self.question_elements.count()
+
 
 class Question(models.Model):
     TYPE_SURVEY = 'SURV'
