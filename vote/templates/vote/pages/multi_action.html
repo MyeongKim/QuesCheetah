@@ -46,6 +46,25 @@
                     </div>
                 {% endfor %}
             </div>
+            <button type="button" class="modal-btn" data-toggle="modal" data-target="#resultModal" hidden>
+                resultModal
+            </button>
+            <div class="modal fade" id="resultModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">Response</h4>
+                        </div>
+                        <div class="modal-body">
+                            Thank you for answering!
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock %}
@@ -73,7 +92,18 @@
                     'update_num': update_num,
                     'unique_user': unique_user,
                 };
-                self.pkc.createUserAnswer(params);
+                self.qc.createUserAnswer(params, function(){
+                    $('.nav-tabs li[q_id="'+question_id+'"] a').html('<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>');
+                    if(question_id == "122"){
+                        $('#resultModal').modal('show');
+                        setTimeout(function(){
+                            location.reload();
+                        },2000);
+                    }else{
+                        var next = parseInt(question_id) + 1;
+                        $('.nav-tabs li[q_id="'+next+'"] a').tab('show');
+                    }
+                });
             });
 
             $('.nav-tabs li:first').addClass('active');

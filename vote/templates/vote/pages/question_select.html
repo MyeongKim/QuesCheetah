@@ -106,7 +106,7 @@
                         'api_key': "{{ api_key }}",
                         'group_name': $(this).attr('gn')
                     };
-                    self.pkc.deleteMultiQuestionSet(params, reload);
+                    self.qc.deleteMultiQuestionSet(params, reload);
                 }
 
             });
@@ -119,7 +119,7 @@
                         'question_id': $(this).attr('qid'),
                         'question_title': $(this).attr('qt'),
                     };
-                    self.pkc.deleteQuestionSet(params, reload);
+                    self.qc.deleteQuestionSet(params, reload);
                 }
             });
         });

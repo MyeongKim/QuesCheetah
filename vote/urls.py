@@ -3,8 +3,8 @@ from vote import views
 
 urlpatterns = [
     url(r'^select/(?P<api_key>\w+)$', views.select_question, name='select_question'),
-    url(r'^get/(?P<api_key>\w+)/(?P<question_title>\w+)$', views.get_vote, name='get_vote'),
     url(r'^get/multiple/(?P<api_key>\w+)/(?P<group_name>[\w|\W]+)$', views.get_multiple_vote, name='get_multiple_vote'),
+    url(r'^get/(?P<api_key>\w+)/(?P<question_title>[\w|\W]+)$', views.get_vote, name='get_vote'),
 
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
 

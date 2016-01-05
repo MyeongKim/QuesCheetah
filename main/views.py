@@ -116,7 +116,7 @@ def apikey_new(request):
     context = {}
     if request.method == 'POST':
         ApiKey.objects.generate(request.user)
-        return redirect('main:user_mypage request.user.id')
+        return redirect('main:user_mypage', request.user.id)
     else:
         return render(request, 'main/pages/apikey_new.html', context)
 

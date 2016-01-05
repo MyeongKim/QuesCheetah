@@ -87,73 +87,63 @@
             {% endfor %}
             var myPieChart = new Chart(ctx).Pie(data,{animateScale: true});
 
-            var data2 = {
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
+            var sample_data2 = {
+                labels: ["7hour ago", "6hour ago", "5hour ago", "4hour ago", "3hour ago", "2hour ago", "1hour ago"],
                 datasets: [
                     {
                         label: "My First dataset",
-                        fillColor: "rgba(220,220,220,0.2)",
-                        strokeColor: "rgba(220,220,220,1)",
-                        pointColor: "rgba(220,220,220,1)",
-                        pointStrokeColor: "#fff",
-                        pointHighlightFill: "#fff",
-                        pointHighlightStroke: "rgba(220,220,220,1)",
-                        data: [65, 59, 80, 81, 56, 55, 40]
-                    },
-                    {
-                        label: "My Second dataset",
                         fillColor: "rgba(151,187,205,0.2)",
                         strokeColor: "rgba(151,187,205,1)",
                         pointColor: "rgba(151,187,205,1)",
                         pointStrokeColor: "#fff",
                         pointHighlightFill: "#fff",
                         pointHighlightStroke: "rgba(151,187,205,1)",
-                        data: [28, 48, 40, 19, 86, 27, 90]
+                        data: [5, 5, 8, 8, 6, 5, 4]
                     }
                 ]
             };
             var ctx2 = $("#myChart2").get(0).getContext("2d");
-            var myLineChart = new Chart(ctx2).Line(data2, {});
+            var myLineChart = new Chart(ctx2).Line(sample_data2, {});
 
-            var data3 = {
-                labels: ["January", "February", "March", "April", "May", "June", "July"],
+            var sample_data3 = {
+                labels: ["answer1", "answer2", "answer3", "answer4"],
                 datasets: [
                     {
-                        label: "My First dataset",
+                        label: "First",
                         fillColor: "rgba(220,220,220,0.5)",
                         strokeColor: "rgba(220,220,220,0.8)",
                         highlightFill: "rgba(220,220,220,0.75)",
                         highlightStroke: "rgba(220,220,220,1)",
-                        data: [6, 5, 8, 8, 5, 5, 4]
+                        data: [6, 5, 8, 8]
                     },
                     {
-                        label: "My Second dataset",
+                        label: "Second",
                         fillColor: "rgba(151,187,205,0.5)",
                         strokeColor: "rgba(151,187,205,0.8)",
                         highlightFill: "rgba(151,187,205,0.75)",
                         highlightStroke: "rgba(151,187,205,1)",
-                        data: [2, 4, 4, 1, 8, 2, 9]
+                        data: [2, 4, 4, 1]
                     },
                     {
-                        label: "My 3 dataset",
-                        fillColor: "rgba(151,187,205,0.5)",
-                        strokeColor: "rgba(151,187,205,0.8)",
-                        highlightFill: "rgba(151,187,205,0.75)",
-                        highlightStroke: "rgba(151,187,205,1)",
-                        data: [2, 4, 1, 4, 6, 2, 9]
+                        label: "Third",
+                        fillColor: "rgba(101,187,125,0.2)",
+                        strokeColor: "rgba(151,187,125,1)",
+                        highlightFill: "rgba(101,187,125,0.75)",
+                        highlightStroke: "rgba(151,187,125,1)",
+                        data: [2, 4, 1, 4]
                     },
                     {
-                        label: "My 4 dataset",
-                        fillColor: "rgba(151,187,205,0.5)",
+                        label: "Fourth",
+                        fillColor: "rgba(181,197,180,0.5)",
                         strokeColor: "rgba(151,187,205,0.8)",
-                        highlightFill: "rgba(151,187,205,0.75)",
+                        highlightFill: "rgba(181,197,180,0.75)",
                         highlightStroke: "rgba(151,187,205,1)",
-                        data: [1, 4, 2, 7, 3, 4, 5]
+                        data: [1, 4, 2, 7]
                     }
                 ]
             };
             var ctx3 = document.getElementById("myChart3").getContext("2d");
-            var myBarChart = new Chart(ctx3).Bar(data3, {
+            var myBarChart = new Chart(ctx3).Bar(sample_data3, {
                 multiTooltipTemplate: "<%=datasetLabel%> : <%= value %>",
             });
 

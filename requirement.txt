@@ -1,0 +1,12 @@
+Django==1.8.7
+backports-abc==0.4
+defusedxml==0.4.1
+django-allauth==0.24.1
+django-cors-headers==1.1.0
+oauthlib==1.0.3
+python-dateutil==2.4.2
+python-engineio==0.8.1
+python3-openid==3.0.9
+requests==2.8.1
+requests-oauthlib==0.5.0
+six==1.10.0

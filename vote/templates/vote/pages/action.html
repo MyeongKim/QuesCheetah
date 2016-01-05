@@ -64,7 +64,9 @@
                     'update_num': update_num,
                     'unique_user': unique_user,
                 };
-                self.pkc.createUserAnswer(params);
+                self.qc.createUserAnswer(params, function(){
+                    location.reload();
+                });
             })
         });
     </script>

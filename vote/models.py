@@ -23,7 +23,7 @@ class MultiQuestion(models.Model):
 
     @property
     def get_question_count(self):
-        return self.question_elements.count()
+        return self.question_elements.filter(is_removed=False).count()
 
 
 class Question(models.Model):

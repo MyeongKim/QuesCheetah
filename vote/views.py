@@ -171,8 +171,6 @@ def get_multiple_vote(request, api_key, group_name):
             'answers': answers
         })
 
-        print(context)
-
     return render(request, 'vote/pages/multi_action.html', context)
 
 
