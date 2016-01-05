@@ -1,11 +1,11 @@
 // This javascript file must be inserted after the jQuery file.
-function PKC(config){
+function QuesCheetah(config){
     this.apiKey = config.apiKey;
     this.baseUrl = "http://localhost:8000/vote/";
     this.callBackUrl = config.callBackUrl;
 }
 
-PKC.prototype.createMultipleQuestion = function (params, success, error) {
+QuesCheetah.prototype.createMultipleQuestion = function (params, success, error) {
     if ( params['group_name'] === ""){
         this.createSingleQuestion(params, success, error);
     }else{
@@ -14,63 +14,63 @@ PKC.prototype.createMultipleQuestion = function (params, success, error) {
     }
 };
 
-PKC.prototype.createSingleQuestion = function (params, success, error) {
+QuesCheetah.prototype.createSingleQuestion = function (params, success, error) {
     var url = this.baseUrl+'single/create';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.createQuestion = function (params, success, error) {
+QuesCheetah.prototype.createQuestion = function (params, success, error) {
     var url = this.baseUrl+'question/create';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.createAnswer = function (params, success, error) {
+QuesCheetah.prototype.createAnswer = function (params, success, error) {
     var url = this.baseUrl+'answer/create';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.createUserAnswer = function (params, success, error) {
+QuesCheetah.prototype.createUserAnswer = function (params, success, error) {
     var url = this.baseUrl+'useranswer/create';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.getQuestion = function (params, success, error) {
+QuesCheetah.prototype.getQuestion = function (params, success, error) {
     var url = this.baseUrl+'question/get';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.getAnswer = function (params, success, error) {
+QuesCheetah.prototype.getAnswer = function (params, success, error) {
     var url = this.baseUrl+'answer/get';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.deleteQuestion = function (params, success, error) {
+QuesCheetah.prototype.deleteQuestion = function (params, success, error) {
     var url = this.baseUrl+'question/delete';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.deleteAnswer = function (params, success, error) {
+QuesCheetah.prototype.deleteAnswer = function (params, success, error) {
     var url = this.baseUrl+'answer/delete';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.deleteUserAnswer = function (params, success, error) {
+QuesCheetah.prototype.deleteUserAnswer = function (params, success, error) {
     var url = this.baseUrl+'useranswer/delete';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.deleteQuestionSet = function (params, success, error) {
+QuesCheetah.prototype.deleteQuestionSet = function (params, success, error) {
     var url = this.baseUrl+'question/set/delete';
     this.doPost(url, params, success, error)
 };
 
-PKC.prototype.deleteMultiQuestionSet = function (params, success, error) {
+QuesCheetah.prototype.deleteMultiQuestionSet = function (params, success, error) {
     var url = this.baseUrl+'multiple/delete';
     this.doPost(url, params, success, error)
 };
 
 
-PKC.prototype.doRequest = function (url, success, errorCallback) {
+QuesCheetah.prototype.doRequest = function (url, success, errorCallback) {
     $.ajax({
         url : url,
         contentType: "application/json",
@@ -98,7 +98,7 @@ PKC.prototype.doRequest = function (url, success, errorCallback) {
 };
 
 // todo error 함수 실행시 error json body 받아서 처리
-PKC.prototype.doPost = function (url, post_body, success, errorCallback) {
+QuesCheetah.prototype.doPost = function (url, post_body, success, errorCallback) {
     $.ajax({
         url : url,
         contentType: "application/json",

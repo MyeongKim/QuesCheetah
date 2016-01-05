@@ -34,7 +34,7 @@ Web SDK for the easy Q&A of your site.
 
 
 # Download SDK
-You can download QuesCheetah JavaScript file [here](https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/sdk.js)
+You can download QuesCheetah JavaScript file [here](https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/quescheetah-sdk-0.1.0.js)
 
 
 # Installation
@@ -44,7 +44,7 @@ To start QuesCheetah, you need jQuery first. Put [jQuery](http://jquery.com/) sc
 
 ``` javascript
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="libs/sdk.js"></script>
+    <script src="libs/quescheetah-sdk-0.1.0.js"></script>
 ```
 
 
