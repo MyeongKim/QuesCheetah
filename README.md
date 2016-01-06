@@ -4,14 +4,8 @@ Web SDK for the easy Q&A of your site.
 
 ---
 
-**Home page**
-
-[http://quescheetah.com](http://quescheetah.com)
 
 
-**slideshare**
-
-[slideshare](slideshare)
 
 **Source code**
 
@@ -21,13 +15,19 @@ Web SDK for the easy Q&A of your site.
 
 [https://mingkim.gitbooks.io/quescheetah-document/content/](https://mingkim.gitbooks.io/quescheetah-document/content/)
 
+**Used open source projects**
+
+[NOTICE.md](./NOTICE.md)
+
 **Demo Video**
 
 [Youtube](youtube)
 
-**Used open source projects**
+**slideshare**
 
-[NOTICE.md](./NOTICE.md)
+[slideshare](slideshare)
+
+
 
 
 ---
