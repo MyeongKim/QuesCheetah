@@ -1,3 +1,4 @@
+# 직접 개발한 코드
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import ManyToManyField
@@ -67,7 +68,6 @@ class Question(models.Model):
 
     def clean(self):
         # clean question_title
-        # todo question_title must be unique in same api_key
         if self.check_same_title(self.api_key, self.question_title):
             raise ValidationError({'question_title': _('This question_title is already exist in same api_key')})
 
@@ -158,4 +158,3 @@ def to_dict(instance):
         else:
             data[f.name] = f.value_from_object(instance)
     return data
-# todo question type == survey 일 경우 answer table field 변경

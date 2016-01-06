@@ -1,4 +1,6 @@
 // This javascript file must be inserted after the jQuery file.
+// 직접 개발한 코드
+
 function QuesCheetah(config){
     this.apiKey = config.apiKey;
     this.baseUrl = "http://localhost:8000/vote/";
@@ -97,7 +99,6 @@ QuesCheetah.prototype.doRequest = function (url, success, errorCallback) {
     });
 };
 
-// todo error 함수 실행시 error json body 받아서 처리
 QuesCheetah.prototype.doPost = function (url, post_body, success, errorCallback) {
     $.ajax({
         url : url,

@@ -1,3 +1,4 @@
+# 직접 개발한 코드
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 from hashlib import sha1
@@ -60,8 +61,6 @@ class ApiKeyManager(models.Manager):
 
         return self.create(user=user, key=key)
 
-
-# todo secret key 대신에 accept_url (마지막에 추가)
 
 class ApiKey(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='api_keys')

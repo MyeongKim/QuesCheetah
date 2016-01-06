@@ -271,7 +271,6 @@
                         'answers': answers,
                     };
                     self.qc.createMultipleQuestion(params, function(){
-                        // todo hardcoded
                         window.location.href = 'http://localhost:8000/vote/select/8f933e8ebc5f6f1c55edcf28ca0ccb031b2c1a2c';
                     });
                     return false;
@@ -312,5 +311,3 @@
     });
     </script>
 {% endblock %}
-{#todo client start_dt, end_dt check 함수 만들기 #}
-{#todo client question_title 특수문자 check 함수 만들기 #}

@@ -25,7 +25,6 @@ SECRET_KEY = 'rep1s8i_i4gqpgs&vywtf4d-a9@($^gen@6*uv_g0!v6&!9c(6'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# todo should be removed
 ALLOWED_HOSTS = ['*']
 
 # Application definition

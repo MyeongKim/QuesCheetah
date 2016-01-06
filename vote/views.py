@@ -1,3 +1,4 @@
+# 직접 개발한 코드
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.contrib import messages
@@ -242,17 +243,6 @@ def multiple_dashboard(request, api_key, group_name):
 
     return render(request, 'vote/pages/multi_dashboard.html', context)
 
-# todo update 하는 api 는 PUT method로.
-
-# todo url 맨 처음 /v1/ 붙이기.
-
-# todo question - list, update
-# todo answer -  update, full_view
-# todo useranswer -  update,
-# todo api - get, create,
-
-# todo single question 만드는 view에서 Httpresponse로 리턴됨.
-# todo cors access-control-allow-origin 헤더 문제
 # ======================================
 
 ''' rest api function '''
@@ -817,7 +807,6 @@ def create_single_question(request):
     answers_data = data['answers']['1']
 
     url = 'http://localhost:8000/vote/question/create'
-    # todo json 형태인데 b'{ } is not serializable error 발생.
     data = {
         'question_title': question_data['question_title'],
         'question_text': question_data['question_text'],

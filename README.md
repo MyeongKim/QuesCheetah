@@ -2,10 +2,11 @@
 
 Web SDK for the easy Q&A of your site.
 
+
 ---
 
-
-
+**Home page**
+[On developing yet.]()
 
 **Source code**
 
@@ -17,17 +18,19 @@ Web SDK for the easy Q&A of your site.
 
 **Used open source projects**
 
-[NOTICE.md](./NOTICE.md)
+[NOTICE.txt](./NOTICE.txt)
 
 **Demo Video**
 
-[Youtube](youtube)
+[https://youtu.be/BW8eLg8mp_E](https://youtu.be/BW8eLg8mp_E)
+
+**Tutorial - Installation at your Jekyll blog in 3 minutes**
+
+[https://youtu.be/4pEEbU2EPk4](https://youtu.be/4pEEbU2EPk4)
 
 **slideshare**
 
-[slideshare](slideshare)
-
-
+[http://www.slideshare.net/ssuser0d8ba1/naver-d2-campus-fest-2015-quescheetah-56732325](http://www.slideshare.net/ssuser0d8ba1/naver-d2-campus-fest-2015-quescheetah-56732325)
 
 
 ---
