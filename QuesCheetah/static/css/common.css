@@ -12,14 +12,6 @@ h1{
     margin-top: 100px;
 }
 
-.navbar-default{
-    margin-bottom: 0;
-    background-color: #075651;
-    border-color: transparent;
-
-    font-size: 1.3em;
-}
-
 .navbar{
     border-bottom: solid #e4dd34 5px ;
 }
@@ -29,20 +21,18 @@ h1{
     right: auto;
     border-left-width: 0px;
 }
+
+.navbar-default{
+    margin-bottom: 0;
+    background-color: #075651;
+    border-color: transparent;
+    font-size: 1.3em;
+}
+
 .navbar-default .navbar-brand{
     color : #fff;
 
     font-size: 1.3em;
-}
-
-.navbar-default .navbar-nav>li>a {
-    color : #fff;
-    font-size: 1.02em;
-}
-
-.navbar-default .navbar-nav>li>a:hover {
-    color : #fff;
-    opacity: 0.8;
 }
 
 .navbar-default .navbar-brand:hover{
@@ -54,7 +44,14 @@ h1{
     color : #fff;
 }
 
-.navbar-default .navbar-nav>li>a:hover{
+.navbar-default .navbar-nav>li>a {
+    color : #fff;
+    font-size: 1.02em;
+}
+
+.navbar-default .navbar-nav>li>a:hover {
+    color : #fff;
+    opacity: 0.8;
     color:#fff;
 }
 
@@ -65,44 +62,4 @@ h1{
 .navbar-default .navbar-nav>li>a.login {
     border-radius: 0px;
     background-color: #059A47;
-}
-
-.login-modal-close-btn{
-    display: inline-block;
-    width: 100%;
-}
-
-.login-modal-close-btn button{
-    right: 0px;
-}
-
-.social-login button{
-    margin-bottom: 20px;
-}
-
-.social-login button.facebook{
-    color: #13198c;
-
-}
-
-.social-login button.google{
-    color: #a50001;
-}
-
-/*mypage.html css*/
-.account-info-dev{
-    text-align: center;
-}
-
-.account-info-dev button{
-    margin-bottom: 5px;
-}
-
-.api-key-info{
-    margin-top: 20px;
-}
-
-/*question_select.html*/
-.question-select-div{
-    text-align: center;
 }

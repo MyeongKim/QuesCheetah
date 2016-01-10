@@ -2,7 +2,21 @@
 
 {% load staticfiles %}
 
-{% block stylesheet %}{% endblock %}
+{% block stylesheet %}
+    <style>
+        .account-info-dev{
+            text-align: center;
+        }
+
+        .account-info-dev button{
+            margin-bottom: 5px;
+        }
+
+        .api-key-info{
+            margin-top: 20px;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <h1>This is user page. Thank you!</h1>
     <div class="row account-info-dev">
