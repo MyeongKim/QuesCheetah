@@ -11,6 +11,7 @@ urlpatterns = [
 
 
     url(r'^multiple/create', views.create_multiple_question, name='create_multiple_question'),
+    url(r'^multiple/get', views.get_group, name='get_multiple_question'),
     url(r'^multiple/delete', views.delete_multi_question_set, name='delete_multi_question_set'),
 
     url(r'^single/create', views.create_single_question, name='create_single_question'),

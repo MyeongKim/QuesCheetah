@@ -512,6 +512,50 @@ def create_answer(request):
 
 @csrf_exempt
 @require_POST
+def get_group(request):
+    """
+    POST - /v1/question/get
+
+    question을 가져옵니다.
+    :parameter - api_key, group_name
+    :return - question, answers
+    """
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    group_name = data.get('group_name')
+
+    response_dict = {}
+    response_dict['question'] = {}
+
+    try:
+        a = ApiKey.objects.get(key=api_key)
+        m = MultiQuestion.objects.get(group_name=group_name)
+    except ObjectDoesNotExist:
+        desc = 'The MultiQuestion doees not exist in follwed api key'
+        return error_return(desc)
+
+    for index, q in enumerate(m.question_elements.all()):
+
+        response_dict['question']['answers'] = []
+
+        for a in q.answers.all():
+            response_dict['question']['answers'].append({
+                'answer_num': a.answer_num,
+                'answer_text': a.answer_text,
+                'answer_count': a.get_answer_count
+            })
+
+        response_dict['question'].update({
+            'question_title': q.question_title,
+            'question_text': q.question_text,
+            'question_id': q.id,
+        })
+
+    return JsonResponse(response_dict)
+
+
+@csrf_exempt
+@require_POST
 def get_question(request):
     """
     POST - /v1/question/get
