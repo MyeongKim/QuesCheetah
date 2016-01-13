@@ -22,10 +22,13 @@ def select_question(request, api_key):
         'api_key': api_key
     }
     try:
+        print("start")
         q_api_key = ApiKey.objects.get(key=api_key)
+        print(q_api_key.key)
         single_question = Question.objects.filter(api_key=q_api_key, multi_question=None, is_removed=False)
-
+        print(single_question)
         if not single_question:
+            print("none")
             pass
     except ObjectDoesNotExist:
         desc = 'The Question does not exist in followed api key.'

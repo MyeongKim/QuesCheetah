@@ -9,6 +9,8 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
+import pymysql
+pymysql.install_as_MySQLdb()
 
 import os
 
@@ -91,8 +93,13 @@ WSGI_APPLICATION = 'QuesCheetah.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'qc',
+        'USER': 'root',
+        'PASSWORD': 'audwn8593',
+        'HOST': 'localhost',
+        'PORT': '',
+        # 'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
 
