@@ -31,7 +31,8 @@ def user_signup(request):
         postUsername = request.POST.get('username')
         postPassword = request.POST.get('password')
 
-        user = User(email=postEmail, username=postUsername, password=postPassword)
+        user = User(email=postEmail, username=postUsername)
+        user.set_password(postPassword)
         try:
             user.save()
 
@@ -66,29 +67,49 @@ def user_signup(request):
 def user_login(request):
 
     context = {}
-    next = ""
-    if request.method == 'POST':
-        email = request.POST['email']
-        password = request.POST['password']
-        user = authenticate(email=email, password=password)
+
+    if request.is_ajax():
+        response_data = {}
+
+        postEmail = request.POST.get('email')
+        postPassword = request.POST.get('password')
+
+        try:
+            user = authenticate(email=postEmail, password=postPassword)
+        except:
+            return JsonResponse({'error': 'no user'})
+
         if user is not None:
-            if user.is_active:
-                login(request, user)
-                # Redirect to a success page.
-                if request.POST.get('next') == "":
-                    return redirect('main:index')
-                else:
-                    return HttpResponseRedirect(request.POST.get('next'))
-            else:
-                # Return a 'disabled account' error message
-                return HttpResponse('active user 가 아닙니다.')
-        else:
-            # Return an 'invalid login' error message.
-            return HttpResponse('로그인 실패')
-    else:
-        next = request.GET.get('next')
-        context.update({'next':next})
-        return render(request, 'main/pages/login.html', context)
+                if user.is_active:
+                    login(request, user)
+                    return JsonResponse({'status': 'success'})
+
+        return JsonResponse({})
+
+    # else:
+    #     next = ""
+    #     if request.method == 'POST':
+    #         email = request.POST['email']
+    #         password = request.POST['password']
+    #         user = authenticate(email=email, password=password)
+    #         if user is not None:
+    #             if user.is_active:
+    #                 login(request, user)
+    #                 # Redirect to a success page.
+    #                 if request.POST.get('next') == "":
+    #                     return redirect('main:index')
+    #                 else:
+    #                     return HttpResponseRedirect(request.POST.get('next'))
+    #             else:
+    #                 # Return a 'disabled account' error message
+    #                 return HttpResponse('active user 가 아닙니다.')
+    #         else:
+    #             # Return an 'invalid login' error message.
+    #             return HttpResponse('로그인 실패')
+    #     else:
+    #         next = request.GET.get('next')
+    #         context.update({'next':next})
+    #         return render(request, 'main/pages/login.html', context)
 
 
 def user_logout(request):
