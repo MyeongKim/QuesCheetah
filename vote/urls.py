@@ -29,6 +29,7 @@ urlpatterns = [
 
     url(r'^useranswer/create', views.create_useranswer, name='create_useranswer'),
     url(r'^useranswer/delete', views.delete_useranswer, name='delete_useranswer'),
+    url(r'^useranswer/update', views.update_useranswer, name='update_useranswer'),
 
     url(r'^dashboard/(?P<api_key>\w+)/(?P<question_id>\w+)$', views.dashboard, name='dashboard'),
     url(r'^dashboard/multiple/(?P<api_key>\w+)/(?P<group_name>[\w|\W]+)$', views.multiple_dashboard, name='multiple_dashboard'),

@@ -1147,7 +1147,7 @@ def delete_useranswer(request):
                 desc = 'The Question does not exist in followed api_key.'
                 return error_return(desc)
 
-        answer = q.answers.filter(answer_num=answer_num, is_removed=False)
+        answer = q.answers.get(answer_num=answer_num, is_removed=False)
         unique_user = str(unique_user) + api_key
 
         try:
@@ -1258,6 +1258,63 @@ def delete_multi_question_set(request):
         m.save()
 
         return JsonResponse(response_dict)
+    else:
+        desc = 'This request url is not authenticated in followed api_key.'
+        return error_return(desc)
+
+
+@csrf_exempt
+@require_POST
+def update_useranswer(request):
+    """
+    POST - /v1/useranswer/update
+
+    생성된 useranswer 의 answer field를 변경합니다.
+    :parameter - api_key, ( question_title / question_id ), pre_answer_num, post_answer_num, unique_user
+    :return - useranswer
+    """
+    if match_domain(request):
+        data = json.loads(request.body.decode('utf-8'))
+        api_key = data.get('api_key')
+        question_title = data.get('question_title')
+        question_id = data.get('question_id')
+        pre_answer_num = data.get('pre_answer_num')
+        post_answer_num = data.get('post_answer_num')
+        unique_user = data.get('unique_user')
+
+        response_dict = {}
+
+        try:
+            a = ApiKey.objects.get(key=api_key)
+            if question_title and question_id:
+                q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
+            elif question_id:
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+            elif question_title:
+                q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+
+        except ObjectDoesNotExist:
+                desc = 'The Question does not exist in followed api_key.'
+                return error_return(desc)
+
+        if q.is_editable:
+            answer = q.answers.get(answer_num=pre_answer_num, is_removed=False)
+            unique_user = str(unique_user) + api_key
+
+            try:
+                useranswer = UserAnswer.objects.get(answer=answer, unique_user=unique_user, is_removed=False)
+                new_answer = q.answers.get(answer_num=post_answer_num, is_removed=False)
+                useranswer.answer = new_answer
+                useranswer.save()
+
+            except ObjectDoesNotExist:
+                    desc = 'The UserAnswer does not exist in followed unique_user.'
+                    return error_return(desc)
+
+            return JsonResponse(response_dict)
+        else:
+            desc = 'Property "is_editable" of this question is currently False. Set True for this request.'
+            return error_return(desc)
     else:
         desc = 'This request url is not authenticated in followed api_key.'
         return error_return(desc)

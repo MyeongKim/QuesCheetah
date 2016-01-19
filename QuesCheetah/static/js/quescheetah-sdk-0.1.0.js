@@ -71,6 +71,10 @@ QuesCheetah.prototype.deleteMultiQuestionSet = function (params, success, error)
     this.doPost(url, params, success, error)
 };
 
+QuesCheetah.prototype.updateUserAnswer = function (params, success, error) {
+    var url = this.baseUrl+'useranswer/update';
+    this.doPost(url, params, success, error)
+};
 
 QuesCheetah.prototype.doRequest = function (url, success, errorCallback) {
     $.ajax({
