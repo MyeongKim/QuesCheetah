@@ -87,6 +87,8 @@
             {% endfor %}
             var myPieChart = new Chart(ctx).Pie(data,{animateScale: true});
 
+
+            // time chart
             var sample_data2 = {
                 labels: ["7hour ago", "6hour ago", "5hour ago", "4hour ago", "3hour ago", "2hour ago", "1hour ago"],
                 datasets: [
@@ -105,6 +107,7 @@
             var ctx2 = $("#myChart2").get(0).getContext("2d");
             var myLineChart = new Chart(ctx2).Line(sample_data2, {});
 
+            // answer correlation cart
             var sample_data3 = {
                 labels: ["answer1", "answer2", "answer3", "answer4"],
                 datasets: [

@@ -9,4 +9,5 @@ urlpatterns = [
     url(r'^signup$', views.user_signup, name='user_signup'),
     url(r'^user/(?P<id>\w+)', views.user_mypage, name='user_mypage'),
     url(r'^apikey/new', views.apikey_new, name='apikey_new'),
+    url(r'^domain/new', views.domain_new, name='domain_new'),
 ]

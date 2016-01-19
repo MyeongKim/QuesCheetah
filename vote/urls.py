@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^question/get', views.get_question, name='get_question'),
     url(r'^question/delete', views.delete_question, name='delete_question'),
     url(r'^question/set/delete', views.delete_question_set, name='delete_question_set'),
+    url(r'^question/private', views.to_private, name='to_private'),
 
     url(r'^answer/create', views.create_answer, name='create_answer'),
     url(r'^answer/view/simple', views.simple_view_answer, name='simple_view_answer'),

@@ -37,9 +37,39 @@
             {% else %}
                 <div class="col-sm-12 api-key-info">
                     <p class="text-primary">You don't have a api key.</p>
-                    <a href="/apikey/new" class="btn btn-primary btn-lg">new api key </a>
+                    <a href="{% url 'main:apikey_new' %}" class="btn btn-primary">new api key </a>
                 </div>
             {% endif %}
+            <div class="col-sm-12">
+                <button class="btn btn-default col-sm-2">Site URL</button>
+                <div class="col-sm-10">
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>URL</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for domain in domains %}
+                            <tr>
+                                <th>{{ forloop.counter }}</th>
+                                <th>{{ domain }}</th>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    <form class="form-inline" action="/domain/new" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <input type="hidden" value="{{ api_key.key }}" name="api_key">
+                            <input type="text" class="form-control" name="domain" placeholder="My domain">
+                            <button type="submit" class="btn btn-default">+</button>
+                            <p class="help-block">Set a domain you want to accept in this api key.</p>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     </div>

@@ -1,5 +1,4 @@
 # 직접 개발한 코드
-import json
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -8,7 +7,11 @@ from django.contrib.auth.views import password_reset
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from main.forms import UserForm, UserCreationForm
-from main.models import User, ApiKey
+from main.models import User, ApiKey, Domain
+
+import re
+from urllib.parse import urlparse
+import json
 
 # Create your views here.
 
@@ -125,10 +128,15 @@ def user_mypage(request, id):
 
     u = User.objects.get(id=id)
     try:
-        api_key = ApiKey.objects.get(user=u)
-        context.update({'api_key': api_key})
+        a = ApiKey.objects.get(user=u)
+        d = Domain.objects.filter(api_key=a)
     except ObjectDoesNotExist:
         pass
+
+    context.update({
+        'api_key': a,
+        'domains': d
+    })
 
     return render(request, 'main/pages/mypage.html', context)
 
@@ -142,4 +150,35 @@ def apikey_new(request):
     else:
         return render(request, 'main/pages/apikey_new.html', context)
 
+
+@login_required
+def domain_new(request):
+    context = {}
+    if request.method == 'POST':
+        domain = request.POST.get('domain')
+        parsed_domain = urlparse(domain)
+
+        print(parsed_domain)
+
+        if parsed_domain.path[:9] == '127.0.0.1' or parsed_domain.path[:9] == 'localhost':
+            post_domain = parsed_domain.path
+
+        elif parsed_domain.netloc:
+            post_domain = parsed_domain.netloc
+            if post_domain[:4] == 'www.':
+                post_domain = post_domain[4:]
+        else:
+            post_domain = parsed_domain.path
+
+        try:
+            a = ApiKey.objects.get(key=request.POST.get('api_key'))
+        except ObjectDoesNotExist:
+            print("api key doesn't exist.")
+            return redirect('main:user_mypage', request.user.id)
+
+        d = Domain(domain=post_domain, api_key=a)
+        d.save()
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        return redirect('main:user_mypage', request.user.id)
 
