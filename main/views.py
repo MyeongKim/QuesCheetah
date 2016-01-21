@@ -3,17 +3,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.contrib.auth.views import password_reset
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, redirect
 from main.forms import UserForm, UserCreationForm
 from main.models import User, ApiKey, Domain
 
-import re
 from urllib.parse import urlparse
 import json
-
-# Create your views here.
 
 
 def index(request):
@@ -89,31 +87,6 @@ def user_login(request):
 
         return JsonResponse({})
 
-    # else:
-    #     next = ""
-    #     if request.method == 'POST':
-    #         email = request.POST['email']
-    #         password = request.POST['password']
-    #         user = authenticate(email=email, password=password)
-    #         if user is not None:
-    #             if user.is_active:
-    #                 login(request, user)
-    #                 # Redirect to a success page.
-    #                 if request.POST.get('next') == "":
-    #                     return redirect('main:index')
-    #                 else:
-    #                     return HttpResponseRedirect(request.POST.get('next'))
-    #             else:
-    #                 # Return a 'disabled account' error message
-    #                 return HttpResponse('active user 가 아닙니다.')
-    #         else:
-    #             # Return an 'invalid login' error message.
-    #             return HttpResponse('로그인 실패')
-    #     else:
-    #         next = request.GET.get('next')
-    #         context.update({'next':next})
-    #         return render(request, 'main/pages/login.html', context)
-
 
 def user_logout(request):
     logout(request)
@@ -137,7 +110,6 @@ def user_mypage(request, id):
         'api_key': a,
         'domains': d
     })
-
     return render(request, 'main/pages/mypage.html', context)
 
 
@@ -158,8 +130,6 @@ def domain_new(request):
         domain = request.POST.get('domain')
         parsed_domain = urlparse(domain)
 
-        print(parsed_domain)
-
         if parsed_domain.path[:9] == '127.0.0.1' or parsed_domain.path[:9] == 'localhost':
             post_domain = parsed_domain.path
 
@@ -170,15 +140,17 @@ def domain_new(request):
         else:
             post_domain = parsed_domain.path
 
+        if not post_domain:
+            messages.add_message(request, messages.ERROR, 'Please write a right url.')
+            return redirect('main:user_mypage', request.user.id)
+
         try:
             a = ApiKey.objects.get(key=request.POST.get('api_key'))
         except ObjectDoesNotExist:
-            print("api key doesn't exist.")
+            messages.add_message(request, messages.ERROR, 'api key doesn\'t exist.')
             return redirect('main:user_mypage', request.user.id)
 
         d = Domain(domain=post_domain, api_key=a)
         d.save()
-        return redirect('main:user_mypage', request.user.id)
-    else:
-        return redirect('main:user_mypage', request.user.id)
+    return redirect('main:user_mypage', request.user.id)
 

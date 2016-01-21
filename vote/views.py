@@ -16,23 +16,17 @@ from vote.models import Question, Answer, UserAnswer, Url, MultiQuestion
 
 
 def select_question(request, api_key):
-    q_api_key = single_question = None
-
     context = {
         'api_key': api_key
     }
     try:
         q_api_key = ApiKey.objects.get(key=api_key)
-        single_question = Question.objects.filter(api_key=q_api_key, multi_question=None, is_removed=False)
-        if not single_question:
-            pass
     except ObjectDoesNotExist:
-        desc = 'The Question does not exist in followed api key.'
-        return error_return(desc)
+        messages.add_message(request, messages.ERROR, 'This api_key is not valid.')
+        return redirect('main:user_mypage', request.user.id)
 
+    single_question = Question.objects.filter(api_key=q_api_key, multi_question=None, is_removed=False)
     m = MultiQuestion.objects.filter(api_key=q_api_key, is_removed=False)
-
-    # answers = Answer.objects.filter(question=single_question)
     context.update({'multi_question': m, 'single_question': single_question})
 
     return render(request, 'vote/pages/question_select.html', context)
@@ -40,7 +34,7 @@ def select_question(request, api_key):
 
 def new(request, api_key):
     context = {
-        'api_key' : api_key
+        'api_key': api_key
     }
 
     return render(request, 'vote/pages/new.html', context)
@@ -66,15 +60,11 @@ def get_vote(request, api_key, question_title):
     try:
         response_json = urllib.request.urlopen(req, data=data).read()
         response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError as e:
-        content = e.read()
-        return HttpResponse(content)
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return redirect('main:user_mypage', request.user.id)
 
     question_json_response = response_json
-    # context.update({
-    #     # 'question': json.loads(question_json_response['question'])[0]
-    #
-    # })
     context.update(question_json_response)
     '''
     2. request to get_answer rest api
@@ -91,14 +81,11 @@ def get_vote(request, api_key, question_title):
     try:
         response_json = urllib.request.urlopen(req, data=data).read()
         response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError as e:
-        content = e.read()
-        return HttpResponse(content)
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return redirect('main:user_mypage', request.user.id)
 
     answer_json_response = response_json
-    # context.update({
-    #     'answers': answer_json_response['answers']
-    # })
     context.update(answer_json_response)
 
     return render(request, 'vote/pages/action.html', context)
@@ -117,7 +104,8 @@ def get_multiple_vote(request, api_key, group_name):
         m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The MultiQuestion does not exist in followed api key.'
-        return error_return(desc)
+        messages.add_message(request, messages.ERROR, desc)
+        return redirect('main:user_mypage', request.user.id)
 
     for index, q in enumerate(m.question_elements.all()):
         '''
@@ -135,9 +123,13 @@ def get_multiple_vote(request, api_key, group_name):
         try:
             response_json = urllib.request.urlopen(req, data=data).read()
             response_json = json.loads(response_json.decode('utf-8'))
-        except HTTPError as e:
-            content = e.read()
-            return HttpResponse(content)
+
+        # except HTTPError as e:
+        #     content = e.read()
+        #     return HttpResponse(content)
+        except HTTPError:
+            messages.add_message(request, messages.ERROR, 'Fail to get data.')
+            return redirect('main:user_mypage', request.user.id)
 
         question_json_response = response_json
         questions[index] = question_json_response
@@ -157,9 +149,9 @@ def get_multiple_vote(request, api_key, group_name):
         try:
             response_json = urllib.request.urlopen(req, data=data).read()
             response_json = json.loads(response_json.decode('utf-8'))
-        except HTTPError as e:
-            content = e.read()
-            return HttpResponse(content)
+        except HTTPError:
+            messages.add_message(request, messages.ERROR, 'Fail to get data.')
+            return redirect('main:user_mypage', request.user.id)
 
         answer_json_response = response_json
         answers[index] = answer_json_response['answers']
@@ -178,16 +170,6 @@ def dashboard(request, api_key, question_id):
     context = {
         'api_key': api_key
     }
-    #
-    # '''
-    # request to simple_view_answer rest api
-    # '''
-    # url = 'http://localhost:8000/vote/answer/view/simple'
-    # param = {
-    #     'api_key': api_key,
-    #     'question_id': question_id
-    # }
-
     '''
     request to full_view_answer rest api
     '''
@@ -203,12 +185,11 @@ def dashboard(request, api_key, question_id):
     try:
         response_json = urllib.request.urlopen(req, data=data).read()
         response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError as e:
-        content = e.read()
-        return HttpResponse(content)
+    except HTTPError:
+            messages.add_message(request, messages.ERROR, 'Fail to get data.')
+            return redirect('main:user_mypage', request.user.id)
 
     context.update(response_json)
-    print(response_json)
     return render(request, 'vote/pages/dashboard.html', context)
 
 
@@ -222,7 +203,8 @@ def multiple_dashboard(request, api_key, group_name):
         m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The MultiQuestion does not exist in followed api key.'
-        return error_return(desc)
+        messages.add_message(request, messages.ERROR, desc)
+        return redirect('main:user_mypage', request.user.id)
 
     questions = m.question_elements.all()
     length = questions.count()
@@ -262,8 +244,8 @@ def match_domain(request):
     a = ApiKey.objects.get(key=api_key)
     try:
         d = Domain.objects.filter(domain=request_domain, api_key=a)
-    except:
-        pass
+    except ObjectDoesNotExist:
+        return False
 
     if d.count() == 0:
         return False

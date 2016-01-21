@@ -111,9 +111,13 @@ QuesCheetah.prototype.doPost = function (url, post_body, success, errorCallback)
         dataType: 'json',
         data : JSON.stringify(post_body),
         success : function(json){
-            console.log(json);
             if(success){
                 success(json);
+            }
+            if(json.error){
+                if(errorCallback){
+                    errorCallback()
+                }
             }
         },
         error : function(xhr, errmsg, err){
