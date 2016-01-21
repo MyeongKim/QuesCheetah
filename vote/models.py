@@ -77,6 +77,7 @@ class Question(models.Model):
                 raise ValidationError({'start_dt': _('Start date should be later than now')})
         else:
             self.start_dt = timezone.now()
+
         # clean end_dt
         if self.end_dt:
             if datetime.strptime(self.end_dt, '%Y-%m-%dT%H:%M') <= datetime.strptime(self.start_dt, '%Y-%m-%dT%H:%M'):
@@ -84,8 +85,10 @@ class Question(models.Model):
         else:
             self.end_dt = timezone.now() + timezone.timedelta(days=30)
 
-        if re.match(r'[@#$//%^&+=]*$', self.question_title):
-            raise ValidationError({'question_title': _('question_title has to be consisted of characters ans numbers.')})
+        if not re.match(r'[a-zA-Z0-9]*$', self.question_title):
+            raise ValidationError({
+                'question_title': _('question_title has to be consisted of characters and numbers with no whitespace.')
+            })
 
     def save(self, **kwargs):
         my_value = kwargs.pop('is_update', None)
@@ -94,11 +97,6 @@ class Question(models.Model):
         else:
             self.clean()
             return super(Question, self).save(**kwargs)
-
-    # @classmethod
-    # def set_group_number(cls, api):
-    #     max_group_number = cls.objects.filter(api_key=api).order_by('-group_number').last()
-    #     return int(max_group_number) + 1
 
 
 class Url(models.Model):

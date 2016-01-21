@@ -6,8 +6,9 @@ urlpatterns = [
     url(r'^select/(?P<api_key>\w+)$', views.select_question, name='select_question'),
     url(r'^get/multiple/(?P<api_key>\w+)/(?P<group_name>[\w|\W]+)$', views.get_multiple_vote, name='get_multiple_vote'),
     url(r'^get/(?P<api_key>\w+)/(?P<question_title>[\w|\W]+)$', views.get_vote, name='get_vote'),
-
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
+    url(r'^dashboard/(?P<api_key>\w+)/(?P<question_id>\w+)$', views.dashboard, name='dashboard'),
+    url(r'^dashboard/multiple/(?P<api_key>\w+)/(?P<group_name>[\w|\W]+)$', views.multiple_dashboard, name='multiple_dashboard'),
 
 
     url(r'^multiple/create', views.create_multiple_question, name='create_multiple_question'),
@@ -31,7 +32,32 @@ urlpatterns = [
     url(r'^useranswer/delete', views.delete_useranswer, name='delete_useranswer'),
     url(r'^useranswer/update', views.update_useranswer, name='update_useranswer'),
 
-    url(r'^dashboard/(?P<api_key>\w+)/(?P<question_id>\w+)$', views.dashboard, name='dashboard'),
-    url(r'^dashboard/multiple/(?P<api_key>\w+)/(?P<group_name>[\w|\W]+)$', views.multiple_dashboard, name='multiple_dashboard'),
+
+    # updated REST API URLs
+
+    # POST
+    url(r'^groups$', views.Groups.as_view(), name='group_post'),
+    # GET, PUT, DELETE
+    url(r'^groups/(?P<group_id>\w+)$', views.Groups.as_view(), name='group'),
+
+    # POST
+    url(r'^questions$', views.Questions.as_view(), name='question_post'),
+    # GET(full), PUT, DELETE
+    url(r'^questions/(?P<question_id>\w+)$', views.Questions.as_view(), name='question'),
+    # GET
+    url(r'^questions/(?P<question_id>\w+)/SimpleResult$', views.simple_view_answer, name='question_simple_result'),
+    # POST
+    url(r'^questions/(?P<question_id>\w+)/ToPrivate$', views.to_private, name='question_to_private'),
+
+    # POST
+    url(r'^questions/(?P<question_id>\w+)/answers', views.Answers.as_view(), name='answer_post'),
+    # GET, DELETE, PUT
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)', views.Answers.as_view(), name='answer'),
+
+    # POST
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers', views.Useranswers.as_view(), name='useranswer_post'),
+    # GET, DELETE, PUT
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers/(?P<useranswer_id>\w+)', views.Useranswers.as_view(), name='useranswer'),
+
 
 ]
