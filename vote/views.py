@@ -236,8 +236,7 @@ def multiple_dashboard(request, api_key, group_name):
 
 
 def match_domain(request):
-    data = json.loads(request.body.decode('utf-8'))
-    api_key = data.get('api_key')
+    api_key = request.META['HTTP_API_KEY']
     request_domain = request.get_host()
 
     if request_domain[:4] == 'www.':
@@ -1374,21 +1373,13 @@ class Groups(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def get(self, request):
-        if not self.kwargs['group_id']:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
-
+    def get(self, request, group_id):
         if match_domain(request):
-            data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
-            group_name = data.get('group_name')
-
             response_dict = {}
             response_dict['question'] = {}
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                m = MultiQuestion.objects.get(group_name=group_name)
+                m = MultiQuestion.objects.get(id=group_id)
             except ObjectDoesNotExist:
                 desc = 'The MultiQuestion doees not exist in follwed api key'
                 return error_return(desc)
@@ -1415,19 +1406,13 @@ class Groups(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def put(self, request):
-        if not self.kwargs['group_id']:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
-
+    def put(self, request, group_id):
         return HttpResponseNotFound('<h1>Not yet</h1>')
 
-    def delete(self, request):
-        if not self.kwargs['group_id']:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
-
+    def delete(self, request, group_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
+            api_key = request.META['HTTP_API_KEY']
             group_name = data.get('group_name')
 
             response_dict = {}
@@ -1530,19 +1515,12 @@ class Questions(View):
             return error_return(desc)
 
     def get(self, request):
-        if not self.kwargs['question_id']:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
         return HttpResponseNotFound('<h1>Not yet</h1>')
 
     def put(self, request):
-        if not self.kwargs['question_id']:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
         return HttpResponseNotFound('<h1>Not yet</h1>')
 
     def delete(self, request):
-        if not self.kwargs['question_id']:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
-
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = data.get('api_key')
@@ -1585,9 +1563,6 @@ class Questions(View):
 
 class Answers(View):
     def post(self, request):
-        if not self.kwargs['question_id']:
-            return HttpResponseNotFound('<h1>Page not found</h1>')
-
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
 
@@ -1628,8 +1603,6 @@ class Answers(View):
             return error_return(desc)
 
     def get(self, request):
-        if not (self.kwargs['question_id'] and self.kwargs['answer_num']):
-            return HttpResponseNotFound('<h1>Page not found</h1>')
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = data.get('api_key')
@@ -1675,9 +1648,6 @@ class Answers(View):
             return error_return(desc)
 
     def delete(self, request):
-        if not (self.kwargs['question_id'] and self.kwargs['answer_num']):
-            return HttpResponseNotFound('<h1>Page not found</h1>')
-
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = data.get('api_key')
@@ -1711,16 +1681,11 @@ class Answers(View):
             return error_return(desc)
 
     def put(self, request):
-        if not (self.kwargs['question_id'] and self.kwargs['answer_num']):
-            return HttpResponseNotFound('<h1>Page not found</h1>')
         return HttpResponseNotFound('<h1>Not yet</h1>')
 
 
 class Useranswers(View):
     def post(self, request):
-        if not (self.kwargs['question_id'] and self.kwargs['answer_num']):
-            return HttpResponseNotFound('<h1>Page not found</h1>')
-
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = data.get('api_key')
@@ -1773,13 +1738,9 @@ class Useranswers(View):
             return error_return(desc)
 
     def get(self, request):
-        if not (self.kwargs['question_id'] and self.kwargs['answer_num'] and self.kwargs['useranswer_id']):
-            return HttpResponseNotFound('<h1>Page not found</h1>')
         return HttpResponseNotFound('<h1>Not yet</h1>')
 
     def delete(self, request):
-        if not (self.kwargs['question_id'] and self.kwargs['answer_num'] and self.kwargs['useranswer_id']):
-            return HttpResponseNotFound('<h1>Page not found</h1>')
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = data.get('api_key')
@@ -1821,8 +1782,6 @@ class Useranswers(View):
             return error_return(desc)
 
     def put(self, request):
-        if not (self.kwargs['question_id'] and self.kwargs['answer_num'] and self.kwargs['useranswer_id']):
-            return HttpResponseNotFound('<h1>Page not found</h1>')
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = data.get('api_key')
