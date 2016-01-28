@@ -34,6 +34,30 @@
                     <button class="btn btn-default col-sm-2">Api key</button>
                     <a href="{% url 'vote:select_question' api_key.key %}">{{ api_key.key }}</a>
                 </div>
+                <div class="col-sm-12">
+                    <button class="btn btn-default col-sm-2">Secret key</button>
+                    <div class="col-sm-10">
+                        <a>{{ api_key.secret_key }}</a>
+                        <a href="{% url 'main:secret_key_new' api_key.key %}"class="btn btn-info">renew</a>
+                        <p class="help-block">If secret key is regenerated, prior JWT can not be used.</p>
+                    </div>
+                </div>
+                <div class="col-sm-12">
+                    <button class="btn btn-default col-sm-2">JWT</button>
+                    <div class="col-sm-4">
+                        <label class="col-sm-4 control-label">Expiration</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control" id="exp">
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <label class="col-sm-4 control-label">Not before</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control" id="nbf">
+                        </div>
+                    </div>
+                    <a href="" class="btn btn-primary" id="new-jwt-btn">create</a>
+                </div>
             {% else %}
                 <div class="col-sm-12 api-key-info">
                     <p class="text-primary">You don't have a api key.</p>
@@ -75,4 +99,45 @@
     </div>
 {% endblock %}
 
-{% block script %}{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function(){
+            $('#new-jwt-btn').click(function(e){
+                e.preventDefault();
+                var post_data = {
+                    "api-key": "{{ api_key.key }}",
+                    "secret-key": "{{ api_key.secret_key }}"
+                };
+
+                if ($('#exp').val()){
+                  post_data["exp"] = Math.round(new Date($('#exp').val()).getTime()/1000)
+                }
+
+                if ($('#nbf').val()){
+                  post_data["nbf"] = Math.round(new Date($('#nbf').val()).getTime()/1000)
+                }
+
+                var empty = false;
+                $.each(post_data, function(key, value){
+                    if (!value){
+                        alert("You should create api key and secret key first.");
+                        empty = true
+                    }
+                });
+
+                if (!empty){
+                    $.ajax({
+                        url : '/jwt/new',
+                        contentType: "application/json",
+                        type : "POST",
+                        dataType: 'json',
+                        data : JSON.stringify(post_data),
+                        success : function(data){
+                            alert(JSON.stringify(data))
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,4 +1,5 @@
 # 직접 개발한 코드
+import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.contrib.auth.decorators import login_required
@@ -6,12 +7,14 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.views import password_reset
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
 from main.forms import UserForm, UserCreationForm
 from main.models import User, ApiKey, Domain
 
 from urllib.parse import urlparse
 import json
+import jwt
 
 
 def index(request):
@@ -154,3 +157,34 @@ def domain_new(request):
         d.save()
     return redirect('main:user_mypage', request.user.id)
 
+
+def secret_key_new(request, key):
+    a = get_object_or_404(ApiKey, key=key)
+    a.secret_key = ApiKey.objects.generate_secret()
+    a.save()
+    return redirect('main:user_mypage', request.user.id)
+
+
+@csrf_exempt
+def jwt_new(request):
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api-key')
+    secret = data.get('secret-key')
+    exp = data.get('exp')
+    nbf = data.get('nbf')
+    if not exp:
+        exp = datetime.datetime.utcnow() + datetime.timedelta(days=30)
+    if not nbf:
+        nbf = datetime.datetime.utcnow()
+
+    a = get_object_or_404(ApiKey, key=api_key)
+    if a.secret_key == secret:
+        encoded = jwt.encode({
+            'api-key': api_key,
+            'exp': exp,
+            'nbf': nbf
+        }, secret, algorithm='HS256')
+
+        return JsonResponse({'jwt': str(encoded.decode('utf-8'))})
+    else:
+        return JsonResponse({'error': 'Not valid secret key.'})
