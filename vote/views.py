@@ -2,7 +2,7 @@
 from django.core import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.contrib import messages
-from django.http import JsonResponse, HttpResponse, HttpResponseNotFound
+from django.http import JsonResponse, HttpResponse, HttpResponseNotFound, HttpResponseBadRequest
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from django.views.decorators.http import require_GET, require_POST
@@ -12,6 +12,8 @@ from urllib.error import HTTPError
 import json
 from main.models import ApiKey, Domain
 from vote.models import Question, Answer, UserAnswer, Url, MultiQuestion
+
+import jwt
 
 ''' server view function '''
 
@@ -236,20 +238,20 @@ def multiple_dashboard(request, api_key, group_name):
 
 
 def match_domain(request):
-    api_key = request.META['HTTP_API_KEY']
-    request_domain = request.get_host()
+    api_key = get_api_key(request)
+    if api_key:
+        request_domain = request.get_host()
 
-    if request_domain[:4] == 'www.':
-        request_domain = request_domain[4:]
-    a = ApiKey.objects.get(key=api_key)
-    try:
-        d = Domain.objects.filter(domain=request_domain, api_key=a)
-    except ObjectDoesNotExist:
+        if request_domain[:4] == 'www.':
+            request_domain = request_domain[4:]
+        try:
+            a = ApiKey.objects.get(key=api_key)
+            d = Domain.objects.get(domain=request_domain, api_key=a)
+        except ObjectDoesNotExist:
+            return False
+        return True
+    else:
         return False
-
-    if d.count() == 0:
-        return False
-    return True
 
 # ======================================
 
@@ -1309,20 +1311,36 @@ def error_return(desc):
     })
 
 
+def get_api_key(request):
+    api_key = request.META.get('HTTP_API_KEY')
+    if api_key:
+        return api_key
+    else:
+        secret = ApiKey.objects.get(id=request.META.get('HTTP_KID')).secret_key
+        try:
+            decoded = jwt.decode(request.META.get('HTTP_JWT'), secret, algorithms=['HS256', 'HS512', 'HS384'])
+        except jwt.InvalidTokenError:
+            return False
+        return decoded.get('api-key')
+
+
 class Groups(View):
     def post(self, request):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
             group_name = data.get('group_name')
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
 
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
-                    desc = 'The ApiKey does not exist in followed key.'
-                    return error_return(desc)
+                desc = 'The ApiKey does not exist in followed key.'
+                return error_return(desc)
 
             new_multiq = MultiQuestion(api_key=a, group_name=group_name)
             new_multiq.save()
@@ -1375,9 +1393,13 @@ class Groups(View):
 
     def get(self, request, group_id):
         if match_domain(request):
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+
             response_dict = {}
             response_dict['question'] = {}
-
             try:
                 m = MultiQuestion.objects.get(id=group_id)
             except ObjectDoesNotExist:
@@ -1403,7 +1425,7 @@ class Groups(View):
 
             return JsonResponse(response_dict)
         else:
-            desc = 'This request url is not authenticated in followed api_key.'
+            desc = 'This request url is not authenticated in followed api_key. / Or api key is not valid.'
             return error_return(desc)
 
     def put(self, request, group_id):
@@ -1412,7 +1434,7 @@ class Groups(View):
     def delete(self, request, group_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = request.META['HTTP_API_KEY']
+            api_key = request.META.get('HTTP_API_KEY')
             group_name = data.get('group_name')
 
             response_dict = {}
