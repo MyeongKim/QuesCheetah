@@ -260,7 +260,7 @@ def match_domain(request):
 
 @csrf_exempt
 @require_POST
-def to_private(request):
+def to_private(request, question_id):
     """
     POST - /v1/question/private
 
@@ -759,7 +759,7 @@ def create_useranswer(request):
 
 @csrf_exempt
 @require_POST
-def simple_view_answer(request):
+def simple_view_answer(request, question_id):
     """
     POST - /v1/answer/view/simple
 
@@ -1429,19 +1429,97 @@ class Groups(View):
             return error_return(desc)
 
     def put(self, request, group_id):
-        return HttpResponseNotFound('<h1>Not yet</h1>')
-
-    def delete(self, request, group_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = request.META.get('HTTP_API_KEY')
-            group_name = data.get('group_name')
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
 
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
+            except ObjectDoesNotExist:
+                desc = 'The ApiKey does not exist in followed key.'
+                return error_return(desc)
+
+            m = MultiQuestion.objects.get(api_key=a, id=group_id)
+            m.update(group_name=data.get('group_name'))
+
+            for question_key, question_value in data.get('questions').items():
+                question_title = question_value.get('question_title')
+                question_text = question_value.get('question_text')
+                start_dt = question_value.get('start_dt')
+                end_dt = question_value.get('end_dt')
+                is_editable = question_value.get('is_editable') == 'True'
+                is_private = question_value.get('is_private') == 'True'
+
+                '''
+                question id is used to distinguish each other.
+                '''
+                q_id = question_value.get('id')
+                try:
+                    selected_q = m.question_elements.all().filter(id=q_id)
+                except ObjectDoesNotExist:
+                    desc = 'Question of this id does not exist.'
+                    return error_return(desc)
+
+                selected_q.update(
+                    question_title=question_title,
+                    question_text=question_text,
+                    start_dt=start_dt,
+                    end_dt=end_dt,
+                    is_editable=is_editable,
+                    is_private=is_private
+                )
+
+                for answer_key, answer_value in data.get('answers').get(question_key).items():
+                    answer_text = answer_value.get('answer_text')
+                    answer_num = answer_value.get('answer_num')
+
+                    a_id = answer_value.get('id')
+
+                    try:
+                        selected_a = selected_q.answers.filter(id=a_id)
+                    except ObjectDoesNotExist:
+                        desc = 'Answer of this id does not exist.'
+                        return error_return(desc)
+
+                    selected_a.update(
+                        answer_text=answer_text,
+                        answer_num=answer_num
+                    )
+
+            try:
+                mq = MultiQuestion.objects.get(id=m.id, is_removed=False)
+                q = mq.question_elements.all()
+
+                response_dict.update({
+                    'multiquestion': serializers.serialize('json', [mq]),
+                    'question': serializers.serialize('json', q),
+                })
+
+                return JsonResponse(response_dict)
+            except ObjectDoesNotExist:
+                desc = 'MultiQuestion does not exist by new_multiq.id'
+                return error_return(desc)
+        else:
+            desc = 'This request url is not authenticated in followed api_key.'
+            return error_return(desc)
+
+    def delete(self, request, group_id):
+        if match_domain(request):
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+
+            response_dict = {}
+
+            try:
+                a = ApiKey.objects.get(key=api_key)
+                m = MultiQuestion.objects.get(api_key=a, id=group_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc)
@@ -1458,8 +1536,7 @@ class Groups(View):
                     answer.is_removed = True
                     answer.save()
 
-                q.is_removed = True
-                q.save()
+                questions.update(is_removed = True)
 
             m.is_removed = True
             m.save()
@@ -1474,7 +1551,11 @@ class Questions(View):
     def post(self, request):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+
             question_title = data.get('question_title')
             question_text = data.get('question_text')
             start_dt = data.get('start_dt')
@@ -1536,16 +1617,20 @@ class Questions(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def get(self, request):
+    def get(self, request, question_id):
         return HttpResponseNotFound('<h1>Not yet</h1>')
 
-    def put(self, request):
+    def put(self, request, question_id):
         return HttpResponseNotFound('<h1>Not yet</h1>')
 
-    def delete(self, request):
+    def delete(self, request, question_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+
             question_title = data.get('question_title')
             question_id = data.get('question_id')
 

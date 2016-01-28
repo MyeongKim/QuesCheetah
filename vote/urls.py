@@ -1,5 +1,6 @@
 # 직접 개발한 코드
 from django.conf.urls import url
+from django.views.decorators.csrf import csrf_exempt
 from vote import views
 
 urlpatterns = [
@@ -35,29 +36,28 @@ urlpatterns = [
 
     # updated REST API URLs
 
-    # POST
-    url(r'^groups$', views.Groups.as_view(), name='group_post'),
+
     # GET, PUT, DELETE
-    url(r'^groups/(?P<group_id>\w+)$', views.Groups.as_view(), name='group'),
+    url(r'^groups/(?P<group_id>\d+)', csrf_exempt(views.Groups.as_view()), name='group'),
+    # POST
+    url(r'^groups$', csrf_exempt(views.Groups.as_view()), name='group_post'),
 
     # POST
-    url(r'^questions$', views.Questions.as_view(), name='question_post'),
+    url(r'^questions$', csrf_exempt(views.Questions.as_view()), name='question_post'),
     # GET(full), PUT, DELETE
-    url(r'^questions/(?P<question_id>\w+)$', views.Questions.as_view(), name='question'),
+    url(r'^questions/(?P<question_id>\w+)$', csrf_exempt(views.Questions.as_view()), name='question'),
     # GET
     url(r'^questions/(?P<question_id>\w+)/SimpleResult$', views.simple_view_answer, name='question_simple_result'),
     # POST
     url(r'^questions/(?P<question_id>\w+)/ToPrivate$', views.to_private, name='question_to_private'),
 
     # POST
-    url(r'^questions/(?P<question_id>\w+)/answers', views.Answers.as_view(), name='answer_post'),
+    url(r'^questions/(?P<question_id>\w+)/answers', csrf_exempt(views.Answers.as_view()), name='answer_post'),
     # GET, DELETE, PUT
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)', views.Answers.as_view(), name='answer'),
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)', csrf_exempt(views.Answers.as_view()), name='answer'),
 
     # POST
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers', views.Useranswers.as_view(), name='useranswer_post'),
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers', csrf_exempt(views.Useranswers.as_view()), name='useranswer_post'),
     # GET, DELETE, PUT
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers/(?P<useranswer_id>\w+)', views.Useranswers.as_view(), name='useranswer'),
-
-
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers/(?P<useranswer_id>\w+)', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
 ]

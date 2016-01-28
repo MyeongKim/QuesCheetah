@@ -68,8 +68,8 @@ class Question(models.Model):
 
     def clean(self):
         # clean question_title
-        if self.check_same_title(self.api_key, self.question_title):
-            raise ValidationError({'question_title': _('This question_title is already exist in same api_key')})
+        # if self.check_same_title(self.api_key, self.question_title):
+            # raise ValidationError({'question_title': _('This question_title is already exist in same api_key')})
 
         # clean start_dt
         if self.start_dt:

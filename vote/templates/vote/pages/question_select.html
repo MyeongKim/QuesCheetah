@@ -40,12 +40,12 @@
                                 <div class="panel-heading">
                                     <a href="{% url 'vote:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">Answer</button></a>
                                     <a href="{% url 'vote:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard</button></a>
-                                    <button class="btn btn-danger multi-delete-btn" gn="{{ m.group_name }}">Delete</button>
+                                    <button class="btn btn-danger multi-delete-btn" gid="{{ m.id }}">Delete</button>
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">#</button>
-                                        {{ forloop.counter }}
+                                        <button class="btn btn-default col-sm-5">id</button>
+                                        {{ m.id }}
                                     </div>
                                     <div class="col-sm-12">
                                         <button class="btn btn-default col-sm-5">group_name</button>
@@ -58,11 +58,11 @@
                                 </div>
                             </div>
                         </div>
-
-                        <hr>
                     {% endfor %}
                     <hr>
-                    <h3>Single Questions</h3>
+                    <div>
+                        <h3 class="col-sm-12">Single Questions</h3>
+                    </div>
                     {% for q in single_question %}
                         <div class="question-div col-sm-10 col-sm-offset-1">
                             <div class="panel panel-default">
@@ -106,7 +106,7 @@
                 if (choice){
                     var params = {
                         'api_key': "{{ api_key }}",
-                        'group_name': $(this).attr('gn')
+                        'group_id': $(this).attr('gid')
                     };
                     self.qc.deleteMultiQuestionSet(params, reload);
                 }
