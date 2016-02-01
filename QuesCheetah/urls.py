@@ -12,7 +12,7 @@ urlpatterns = [
 
     url(r'^accounts/', include('allauth.urls')),
 
-    url(r'vote/', include('vote.urls', namespace='vote')),
+    url(r'v1/', include('vote.urls', namespace='v1')),
     url(r'', include('main.urls', namespace='main')),
 
 

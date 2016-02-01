@@ -42,22 +42,22 @@ urlpatterns = [
     # POST
     url(r'^groups$', csrf_exempt(views.Groups.as_view()), name='group_post'),
 
-    # POST
-    url(r'^questions$', csrf_exempt(views.Questions.as_view()), name='question_post'),
-    # GET(full), PUT, DELETE
-    url(r'^questions/(?P<question_id>\w+)$', csrf_exempt(views.Questions.as_view()), name='question'),
     # GET
     url(r'^questions/(?P<question_id>\w+)/SimpleResult$', views.simple_view_answer, name='question_simple_result'),
-    # POST
+    # GET
     url(r'^questions/(?P<question_id>\w+)/ToPrivate$', views.to_private, name='question_to_private'),
-
+    # GET(full), PUT, DELETE
+    url(r'^questions/(?P<question_id>\w+)$', csrf_exempt(views.Questions.as_view()), name='question'),
     # POST
-    url(r'^questions/(?P<question_id>\w+)/answers', csrf_exempt(views.Answers.as_view()), name='answer_post'),
+    url(r'^questions$', csrf_exempt(views.Questions.as_view()), name='question_post'),
+
     # GET, DELETE, PUT
     url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)', csrf_exempt(views.Answers.as_view()), name='answer'),
+    # POST, GET
+    url(r'^questions/(?P<question_id>\w+)/answers', csrf_exempt(views.Answers.as_view()), name='answer_post'),
 
     # POST
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers', csrf_exempt(views.Useranswers.as_view()), name='useranswer_post'),
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)/useranswers', csrf_exempt(views.Useranswers.as_view()), name='useranswer_post'),
     # GET, DELETE, PUT
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)/useranswers/(?P<useranswer_id>\w+)', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
+    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/(?P<unique_user>\w+)', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
 ]

@@ -271,7 +271,7 @@
                         'questions': questions,
                         'answers': answers
                     };
-                    self.qc.createMultipleQuestion(params, function(){
+                    self.qc.createGroup(params, function(){
                         window.location.href = 'http://localhost:8000/vote/select/'+api_key;
                     });
                     return false;

@@ -260,47 +260,6 @@ def match_domain(request):
 
 @csrf_exempt
 @require_POST
-def to_private(request, question_id):
-    """
-    POST - /v1/question/private
-
-    question을 private으로 전환합니다.
-
-    :parameter - api_key, ( question_title / question_id )
-    :return -
-    """
-    if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
-        api_key = data.get('api_key')
-        question_title = data.get('question_title')
-        question_id = data.get('question_id')
-
-        response_dict = {}
-
-        try:
-            a = ApiKey.objects.get(key=api_key)
-
-            if question_title and question_id:
-                q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-            elif question_id:
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-            elif question_title:
-                q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-        except ObjectDoesNotExist:
-            desc = 'The Question does not exist in followed api key.'
-            return error_return(desc)
-
-        q.is_private = True
-        q.save()
-
-        return JsonResponse(response_dict)
-    else:
-        desc = 'This request url is not authenticated in followed api_key.'
-        return error_return(desc)
-
-
-@csrf_exempt
-@require_POST
 def to_public(request):
     """
     POST - /v1/question/public
@@ -757,62 +716,6 @@ def create_useranswer(request):
         return error_return(desc)
 
 
-@csrf_exempt
-@require_POST
-def simple_view_answer(request, question_id):
-    """
-    POST - /v1/answer/view/simple
-
-    answer 의 중요 정보만을 제공합니다.
-    :parameter - api_key, ( question_title / question_id )
-    :return - question_title, question_text, answer({answer_num, answer_text, answer_count})
-    """
-    if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
-        api_key = data.get('api_key')
-        question_title = data.get('question_title')
-        question_id = data.get('question_id')
-
-        response_dict = {}
-        answer_list = []
-
-        try:
-            a = ApiKey.objects.get(key=api_key)
-
-            if question_title and question_id:
-                q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-            elif question_id:
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-            elif question_title:
-                q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-        except ObjectDoesNotExist:
-                desc = 'The Question does not exist in followed api_key.'
-                return error_return(desc)
-
-        response_dict.update({
-            'question_title': q.question_title,
-            'question_text': q.question_text
-        })
-        a = q.answers.all()
-        if a:
-            for answer in a:
-                answer_list.append({
-                    'answer_num': answer.answer_num,
-                    'answer_text': answer.answer_text,
-                    'answer_count': answer.get_answer_count,
-                })
-
-            response_dict.update({
-                'answer': answer_list
-            })
-        else:
-            desc = 'The Answer does not exist.'
-            return error_return(desc)
-
-        return JsonResponse(response_dict)
-    else:
-        desc = 'This request url is not authenticated in followed api_key.'
-        return error_return(desc)
 
 
 @csrf_exempt
@@ -1618,10 +1521,96 @@ class Questions(View):
             return error_return(desc)
 
     def get(self, request, question_id):
-        return HttpResponseNotFound('<h1>Not yet</h1>')
+        if match_domain(request):
+            data = json.loads(request.body.decode('utf-8'))
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+
+            response_dict = {}
+            answer_list = []
+
+            try:
+                a = ApiKey.objects.get(key=api_key)
+                q = Question.objects.get(api_key=a, id=question_id)
+            except ObjectDoesNotExist:
+                    desc = 'The Question does not exist in followed api_key.'
+                    return error_return(desc)
+
+            response_dict.update({
+                'question_id': q.id,
+                'question_title': q.question_title,
+                'question_text': q.question_text
+            })
+
+            a = q.answers.all()
+            if a:
+                for answer in a:
+                    answer_list.append({
+                        'answer_num': answer.answer_num,
+                        'answer_text': answer.answer_text,
+                        'answer_count': answer.get_answer_count,
+                    })
+
+                response_dict.update({
+                    'answer': answer_list
+                })
+            else:
+                desc = 'The Answer does not exist.'
+                return error_return(desc)
+
+            return JsonResponse(response_dict)
+        else:
+            desc = 'This request url is not authenticated in followed api_key.'
+            return error_return(desc)
 
     def put(self, request, question_id):
-        return HttpResponseNotFound('<h1>Not yet</h1>')
+        if match_domain(request):
+            data = json.loads(request.body.decode('utf-8'))
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+
+            question_title = data.get('question_title')
+            question_text = data.get('question_text')
+            start_dt = data.get('start_dt')
+            end_dt = data.get('end_dt')
+            is_editable = data.get('is_editable') == 'True'
+            is_private = data.get('is_private') == 'True'
+
+            response_dict = {}
+
+            try:
+                a = ApiKey.objects.get(key=api_key)
+            except ObjectDoesNotExist:
+                desc = 'The ApiKey instance does not exist in followed key.'
+                return error_return(desc)
+
+            q = Question.objects.get(api_key=a, id=question_id).update(
+                question_title=question_title,
+                question_text=question_text,
+                start_dt=start_dt,
+                end_dt=end_dt,
+                is_editable=is_editable,
+                is_private=is_private
+            )
+
+            try:
+                updated_q = Question.objects.get(api_key=a, id=q.id, is_removed=False)
+            except ObjectDoesNotExist:
+                desc = 'The Question does not exist in followed api key.'
+                return error_return(desc)
+
+            response_dict.update({
+                'question': serializers.serialize('json', [updated_q])
+            })
+
+            return JsonResponse(response_dict)
+        else:
+            desc = 'This request url is not authenticated in followed api_key.'
+            return error_return(desc)
 
     def delete(self, request, question_id):
         if match_domain(request):
@@ -1668,26 +1657,100 @@ class Questions(View):
             return error_return(desc)
 
 
+@csrf_exempt
+@require_POST
+def simple_view_answer(request, question_id):
+    """
+    POST - /v1/answer/view/simple
+
+    answer 의 중요 정보만을 제공합니다.
+    :parameter - api_key, ( question_title / question_id )
+    :return - question_title, question_text, answer({answer_num, answer_text, answer_count})
+    """
+    if match_domain(request):
+        data = json.loads(request.body.decode('utf-8'))
+        api_key = get_api_key(request)
+        if not api_key:
+            desc = "Can't get a valid api key."
+            return error_return(desc)
+
+        question_id = data.get('question_id')
+
+        response_dict = {}
+        answer_list = []
+
+        try:
+            a = ApiKey.objects.get(key=api_key)
+            q = Question.objects.get(api_key=a, id=question_id)
+        except ObjectDoesNotExist:
+                desc = 'The Question does not exist in followed api_key.'
+                return error_return(desc)
+
+        response_dict.update({
+            'question_title': q.question_title,
+            'question_text': q.question_text
+        })
+        a = q.answers.all()
+        if a:
+            for answer in a:
+                answer_list.append({
+                    'answer_num': answer.answer_num,
+                    'answer_text': answer.answer_text,
+                    'answer_count': answer.get_answer_count,
+                })
+
+            response_dict.update({
+                'answer': answer_list
+            })
+        else:
+            desc = 'The Answer does not exist.'
+            return error_return(desc)
+
+        return JsonResponse(response_dict)
+    else:
+        desc = 'This request url is not authenticated in followed api_key.'
+        return error_return(desc)
+
+
+@csrf_exempt
+def to_private(request, question_id):
+    if match_domain(request):
+        data = json.loads(request.body.decode('utf-8'))
+        api_key = get_api_key(request)
+        if not api_key:
+            desc = "Can't get a valid api key."
+            return error_return(desc)
+
+        response_dict = {}
+
+        try:
+            a = ApiKey.objects.get(key=api_key)
+            q = Question.objects.get(api_key=a, id=question_id)
+        except ObjectDoesNotExist:
+            desc = 'The Question does not exist in followed api key.'
+            return error_return(desc)
+
+        q.update(is_private=True)
+        return JsonResponse(response_dict)
+    else:
+        desc = 'This request url is not authenticated in followed api_key.'
+        return error_return(desc)
+
+
 class Answers(View):
-    def post(self, request):
+    def post(self, request, question_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-
-            api_key = data.get('api_key')
-            question_title = data.get('question_title')
-            question_id = data.get('question_id')
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
 
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-
-                if question_title and question_id:
-                    q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-                elif question_id:
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-                elif question_title:
-                    q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+                q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc)
@@ -1709,25 +1772,19 @@ class Answers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def get(self, request):
+    def get(self, request, question_id):
         if match_domain(request):
-            data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
-            question_title = data.get('question_title')
-            question_id = data.get('question_id')
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
 
             response_dict = {}
             answer_list = []
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-
-                if question_title and question_id:
-                    q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-                elif question_id:
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-                elif question_title:
-                    q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+                q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc)
@@ -1736,13 +1793,13 @@ class Answers(View):
             if a:
                 for answer in a:
                     answer_list.append({
+                        'id': answer.id,
                         'answer_num': answer.answer_num,
                         'answer_text': answer.answer_text,
                         'answer_count': answer.get_answer_count
                     })
 
                 response_dict.update({
-                    # 'answers': serializers.serialize('json', q.answers.all())
                     'answers': answer_list
                 })
             else:
@@ -1754,25 +1811,55 @@ class Answers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def delete(self, request):
+    def get(self, request, question_id, answer_num):
         if match_domain(request):
-            data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
-            question_title = data.get('question_title')
-            question_id = data.get('question_id')
-            answer_num = data.get('answer_num')
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
 
+            response_dict = {}
+            answer_list = []
+
+            try:
+                a = ApiKey.objects.get(key=api_key)
+                q = Question.objects.get(api_key=a, id=question_id)
+            except ObjectDoesNotExist:
+                desc = 'The Question does not exist in followed api key.'
+                return error_return(desc)
+
+            a = q.answers.get(answer_num=answer_num)
+            if a:
+                answer_list.append({
+                    'id': a.id,
+                    'answer_num': a.answer_num,
+                    'answer_text': a.answer_text,
+                    'answer_count': a.get_answer_count
+                })
+
+                response_dict.update({
+                    'answers': answer_list
+                })
+            else:
+                desc = 'The Answer does not exist.'
+                return error_return(desc)
+
+            return JsonResponse(response_dict)
+        else:
+            desc = 'This request url is not authenticated in followed api_key.'
+            return error_return(desc)
+
+    def delete(self, request, question_id, answer_num):
+        if match_domain(request):
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                if question_title and question_id:
-                    q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-                elif question_id:
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-                elif question_title:
-                    q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-
+                q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc)
@@ -1781,44 +1868,60 @@ class Answers(View):
             for a in answer:
                 a.is_removed = True
                 a.save()
-
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def put(self, request):
-        return HttpResponseNotFound('<h1>Not yet</h1>')
-
-
-class Useranswers(View):
-    def post(self, request):
+    def put(self, request, question_id, answer_num):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
-            question_title = data.get('question_title')
-            question_id = data.get('question_id')
-            update_num = data.get('update_num')
-            unique_user = data.get('unique_user')
-
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
+                q = Question.objects.get(api_key=a, id=question_id)
+            except ObjectDoesNotExist:
+                desc = 'The Question does not exist in followed api key.'
+                return error_return(desc)
 
-                if question_title and question_id:
-                    q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-                elif question_id:
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-                elif question_title:
-                    q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+            answer_text = data.get('answer_text')
+            update_a = Answer.objects.get(question=q, answer_num=answer_num)
+            update_a.update(answer_text=answer_text)
+            for index, answer in enumerate(q.answers.all(), start=1):
+                response_dict['answer'+str(index)] = serializers.serialize('json', [answer])
+            return JsonResponse(response_dict)
+        else:
+            desc = 'This request url is not authenticated in followed api_key.'
+            return error_return(desc)
+
+
+class Useranswers(View):
+    def post(self, request, question_id, answer_num):
+        # todo update_num => answer_num document modify
+        if match_domain(request):
+            data = json.loads(request.body.decode('utf-8'))
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+            unique_user = data.get('unique_user')
+            response_dict = {}
+
+            try:
+                a = ApiKey.objects.get(key=api_key)
+                q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc)
 
             if q.answers:
                 try:
-                    a = Answer.objects.get(question=q, answer_num=update_num, is_removed=False)
+                    a = Answer.objects.get(question=q, answer_num=answer_num, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Answer does not exist in followed answer_num.'
                     return error_return(desc)
@@ -1844,41 +1947,71 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def get(self, request):
-        return HttpResponseNotFound('<h1>Not yet</h1>')
-
-    def delete(self, request):
+    def get(self, request, question_id, unique_user):
         if match_domain(request):
-            data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
-            question_title = data.get('question_title')
-            question_id = data.get('question_id')
-            answer_num = data.get('answer_num')
-            unique_user = data.get('unique_user')
-
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                if question_title and question_id:
-                    q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-                elif question_id:
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-                elif question_title:
-                    q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+                q = Question.objects.get(api_key=a, id=question_id)
+            except ObjectDoesNotExist:
+                desc = 'The Question does not exist in followed api key.'
+                return error_return(desc)
 
+            if q.answers:
+                try:
+                    answers = Answer.objects.filter(question=q, is_removed=False)
+                except ObjectDoesNotExist:
+                    desc = 'The Answer does not exist in followed answer_num.'
+                    return error_return(desc)
+
+                try:
+                    u = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
+                except ObjectDoesNotExist:
+                    desc = 'No such user answered this question.'
+                    return error_return(desc)
+
+                try:
+                    get_u = UserAnswer.objects.get(id=u.id, is_removed=False)
+                except ObjectDoesNotExist:
+                    desc = 'The UserAnswer does not exist in followed id.'
+                    return error_return(desc)
+
+                response_dict.update({
+                    'useranswer': serializers.serialize('json', [get_u])
+                })
+            else:
+                desc = 'The Answer does not exist.'
+                return error_return(desc)
+
+            return JsonResponse(response_dict)
+        else:
+            desc = 'This request url is not authenticated in followed api_key.'
+            return error_return(desc)
+
+    def delete(self, request, question_id, unique_user):
+        if match_domain(request):
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+            response_dict = {}
+
+            try:
+                a = ApiKey.objects.get(key=api_key)
+                q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc)
 
-            answer = q.answers.get(answer_num=answer_num, is_removed=False)
-            unique_user = str(unique_user) + api_key
-
             try:
-                useranswer = UserAnswer.objects.get(answer=answer, unique_user=unique_user, is_removed=False)
+                useranswer = UserAnswer.objects.get(answer__in=q.answers, unique_user=unique_user, is_removed=False)
                 useranswer.is_removed = True
                 useranswer.save()
-
             except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed unique_user.'
                     return error_return(desc)
@@ -1888,45 +2021,31 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc)
 
-    def put(self, request):
+    def put(self, request, question_id, unique_user):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
-            api_key = data.get('api_key')
-            question_title = data.get('question_title')
-            question_id = data.get('question_id')
-            pre_answer_num = data.get('pre_answer_num')
-            post_answer_num = data.get('post_answer_num')
-            unique_user = data.get('unique_user')
-
+            api_key = get_api_key(request)
+            if not api_key:
+                desc = "Can't get a valid api key."
+                return error_return(desc)
+            answer_num = data.get('answer_num')
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                if question_title and question_id:
-                    q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-                elif question_id:
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-                elif question_title:
-                    q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-
+                q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc)
 
             if q.is_editable:
-                answer = q.answers.get(answer_num=pre_answer_num, is_removed=False)
-                unique_user = str(unique_user) + api_key
-
                 try:
-                    useranswer = UserAnswer.objects.get(answer=answer, unique_user=unique_user, is_removed=False)
-                    new_answer = q.answers.get(answer_num=post_answer_num, is_removed=False)
-                    useranswer.answer = new_answer
-                    useranswer.save()
-
+                    u = UserAnswer.objects.get(answer__in=q.answers, unique_user=unique_user, is_removed=False)
                 except ObjectDoesNotExist:
-                        desc = 'The UserAnswer does not exist in followed unique_user.'
-                        return error_return(desc)
+                    desc = 'The UserAnswer does not exist in followed unique_user.'
+                    return error_return(desc)
 
+                u.update(answer_num=answer_num)
                 return JsonResponse(response_dict)
             else:
                 desc = 'Property "is_editable" of this question is currently False. Set True for this request.'
