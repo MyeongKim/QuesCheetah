@@ -1207,11 +1207,11 @@ def update_useranswer(request):
         return error_return(desc)
 
 
-def error_return(desc):
+def error_return(desc, status=400):
     return JsonResponse({
         'error': True,
-        'description': desc,
-    })
+        'description': desc
+    }, status=status)
 
 
 def get_api_key(request):
@@ -1243,7 +1243,7 @@ class Groups(View):
                 a = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey does not exist in followed key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             new_multiq = MultiQuestion(api_key=a, group_name=group_name)
             new_multiq.save()
@@ -1289,10 +1289,10 @@ class Groups(View):
                 return JsonResponse(response_dict)
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
-                return error_return(desc)
+                return error_return(desc, 404)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def get(self, request, group_id):
         if match_domain(request):
@@ -1307,7 +1307,7 @@ class Groups(View):
                 m = MultiQuestion.objects.get(id=group_id)
             except ObjectDoesNotExist:
                 desc = 'The MultiQuestion doees not exist in follwed api key'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             for index, q in enumerate(m.question_elements.all()):
 
@@ -1329,7 +1329,7 @@ class Groups(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key. / Or api key is not valid.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def put(self, request, group_id):
         if match_domain(request):
@@ -1345,7 +1345,7 @@ class Groups(View):
                 a = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey does not exist in followed key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             m = MultiQuestion.objects.get(api_key=a, id=group_id)
             m.update(group_name=data.get('group_name'))
@@ -1366,7 +1366,7 @@ class Groups(View):
                     selected_q = m.question_elements.all().filter(id=q_id)
                 except ObjectDoesNotExist:
                     desc = 'Question of this id does not exist.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
                 selected_q.update(
                     question_title=question_title,
@@ -1387,7 +1387,7 @@ class Groups(View):
                         selected_a = selected_q.answers.filter(id=a_id)
                     except ObjectDoesNotExist:
                         desc = 'Answer of this id does not exist.'
-                        return error_return(desc)
+                        return error_return(desc, 404)
 
                     selected_a.update(
                         answer_text=answer_text,
@@ -1406,10 +1406,10 @@ class Groups(View):
                 return JsonResponse(response_dict)
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
-                return error_return(desc)
+                return error_return(desc, 404)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def delete(self, request, group_id):
         if match_domain(request):
@@ -1425,7 +1425,7 @@ class Groups(View):
                 m = MultiQuestion.objects.get(api_key=a, id=group_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
             questions = m.question_elements.all()
             for q in questions:
@@ -1447,7 +1447,7 @@ class Groups(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
 
 class Questions(View):
@@ -1473,7 +1473,7 @@ class Questions(View):
                 a = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey instance does not exist in followed key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             new_question = Question(
                 api_key=a,
@@ -1491,7 +1491,7 @@ class Questions(View):
                 q = Question.objects.get(api_key=a, id=new_question.id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             response_dict.update({
                 'question': serializers.serialize('json', [q])
@@ -1518,7 +1518,7 @@ class Questions(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def get(self, request, question_id):
         if match_domain(request):
@@ -1536,7 +1536,7 @@ class Questions(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
             response_dict.update({
                 'question_id': q.id,
@@ -1558,12 +1558,12 @@ class Questions(View):
                 })
             else:
                 desc = 'The Answer does not exist.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def put(self, request, question_id):
         if match_domain(request):
@@ -1586,7 +1586,7 @@ class Questions(View):
                 a = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey instance does not exist in followed key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             q = Question.objects.get(api_key=a, id=question_id).update(
                 question_title=question_title,
@@ -1601,7 +1601,7 @@ class Questions(View):
                 updated_q = Question.objects.get(api_key=a, id=q.id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             response_dict.update({
                 'question': serializers.serialize('json', [updated_q])
@@ -1610,7 +1610,7 @@ class Questions(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def delete(self, request, question_id):
         if match_domain(request):
@@ -1636,7 +1636,7 @@ class Questions(View):
 
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
             answers = q.answers.all()
             for answer in answers:
@@ -1654,7 +1654,7 @@ class Questions(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
 
 @csrf_exempt
@@ -1684,7 +1684,7 @@ def simple_view_answer(request, question_id):
             q = Question.objects.get(api_key=a, id=question_id)
         except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api_key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
         response_dict.update({
             'question_title': q.question_title,
@@ -1704,12 +1704,12 @@ def simple_view_answer(request, question_id):
             })
         else:
             desc = 'The Answer does not exist.'
-            return error_return(desc)
+            return error_return(desc, 404)
 
         return JsonResponse(response_dict)
     else:
         desc = 'This request url is not authenticated in followed api_key.'
-        return error_return(desc)
+        return error_return(desc, 401)
 
 
 @csrf_exempt
@@ -1728,13 +1728,13 @@ def to_private(request, question_id):
             q = Question.objects.get(api_key=a, id=question_id)
         except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api key.'
-            return error_return(desc)
+            return error_return(desc, 404)
 
         q.update(is_private=True)
         return JsonResponse(response_dict)
     else:
         desc = 'This request url is not authenticated in followed api_key.'
-        return error_return(desc)
+        return error_return(desc, 401)
 
 
 class Answers(View):
@@ -1753,7 +1753,7 @@ class Answers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             for key, value in data.get('answers').items():
                 answer_text = value.get('answer_text')
@@ -1770,7 +1770,7 @@ class Answers(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def get(self, request, question_id):
         if match_domain(request):
@@ -1787,7 +1787,7 @@ class Answers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             a = q.answers.all()
             if a:
@@ -1804,12 +1804,12 @@ class Answers(View):
                 })
             else:
                 desc = 'The Answer does not exist.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def get(self, request, question_id, answer_num):
         if match_domain(request):
@@ -1826,7 +1826,7 @@ class Answers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             a = q.answers.get(answer_num=answer_num)
             if a:
@@ -1842,12 +1842,12 @@ class Answers(View):
                 })
             else:
                 desc = 'The Answer does not exist.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def delete(self, request, question_id, answer_num):
         if match_domain(request):
@@ -1862,7 +1862,7 @@ class Answers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
             answer = q.answers.filter(answer_num=answer_num, is_removed=False)
             for a in answer:
@@ -1871,7 +1871,7 @@ class Answers(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def put(self, request, question_id, answer_num):
         if match_domain(request):
@@ -1887,7 +1887,7 @@ class Answers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             answer_text = data.get('answer_text')
             update_a = Answer.objects.get(question=q, answer_num=answer_num)
@@ -1897,7 +1897,7 @@ class Answers(View):
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
 
 class Useranswers(View):
@@ -1917,14 +1917,14 @@ class Useranswers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             if q.answers:
                 try:
                     a = Answer.objects.get(question=q, answer_num=answer_num, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Answer does not exist in followed answer_num.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
                 new_useranswer = UserAnswer(answer=a, unique_user=unique_user)
                 new_useranswer.save()
@@ -1933,19 +1933,19 @@ class Useranswers(View):
                     curr_useranswer = UserAnswer.objects.get(id=new_useranswer.id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed id.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
                 response_dict.update({
                     'useranswer': serializers.serialize('json', [curr_useranswer])
                 })
             else:
                 desc = 'The Answer does not exist.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def get(self, request, question_id, unique_user):
         if match_domain(request):
@@ -1960,38 +1960,38 @@ class Useranswers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             if q.answers:
                 try:
                     answers = Answer.objects.filter(question=q, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Answer does not exist in followed answer_num.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
                 try:
                     u = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'No such user answered this question.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
                 try:
                     get_u = UserAnswer.objects.get(id=u.id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed id.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
                 response_dict.update({
                     'useranswer': serializers.serialize('json', [get_u])
                 })
             else:
                 desc = 'The Answer does not exist.'
-                return error_return(desc)
+                return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def delete(self, request, question_id, unique_user):
         if match_domain(request):
@@ -2006,7 +2006,7 @@ class Useranswers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
             try:
                 useranswer = UserAnswer.objects.get(answer__in=q.answers, unique_user=unique_user, is_removed=False)
@@ -2014,12 +2014,12 @@ class Useranswers(View):
                 useranswer.save()
             except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed unique_user.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
     def put(self, request, question_id, unique_user):
         if match_domain(request):
@@ -2036,14 +2036,14 @@ class Useranswers(View):
                 q = Question.objects.get(api_key=a, id=question_id)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
             if q.is_editable:
                 try:
                     u = UserAnswer.objects.get(answer__in=q.answers, unique_user=unique_user, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed unique_user.'
-                    return error_return(desc)
+                    return error_return(desc, 404)
 
                 u.update(answer_num=answer_num)
                 return JsonResponse(response_dict)
@@ -2052,5 +2052,5 @@ class Useranswers(View):
                 return error_return(desc)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc)
+            return error_return(desc, 401)
 
