@@ -1,5 +1,4 @@
 // This javascript file must be inserted after the jQuery file.
-// 직접 개발한 코드
 
 function QuesCheetah(config){
     this.apiKey = config.apiKey;

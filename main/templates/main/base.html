@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.min.css" %}">
     <link rel="stylesheet" href="{% static "css/common.css" %}">
     {% block stylesheet %}{% endblock %}
+    <script src="{% static "jspm_packages/system.js" %}"></script>
+    <script src="{% static "home/config.js" %}"></script>
+    <script src="{% static "js/system.yuml.js" %}"></script>
 </head>
 <body>
     {% include "main/pages/nav.html" %}
@@ -30,12 +33,7 @@
     <script src="{% static "bootstrap/js/bootstrap.min.js" %}"></script>
     <script src="{% static "js/quescheetah-sdk-0.1.0.js" %}"></script>
     <script type="application/javascript">
-        var self = this;
-        var config = {
-            'apiKey': 'ee9c63a4b947cdbc2b6759e655c7e175a8a1dca2',
-            'callBackUrl': 'http://localhost:8000',
-        };
-        var qc = new QuesCheetah(config);
+        System.import("{% static "js/app.js" %}");
     </script>
     {% block script %}{% endblock %}
     </body>

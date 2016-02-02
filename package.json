@@ -1,0 +1,32 @@
+{
+  "name": "quescheetah",
+  "version": "0.0.1",
+  "description": "<img src=\"./QuesCheetah/static/images/quescheetah-logo.png\" width=\"400\">",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mingkim/QuesCheetah.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mingkim/QuesCheetah/issues"
+  },
+  "homepage": "https://github.com/mingkim/QuesCheetah#readme",
+  "devDependencies": {
+    "jspm": "^0.16.26"
+  },
+  "jspm": {
+    "dependencies": {
+      "systemjs": "npm:systemjs@^0.19.18"
+    },
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.8.24",
+      "babel-runtime": "npm:babel-runtime@^5.8.24",
+      "core-js": "npm:core-js@^1.1.4"
+    }
+  }
+}
