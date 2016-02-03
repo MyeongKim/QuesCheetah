@@ -31,9 +31,10 @@ def user_signup(request):
     if request.is_ajax():
         response_data = {}
 
-        postEmail = request.POST.get('email')
-        postUsername = request.POST.get('username')
-        postPassword = request.POST.get('password')
+        data = json.loads(request.body.decode('utf-8'))
+        postEmail = data.get('email')
+        postUsername = data.get('username')
+        postPassword = data.get('password')
 
         user = User(email=postEmail, username=postUsername)
         user.set_password(postPassword)
@@ -42,12 +43,12 @@ def user_signup(request):
 
         except IntegrityError as e:
             response_data['status'] = False
-            response_data['msg'] = '이미 가입되어있는 이메일입니다.'
+            response_data['msg'] = 'Sorry! This email is already signed up.'
             return HttpResponse(json.dumps(response_data),
                                 content_type="application/json"
                                 )
         response_data['status'] = True
-        response_data['msg'] = '가입이 완료되었습니다.'
+        response_data['msg'] = 'Success!'
 
         return HttpResponse(
                     json.dumps(response_data),
@@ -74,9 +75,9 @@ def user_login(request):
 
     if request.is_ajax():
         response_data = {}
-
-        postEmail = request.POST.get('email')
-        postPassword = request.POST.get('password')
+        data = json.loads(request.body.decode('utf-8'))
+        postEmail = data.get('email')
+        postPassword = data.get('password')
 
         try:
             user = authenticate(email=postEmail, password=postPassword)

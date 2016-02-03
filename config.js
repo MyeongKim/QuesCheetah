@@ -1,4 +1,5 @@
 System.config({
+  baseURL: "/static",
   defaultJSExtensions: true,
   transpiler: "babel",
   babelOptions: {
@@ -9,17 +10,21 @@ System.config({
     ]
   },
   paths: {
-    "github:*": "static/jspm_packages/github/*",
-    "npm:*": "static/jspm_packages/npm/*"
+    "github:*": "jspm_packages/github/*",
+    "npm:*": "jspm_packages/npm/*"
   },
 
   map: {
-    "qc-config":"static/js/quescheetah-config.js",
-    "qc-sdk": "static/js/quescheetah-sdk-0.1.0.js",
-    "test": "static/js/test.js",
+    "ajax_call": "js/ajax_call.js",
     "babel": "npm:babel-core@5.8.35",
     "babel-runtime": "npm:babel-runtime@5.8.35",
+    "bootstrap": "github:twbs/bootstrap@3.3.6",
+    "chart": "./QuesCheetah/static/js/Chart.min.js",
     "core-js": "npm:core-js@1.2.6",
+    "jquery": "npm:jquery@2.2.0",
+    "qc-init": "js/quescheetah-init.js",
+    "qc-sdk": "js/quescheetah-sdk-0.1.0.js",
+    "submit": "js/submit.js",
     "systemjs": "npm:systemjs@0.19.18",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
@@ -32,6 +37,9 @@ System.config({
     },
     "github:jspm/nodelibs-util@0.1.0": {
       "util": "npm:util@0.10.3"
+    },
+    "github:twbs/bootstrap@3.3.6": {
+      "jquery": "github:components/jquery@2.2.0"
     },
     "npm:assert@1.3.0": {
       "util": "npm:util@0.10.3"

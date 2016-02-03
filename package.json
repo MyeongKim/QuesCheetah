@@ -21,6 +21,8 @@
   },
   "jspm": {
     "dependencies": {
+      "bootstrap": "github:twbs/bootstrap@^3.3.6",
+      "jquery": "npm:jquery@^2.2.0",
       "systemjs": "npm:systemjs@^0.19.18"
     },
     "devDependencies": {

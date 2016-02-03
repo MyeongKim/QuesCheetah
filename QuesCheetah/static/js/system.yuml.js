@@ -7,7 +7,7 @@ window.showModuleRelationships = function () {
     });
 
   function displayName(moduleName) {
-    return moduleName.replace(System.baseURL+'static/', '');
+    return moduleName.replace(System.baseURL, '');
   }
 
   var moduleDefinitions = modules.map(function (module) {
