@@ -92,109 +92,127 @@ Following functions can be used inside of your JavaScript file.
 Check the parameter of the request and the response format in the REST API section.
 
 
+##**Group**
+###**1. create a group question**
 
-###**make one question only**
+Create many questions. These questions are grouped together as ```group_name```.
 
-Not making any related answers, make one question only.
+REST API URL = ```"groups"```
 
-REST API URL = ```"question/create"```
+```javascript
+    qs.createGroup(params, successCallback, errorCallback);
+```
+
+###**2. delete a group question**
+
+Delete a group with all related question, answer and useranswer data.
+
+REST API URL = ```"groups/{groupId}"```
+
+```javascript
+    qs.deleteGroup(params, successCallback, errorCallback);
+```
+
+##**Question**
+###**1. make a question**
+
+Make a single question.
+
+REST API URL = ```"questions"```
 
 ```javascript
     qs.createQuestion(params, successCallback, errorCallback);
 ```
 
-###**make one answer only**
+###**2. get a question**
 
-Make one answer
+get a question data.
 
-REST API URL = ```"answer/create"```
-
-```javascript
-    qs.createAnswer(params, successCallback, errorCallback);
-```
-
-###**create single question**
-
-Create one question and related answers at once.
-
-REST API URL = ```"single/create"```
+REST API URL = ```"questions/{questionId}"```
 
 ```javascript
-    qs.createSingleQuestion(params, successCallback, errorCallback);
+    qs.getQuestion(params, successCallback, errorCallback);
 ```
 
-###**create many question**
+###**3. update a question**
 
-Create many questions. These questions are grouped together.
-If the ```group_name```is empty in requested data, It's redirected to creating single question function.
+update a question data.
 
-REST API URL = ```"multiple/create"```
-
+REST API URL = ```"questions/{questionId}"```
 
 ```javascript
-    qs.createQuestion(params, successCallback, errorCallback);
+    qs.updateQuestion(params, successCallback, errorCallback);
 ```
 
-###**create user answer**
+###**4. delete a question**
 
-Used when new user answers the question. 
+delete a question data with all answer and useranswer data.
 
-REST API URL = ```"useranswer/create"```
-
-```javascript
-    qs.createUserAnswer(params, successCallback, errorCallback);
-```
-
-###**delete one question only**
-
-Not removing any related answers, delete one question only.
-
-REST API URL = ```"question/delete"```
-
+REST API URL = ```"questions/{questionId}"```
 
 ```javascript
     qs.deleteQuestion(params, successCallback, errorCallback);
 ```
 
-###**delete one answer only**
+##**Answer**
+###**1. make a new answer of specific question**
 
-Delete one answer only.
+Add a new answer to the question.
 
-REST API URL = ```"answer/delete"```
+REST API URL = ```"questions/{questionId}/answers"```
 
+```javascript
+    qs.createAnswer(params, successCallback, errorCallback);
+```
+
+###**2. get one answer data of the question**
+
+Get answer data of ```answerNum```.
+
+REST API URL = ```"questions/{questionId}/answers/{answerNum}"```
+
+```javascript
+    qs.getAnswer(params, successCallback, errorCallback);
+```
+
+###**3. delete one answer data of the question**
+
+Delete answer data of ```answerNum```.
+
+REST API URL = ```"questions/{questionId}/answers/{answerNum}"```
 
 ```javascript
     qs.deleteAnswer(params, successCallback, errorCallback);
 ```
 
-###**delete an user's answer**
+##**Useranswer**
+###**1. create useranswer**
 
-Delete specific user's answer.
+Used when new user answers the question. 
 
-REST API URL = ```"useranswer/delete"```
+REST API URL = ```"questions/{questionId}/answers/{answerNum}/useranswers"```
 
+```javascript
+    qs.createUserAnswer(params, successCallback, errorCallback);
+```
+
+###**2. update useranswer**
+
+Change the number which user answered.
+
+REST API URL = ```"questions/{questionId}/answers/useranswers/{uniqueUser}"```
+
+```javascript
+    qs.updateUserAnswer(params, successCallback, errorCallback);
+```
+
+###**3. delete useranswer**
+
+Delete the useranswer data of ```uniqueUser```.
+
+REST API URL = ```"questions/{questionId}/answers/useranswers/{uniqueUser}"```
 
 ```javascript
     qs.deleteUserAnswer(params, successCallback, errorCallback);
-```
-
-###**delete an question and all related answers, useranswers.**
-
-Delete an question with all related data.
-
-REST API URL = ```"question/set/delete"```
-
-```javascript
-    qs.deleteQuestionSet(params, successCallback, errorCallback);
-```
-
-###**delete many question and all related answers, useranswers.**
-
-Delete one group with all related data.
-
-REST API URL = ```"multiple/delete"```
-
-```javascript
-    qs.deleteMultiQuestionSet(params, successCallback, errorCallback);
 ```
 
