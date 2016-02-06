@@ -1,0 +1,14 @@
+language: python
+python:
+  - "3.4"
+  - "3.5"
+  - "3.5-dev" # 3.5 development branch
+services: mysql
+env:
+  - DJANGO_VERSION=1.8.4
+install: "pip install -r requirements.txt"
+before_script:
+  - mysql -e 'create database quescheetah;'
+  - python manage.py migrate
+script:
+  - python manage.py test
