@@ -30,7 +30,7 @@
                 </div>
                 <div class="panel-body">
                     {% for a in answers|dictsort:"answer_num" %}
-                            <button class="btn btn-default answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ question_id }}">
+                            <button class="btn btn-default single answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ question_id }}">
                                 {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
                             </button>
                     {% endfor %}
@@ -40,34 +40,4 @@
     </div>
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(document).ready(function(){
-
-            function unique_set(myType){
-                //if (myType === "default"){
-                    var d = new Date();
-                    return d.getTime();
-                //}
-            }
-
-            $('.answerBtn').click(function () {
-                var api_key = "{{ api_key }}";
-                var update_num = $(this).attr('a_num');
-                var question_title = "";
-                var question_id = $(this).attr('q_id');
-                var unique_user = unique_set("default");
-                var params = {
-                    'api_key': api_key,
-                    'question_title': question_title,
-                    'question_id': question_id,
-                    'update_num': update_num,
-                    'unique_user': unique_user,
-                };
-                self.qc.createUserAnswer(params, function(){
-                    location.reload();
-                });
-            })
-        });
-    </script>
-{% endblock %}
+{% block script %}{% endblock %}

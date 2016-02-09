@@ -51,13 +51,14 @@ urlpatterns = [
     # POST
     url(r'^questions$', csrf_exempt(views.Questions.as_view()), name='question_post'),
 
-    # GET, DELETE, PUT
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\w+)', csrf_exempt(views.Answers.as_view()), name='answer'),
-    # POST, GET
-    url(r'^questions/(?P<question_id>\w+)/answers', csrf_exempt(views.Answers.as_view()), name='answer_post'),
+    # POST, GET, PUT
+    url(r'^questions/(?P<question_id>\w+)/answers/$', csrf_exempt(views.Answers.as_view()), name='answer_post'),
+    # GET, DELETE,
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)$', csrf_exempt(views.Answers.as_view()), name='answer'),
 
-    # POST
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)/useranswers', csrf_exempt(views.Useranswers.as_view()), name='useranswer_post'),
+    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/$', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
     # GET, DELETE, PUT
-    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/(?P<unique_user>\w+)', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
+    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/(?P<unique_user>\w+)$', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
+    # POST, GET
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)/useranswers$', csrf_exempt(views.Useranswers.as_view()), name='useranswer_post'),
 ]

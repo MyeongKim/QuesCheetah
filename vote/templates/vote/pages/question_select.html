@@ -29,7 +29,7 @@
         {% endif %}
         <h1>Question select</h1>
         <div id="helper-msg"></div>
-        <a href="{% url 'vote:new' api_key %}"><button class="btn btn-info">make a new question?</button></a>
+        <a href="{% url 'v1:new' api_key %}"><button class="btn btn-info">make a new question?</button></a>
         <div class="row">
             <div class="col-sm-6 col-sm-offset-3">
                 <div class="">
@@ -38,8 +38,8 @@
                         <div class="question-div col-sm-10 col-sm-offset-1">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <a href="{% url 'vote:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">Answer</button></a>
-                                    <a href="{% url 'vote:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard</button></a>
+                                    <a href="{% url 'v1:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">Answer</button></a>
+                                    <a href="{% url 'v1:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard</button></a>
                                     <button class="btn btn-danger multi-delete-btn" gid="{{ m.id }}">Delete</button>
                                 </div>
                                 <div class="panel-body">
@@ -67,14 +67,14 @@
                         <div class="question-div col-sm-10 col-sm-offset-1">
                             <div class="panel panel-default">
                                 <div class="panel-heading">
-                                    <a href="{% url 'vote:get_vote' api_key q.question_title %}"><button class="btn btn-default">Answer</button></a>
-                                    <a href="{% url 'vote:dashboard' api_key q.id %}"><button class="btn btn-default">Dashboard</button></a>
+                                    <a href="{% url 'v1:get_vote' api_key q.question_title %}"><button class="btn btn-default">Answer</button></a>
+                                    <a href="{% url 'v1:dashboard' api_key q.id %}"><button class="btn btn-default">Dashboard</button></a>
                                     <button class="btn btn-danger single-delete-btn" qid="{{ q.id }}" qt="{{ q.question_title }}">Delete</button>
                                 </div>
                                 <div class="panel-body">
                                     <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">#</button>
-                                        {{ forloop.counter }}
+                                        <button class="btn btn-default col-sm-5">id</button>
+                                        {{ q.id }}
                                     </div>
                                     <div class="col-sm-12">
                                         <button class="btn btn-default col-sm-5">question_text</button>
@@ -94,36 +94,4 @@
         </div>
     </div>
 {% endblock %}
-{% block script %}
-    <script type="application/javascript">
-        $(document).ready(function(){
-            function reload(){
-                location.reload();
-            }
-
-            $('.multi-delete-btn').click(function(){
-                var choice = confirm("Are you sure?");
-                if (choice){
-                    var params = {
-                        'api_key': "{{ api_key }}",
-                        'group_id': $(this).attr('gid')
-                    };
-                    self.qc.deleteGroup(params, reload);
-                }
-
-            });
-
-            $('.single-delete-btn').click(function(){
-                var choice = confirm("Are you sure?");
-                if (choice){
-                    var params = {
-                        'api_key': "{{ api_key }}",
-                        'question_id': $(this).attr('qid'),
-                        'question_title': $(this).attr('qt'),
-                    };
-                    self.qc.deleteQuestion(params, reload);
-                }
-            });
-        });
-    </script>
-{% endblock %}
+{% block script %}{% endblock %}

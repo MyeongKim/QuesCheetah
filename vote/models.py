@@ -45,6 +45,7 @@ class Question(models.Model):
     ''' question '''
     question_title = models.CharField(max_length=50)
     question_text = models.CharField(max_length=100)
+    question_num = models.CharField(max_length=10, null=True)
 
     ''' question available '''
     is_closed = models.BooleanField(default=False)
@@ -131,7 +132,7 @@ class Answer(models.Model):
 
 # user vote info 따로 관리
 class UserAnswer(models.Model):
-    answer = models.ForeignKey(Answer, related_name='user_answers')
+    answer = models.ForeignKey(Answer, related_name='answer')
     unique_user = models.CharField(max_length=100, unique=True)  # api_key+unique Id
     # survey_text = models.TextField()
 

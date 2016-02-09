@@ -51,7 +51,7 @@ def get_vote(request, api_key, question_title):
     '''
     1. request to get_question rest api
     '''
-    url = 'http://localhost:8000/vote/question/get'
+    url = 'http://127.0.0.1:8000/v1/question/get'
     param = {
         'api_key': api_key,
         'question_title': question_title
@@ -59,20 +59,21 @@ def get_vote(request, api_key, question_title):
 
     data = json.dumps(param).encode('utf-8')
     req = urllib.request.Request(url)
+    req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
 
     try:
         response_json = urllib.request.urlopen(req, data=data).read()
         response_json = json.loads(response_json.decode('utf-8'))
     except HTTPError:
         messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return redirect('main:user_mypage', request.user.id)
+        # return redirect('main:user_mypage', request.user.id)
 
     question_json_response = response_json
     context.update(question_json_response)
     '''
     2. request to get_answer rest api
     '''
-    url = 'http://localhost:8000/vote/answer/get'
+    url = 'http://127.0.0.1:8000/v1/answer/get'
     param = {
         'api_key': api_key,
         'question_title': question_title
@@ -80,13 +81,14 @@ def get_vote(request, api_key, question_title):
 
     data = json.dumps(param).encode('utf-8')
     req = urllib.request.Request(url)
+    req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
 
     try:
         response_json = urllib.request.urlopen(req, data=data).read()
         response_json = json.loads(response_json.decode('utf-8'))
     except HTTPError:
         messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return redirect('main:user_mypage', request.user.id)
+        # return redirect('main:user_mypage', request.user.id)
 
     answer_json_response = response_json
     context.update(answer_json_response)
@@ -114,7 +116,7 @@ def get_multiple_vote(request, api_key, group_name):
         '''
         1. request to get_question rest api
         '''
-        url = 'http://localhost:8000/vote/question/get'
+        url = 'http://127.0.0.1:8000/v1/question/get'
         param = {
             'api_key': api_key,
             'question_title': q.question_title
@@ -122,6 +124,7 @@ def get_multiple_vote(request, api_key, group_name):
 
         data = json.dumps(param).encode('utf-8')
         req = urllib.request.Request(url)
+        req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
 
         try:
             response_json = urllib.request.urlopen(req, data=data).read()
@@ -140,7 +143,7 @@ def get_multiple_vote(request, api_key, group_name):
         '''
         2. request to get_answer rest api
         '''
-        url = 'http://localhost:8000/vote/answer/get'
+        url = 'http://127.0.0.1:8000/v1/answer/get'
         param = {
             'api_key': api_key,
             'question_title': q.question_title
@@ -148,6 +151,7 @@ def get_multiple_vote(request, api_key, group_name):
 
         data = json.dumps(param).encode('utf-8')
         req = urllib.request.Request(url)
+        req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
 
         try:
             response_json = urllib.request.urlopen(req, data=data).read()
@@ -176,7 +180,7 @@ def dashboard(request, api_key, question_id):
     '''
     request to full_view_answer rest api
     '''
-    url = 'http://localhost:8000/vote/answer/view/full'
+    url = 'http://127.0.0.1:8000/vote/answer/view/full'
     param = {
         'api_key': api_key,
         'question_id': question_id
@@ -241,7 +245,6 @@ def match_domain(request):
     api_key = get_api_key(request)
     if api_key:
         request_domain = request.get_host()
-
         if request_domain[:4] == 'www.':
             request_domain = request_domain[4:]
         try:
@@ -562,42 +565,38 @@ def get_question(request):
     :parameter - api_key, ( question_title / question_id )
     :return - question
     """
-    if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
-        api_key = data.get('api_key')
-        question_title = data.get('question_title')
-        question_id = data.get('question_id')
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    question_title = data.get('question_title')
+    question_id = data.get('question_id')
 
-        response_dict = {}
+    response_dict = {}
 
-        try:
-            a = ApiKey.objects.get(key=api_key)
+    try:
+        a = ApiKey.objects.get(key=api_key)
 
-            if question_title and question_id:
-                q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-            elif question_id:
-                q = Question.objects.get(api_key=a,id=question_id, is_removed=False)
-            elif question_title:
-                q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-        except ObjectDoesNotExist:
-            desc = 'The Question does not exist in followed api key.'
-            return error_return(desc)
-
-        if q:
-            response_dict.update({
-                # 'question': serializers.serialize('json', [q])
-                'question_title': q.question_title,
-                'question_text': q.question_text,
-                'question_id': q.id,
-            })
-        else:
-            desc = 'The Question does not exist.'
-            return error_return(desc)
-
-        return JsonResponse(response_dict)
-    else:
-        desc = 'This request url is not authenticated in followed api_key.'
+        if question_title and question_id:
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
+        elif question_id:
+            q = Question.objects.get(api_key=a,id=question_id, is_removed=False)
+        elif question_title:
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+    except ObjectDoesNotExist:
+        desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
+
+    if q:
+        response_dict.update({
+            # 'question': serializers.serialize('json', [q])
+            'question_title': q.question_title,
+            'question_text': q.question_text,
+            'question_id': q.id,
+        })
+    else:
+        desc = 'The Question does not exist.'
+        return error_return(desc)
+
+    return JsonResponse(response_dict)
 
 
 @csrf_exempt
@@ -610,49 +609,52 @@ def get_answer(request):
     :parameter - api_key, ( question_title / question_id )
     :return - answer
     """
-    if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
-        api_key = data.get('api_key')
-        question_title = data.get('question_title')
-        question_id = data.get('question_id')
+    data = json.loads(request.body.decode('utf-8'))
+    api_key = data.get('api_key')
+    question_title = data.get('question_title')
+    question_id = data.get('question_id')
 
-        response_dict = {}
-        answer_list = []
+    response_dict = {}
+    answer_list = []
 
-        try:
-            a = ApiKey.objects.get(key=api_key)
+    try:
+        a = ApiKey.objects.get(key=api_key)
 
-            if question_title and question_id:
-                q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-            elif question_id:
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-            elif question_title:
-                q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-        except ObjectDoesNotExist:
-            desc = 'The Question does not exist in followed api key.'
-            return error_return(desc)
-
-        a = q.answers.all()
-        if a:
-            for answer in a:
-                answer_list.append({
-                    'answer_num': answer.answer_num,
-                    'answer_text': answer.answer_text,
-                    'answer_count': answer.get_answer_count
-                })
-
-            response_dict.update({
-                # 'answers': serializers.serialize('json', q.answers.all())
-                'answers': answer_list
-            })
-        else:
-            desc = 'The Answer does not exist.'
-            return error_return(desc)
-
-        return JsonResponse(response_dict)
-    else:
-        desc = 'This request url is not authenticated in followed api_key.'
+        if question_title and question_id:
+            q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
+        elif question_id:
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+        elif question_title:
+            q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+    except ObjectDoesNotExist:
+        desc = 'The Question does not exist in followed api key.'
         return error_return(desc)
+
+    a = q.answers.all()
+    if a:
+        print(a)
+        print("sdf")
+        print("sdf")
+        for answer in a:
+            print("sdf1212")
+            answer_list.append({
+                'answer_num': answer.answer_num,
+                'answer_text': answer.answer_text,
+                'answer_count': answer.get_answer_count()
+            })
+            print(answer.get_answer_count())
+        response_dict.update({
+            'answers': answer_list
+        })
+        print("sdf")
+
+        print(response_dict)
+        return JsonResponse(response_dict, safe=False)
+    else:
+        desc = 'The Answer does not exist.'
+        return error_return(desc)
+
+
 
 @csrf_exempt
 @require_POST
@@ -1237,7 +1239,10 @@ class Groups(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            response_dict = {}
+            response_dict = {
+                'questions': {},
+                'answers': {}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
@@ -1262,6 +1267,7 @@ class Groups(View):
                         multi_question=new_multiq,
                         question_title=question_title,
                         question_text=question_text,
+                        question_num=question_key,
                         start_dt=start_dt,
                         end_dt=end_dt,
                         is_editable=is_editable,
@@ -1271,7 +1277,7 @@ class Groups(View):
 
                     for answer_key, answer_value in data.get('answers').get(question_key).items():
                         answer_text = answer_value.get('answer_text')
-                        answer_num = answer_value.get('answer_num')
+                        answer_num = answer_key
 
                         if answer_text:
                             new_answer = Answer(question=new_question, answer_text=answer_text, answer_num=answer_num)
@@ -1279,17 +1285,42 @@ class Groups(View):
 
             try:
                 mq = MultiQuestion.objects.get(id=new_multiq.id, is_removed=False)
-                q = mq.question_elements.all()
+                q = mq.question_elements.all().order_by('question_num')
 
-                response_dict.update({
-                    'multiquestion': serializers.serialize('json', [mq]),
-                    'question': serializers.serialize('json', q),
-                })
-
-                return JsonResponse(response_dict)
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
                 return error_return(desc, 404)
+
+            response_dict.update({
+                "group_id": mq.id,
+                "group_name": mq.group_name
+            })
+
+            for question in q:
+                response_dict['questions'].update({
+                    question.question_num : {
+                        'question_title': question.question_title,
+                        'question_text': question.question_text,
+                        'start_dt': question.start_dt,
+                        'end_dt': question.end_dt,
+                        'is_editable': question.is_editable,
+                        'is_private': question.is_private
+                    }
+                })
+
+                a = question.answers.all().order_by('answer_num')
+                response_dict['answers'].update({
+                    question.question_num : {}
+                })
+
+                for answer in a:
+                    response_dict['answers'][question.question_num].update({
+                        answer.answer_num : {
+                            'answer_text': answer.answer_text,
+                        }
+                    })
+
+            return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
@@ -1301,30 +1332,46 @@ class Groups(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            response_dict = {}
-            response_dict['question'] = {}
+            response_dict = {
+                'questions': {},
+                'answers': {}
+            }
+
             try:
                 m = MultiQuestion.objects.get(id=group_id)
+                q = m.question_elements.all().order_by('question_num')
             except ObjectDoesNotExist:
                 desc = 'The MultiQuestion doees not exist in follwed api key'
                 return error_return(desc, 404)
 
-            for index, q in enumerate(m.question_elements.all()):
+            response_dict.update({
+                "group_id": m.id,
+                "group_name": m.group_name
+            })
 
-                response_dict['question']['answers'] = []
-
-                for a in q.answers.all():
-                    response_dict['question']['answers'].append({
-                        'answer_num': a.answer_num,
-                        'answer_text': a.answer_text,
-                        'answer_count': a.get_answer_count
-                    })
-
-                response_dict['question'].update({
-                    'question_title': q.question_title,
-                    'question_text': q.question_text,
-                    'question_id': q.id,
+            for question in q:
+                response_dict['questions'].update({
+                    question.question_num : {
+                        'question_title': question.question_title,
+                        'question_text': question.question_text,
+                        'start_dt': question.start_dt,
+                        'end_dt': question.end_dt,
+                        'is_editable': question.is_editable,
+                        'is_private': question.is_private
+                    }
                 })
+
+                a = question.answers.all().order_by('answer_num')
+                response_dict['answers'].update({
+                    question.question_num : {}
+                })
+
+                for answer in a:
+                    response_dict['answers'][question.question_num].update({
+                        answer.answer_num : {
+                            'answer_text': answer.answer_text,
+                        }
+                    })
 
             return JsonResponse(response_dict)
         else:
@@ -1339,7 +1386,12 @@ class Groups(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            response_dict = {}
+            response_dict = {
+                'questions': {},
+                'answers': {}
+            }
+            update_question_dict = {}
+            update_answer_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
@@ -1348,65 +1400,119 @@ class Groups(View):
                 return error_return(desc, 404)
 
             m = MultiQuestion.objects.get(api_key=a, id=group_id)
-            m.update(group_name=data.get('group_name'))
+            group_name = data.get('group_name')
 
-            for question_key, question_value in data.get('questions').items():
-                question_title = question_value.get('question_title')
-                question_text = question_value.get('question_text')
-                start_dt = question_value.get('start_dt')
-                end_dt = question_value.get('end_dt')
-                is_editable = question_value.get('is_editable') == 'True'
-                is_private = question_value.get('is_private') == 'True'
+            if group_name:
+                m.group_name = group_name
+                m.save()
 
-                '''
-                question id is used to distinguish each other.
-                '''
-                q_id = question_value.get('id')
-                try:
-                    selected_q = m.question_elements.all().filter(id=q_id)
-                except ObjectDoesNotExist:
-                    desc = 'Question of this id does not exist.'
-                    return error_return(desc, 404)
-
-                selected_q.update(
-                    question_title=question_title,
-                    question_text=question_text,
-                    start_dt=start_dt,
-                    end_dt=end_dt,
-                    is_editable=is_editable,
-                    is_private=is_private
-                )
-
-                for answer_key, answer_value in data.get('answers').get(question_key).items():
-                    answer_text = answer_value.get('answer_text')
-                    answer_num = answer_value.get('answer_num')
-
-                    a_id = answer_value.get('id')
+            if data.get('questions'):
+                for question_key, question_value in data.get('questions').items():
+                    question_title = question_value.get('question_title')
+                    question_text = question_value.get('question_text')
+                    start_dt = question_value.get('start_dt')
+                    end_dt = question_value.get('end_dt')
+                    is_editable = question_value.get('is_editable') == 'True'
+                    is_private = question_value.get('is_private') == 'True'
 
                     try:
-                        selected_a = selected_q.answers.filter(id=a_id)
+                        selected_q = m.question_elements.get(question_num=question_key)
                     except ObjectDoesNotExist:
-                        desc = 'Answer of this id does not exist.'
+                        desc = 'Question does not exist.'
                         return error_return(desc, 404)
 
-                    selected_a.update(
-                        answer_text=answer_text,
-                        answer_num=answer_num
-                    )
+                    if question_title:
+                        update_question_dict.update({
+                            'question_title': question_title
+                        })
+                    if question_text:
+                        update_question_dict.update({
+                            'question_text': question_text
+                        })
+                    if start_dt:
+                        update_question_dict.update({
+                            'start_dt': start_dt
+                        })
+                    if end_dt:
+                        update_question_dict.update({
+                            'end_dt': end_dt
+                        })
+                    if question_value.get('is_editable'):
+                        update_question_dict.update({
+                            'is_editable': is_editable
+                        })
+                    if question_value.get('is_private'):
+                        update_question_dict.update({
+                            'is_private': is_private
+                        })
 
+                    for key in update_question_dict:
+                        setattr(selected_q, key, update_question_dict[key])
+                    selected_q.save(is_update=True)
+
+                    '''
+                    update answer instance
+                    '''
+                    if data.get('answers').get(question_key):
+                        for answer_key, answer_value in data.get('answers').get(question_key).items():
+                            answer_text = answer_value.get('answer_text')
+
+                            try:
+                                selected_a = selected_q.answers.get(answer_num=answer_key)
+                            except ObjectDoesNotExist:
+                                desc = 'Answer does not exist.'
+                                return error_return(desc, 404)
+
+                            if answer_text:
+                                update_answer_dict.update({
+                                    'answer_text': answer_text
+                                })
+
+                            for key in update_answer_dict:
+                                setattr(selected_a, key, update_answer_dict[key])
+                            selected_a.save()
+
+            '''
+            load data for response json
+            '''
             try:
                 mq = MultiQuestion.objects.get(id=m.id, is_removed=False)
-                q = mq.question_elements.all()
-
-                response_dict.update({
-                    'multiquestion': serializers.serialize('json', [mq]),
-                    'question': serializers.serialize('json', q),
-                })
-
-                return JsonResponse(response_dict)
+                q = mq.question_elements.all().order_by('question_num')
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
                 return error_return(desc, 404)
+
+            response_dict.update({
+                "group_id": mq.id,
+                "group_name": mq.group_name
+            })
+
+            for question in q:
+                response_dict['questions'].update({
+                    question.question_num : {
+                        'question_title': question.question_title,
+                        'question_text': question.question_text,
+                        'start_dt': question.start_dt,
+                        'end_dt': question.end_dt,
+                        'is_editable': question.is_editable,
+                        'is_private': question.is_private
+                    }
+                })
+
+                a = question.answers.all().order_by('answer_num')
+                response_dict['answers'].update({
+                    question.question_num : {}
+                })
+
+                for answer in a:
+                    response_dict['answers'][question.question_num].update({
+                        answer.answer_num : {
+                            'answer_text': answer.answer_text,
+                        }
+                    })
+
+            return JsonResponse(response_dict)
+
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
@@ -1444,6 +1550,10 @@ class Groups(View):
             m.is_removed = True
             m.save()
 
+            response_dict.update({
+                "result": "success",
+                "description": "Deleted this group"
+            })
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
@@ -1459,15 +1569,20 @@ class Questions(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            question_title = data.get('question_title')
-            question_text = data.get('question_text')
-            start_dt = data.get('start_dt')
-            end_dt = data.get('end_dt')
-            is_editable = data.get('is_editable') == 'True'
-            is_private = data.get('is_private') == 'True'
-            answers = data.get('answers')
+            question_data = data.get('questions').get("1")
+            question_title = question_data.get('question_title')
+            question_text = question_data.get('question_text')
+            start_dt = question_data.get('start_dt')
+            end_dt = question_data.get('end_dt')
+            is_editable = question_data.get('is_editable') == 'True'
+            is_private = question_data.get('is_private') == 'True'
 
-            response_dict = {}
+            answer_data = data.get('answers').get("1")
+
+            response_dict = {
+                'questions': {},
+                'answers': {}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
@@ -1479,6 +1594,7 @@ class Questions(View):
                 api_key=a,
                 question_title=question_title,
                 question_text=question_text,
+                question_num="1",
                 start_dt=start_dt,
                 end_dt=end_dt,
                 is_editable=is_editable,
@@ -1493,27 +1609,39 @@ class Questions(View):
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
-            response_dict.update({
-                'question': serializers.serialize('json', [q])
-            })
-
-            answer_dict = {}
-
-            for key, value in answers.items():
+            for key, value in answer_data.items():
                 answer_text = value.get('answer_text')
                 if answer_text:
                     new_answer = Answer(question=q, answer_text=answer_text, answer_num=key)
                     new_answer.save()
-
-                    for index, answer in enumerate(q.answers.all(), start=1):
-                        answer_dict['answer'+str(index)] = serializers.serialize('json', [answer])
                 else:
-                    desc = 'answer_text is None'
-                    return error_return(desc)
+                    pass
 
-            response_dict.update({
-                'answers': answer_dict
+            '''
+            load data for response json
+            '''
+            response_dict['questions'].update({
+                q.question_num : {
+                    'question_title': q.question_title,
+                    'question_text': q.question_text,
+                    'start_dt': q.start_dt,
+                    'end_dt': q.end_dt,
+                    'is_editable': q.is_editable,
+                    'is_private': q.is_private
+                }
             })
+
+            a = q.answers.all().order_by('answer_num')
+            response_dict['answers'].update({
+                q.question_num : {}
+            })
+
+            for answer in a:
+                response_dict['answers'][q.question_num].update({
+                    answer.answer_num : {
+                        'answer_text': answer.answer_text,
+                    }
+                })
 
             return JsonResponse(response_dict)
         else:
@@ -1522,14 +1650,15 @@ class Questions(View):
 
     def get(self, request, question_id):
         if match_domain(request):
-            data = json.loads(request.body.decode('utf-8'))
             api_key = get_api_key(request)
             if not api_key:
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            response_dict = {}
-            answer_list = []
+            response_dict = {
+                'questions': {},
+                'answers': {}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
@@ -1538,27 +1667,31 @@ class Questions(View):
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
-            response_dict.update({
-                'question_id': q.id,
-                'question_title': q.question_title,
-                'question_text': q.question_text
+            '''
+            load data for response json
+            '''
+            response_dict['questions'].update({
+                q.question_num : {
+                    'question_title': q.question_title,
+                    'question_text': q.question_text,
+                    'start_dt': q.start_dt,
+                    'end_dt': q.end_dt,
+                    'is_editable': q.is_editable,
+                    'is_private': q.is_private
+                }
             })
 
-            a = q.answers.all()
-            if a:
-                for answer in a:
-                    answer_list.append({
-                        'answer_num': answer.answer_num,
-                        'answer_text': answer.answer_text,
-                        'answer_count': answer.get_answer_count,
-                    })
+            a = q.answers.all().order_by('answer_num')
+            response_dict['answers'].update({
+                q.question_num : {}
+            })
 
-                response_dict.update({
-                    'answer': answer_list
+            for answer in a:
+                response_dict['answers'][q.question_num].update({
+                    answer.answer_num : {
+                        'answer_text': answer.answer_text,
+                    }
                 })
-            else:
-                desc = 'The Answer does not exist.'
-                return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
@@ -1573,14 +1706,12 @@ class Questions(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            question_title = data.get('question_title')
-            question_text = data.get('question_text')
-            start_dt = data.get('start_dt')
-            end_dt = data.get('end_dt')
-            is_editable = data.get('is_editable') == 'True'
-            is_private = data.get('is_private') == 'True'
-
-            response_dict = {}
+            response_dict = {
+                'questions': {},
+                'answers': {}
+            }
+            update_question_dict = {}
+            update_answer_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
@@ -1588,24 +1719,100 @@ class Questions(View):
                 desc = 'The ApiKey instance does not exist in followed key.'
                 return error_return(desc, 404)
 
-            q = Question.objects.get(api_key=a, id=question_id).update(
-                question_title=question_title,
-                question_text=question_text,
-                start_dt=start_dt,
-                end_dt=end_dt,
-                is_editable=is_editable,
-                is_private=is_private
-            )
+            if data.get('questions').get('1'):
+                question_data = data.get('questions').get('1')
+                question_title = question_data.get('question_title')
+                question_text = question_data.get('question_text')
+                start_dt = question_data.get('start_dt')
+                end_dt = question_data.get('end_dt')
+                is_editable = question_data.get('is_editable') == 'True'
+                is_private = question_data.get('is_private') == 'True'
+
+                try:
+                    selected_q = Question.objects.get(api_key=a, id=question_id)
+                except ObjectDoesNotExist:
+                    desc = 'Question does not exist.'
+                    return error_return(desc, 404)
+
+                if question_title:
+                    update_question_dict.update({
+                        'question_title': question_title
+                    })
+                if question_text:
+                    update_question_dict.update({
+                        'question_text': question_text
+                    })
+                if start_dt:
+                    update_question_dict.update({
+                        'start_dt': start_dt
+                    })
+                if end_dt:
+                    update_question_dict.update({
+                        'end_dt': end_dt
+                    })
+                if question_data.get('is_editable'):
+                    update_question_dict.update({
+                        'is_editable': is_editable
+                    })
+                if question_data.get('is_private'):
+                    update_question_dict.update({
+                        'is_private': is_private
+                    })
+
+                for key in update_question_dict:
+                    setattr(selected_q, key, update_question_dict[key])
+                selected_q.save(is_update=True)
+
+                '''
+                update answer instance
+                '''
+                if data.get('answers').get('1'):
+                    for answer_key, answer_value in data.get('answers').get('1').items():
+                        answer_text = answer_value.get('answer_text')
+
+                        try:
+                            selected_a = selected_q.answers.get(answer_num=answer_key)
+                        except ObjectDoesNotExist:
+                            desc = 'Answer does not exist.'
+                            return error_return(desc, 404)
+
+                        if answer_text:
+                            update_answer_dict.update({
+                                'answer_text': answer_text
+                            })
+
+                        for key in update_answer_dict:
+                            setattr(selected_a, key, update_answer_dict[key])
+                        selected_a.save()
 
             try:
-                updated_q = Question.objects.get(api_key=a, id=q.id, is_removed=False)
+                updated_q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
-            response_dict.update({
-                'question': serializers.serialize('json', [updated_q])
+            response_dict['questions'].update({
+                updated_q.question_num : {
+                    'question_title': updated_q.question_title,
+                    'question_text': updated_q.question_text,
+                    'start_dt': updated_q.start_dt,
+                    'end_dt': updated_q.end_dt,
+                    'is_editable': updated_q.is_editable,
+                    'is_private': updated_q.is_private
+                }
             })
+
+            a = updated_q.answers.all().order_by('answer_num')
+            response_dict['answers'].update({
+                updated_q.question_num : {}
+            })
+
+            for answer in a:
+                response_dict['answers'][updated_q.question_num].update({
+                    answer.answer_num : {
+                        'answer_text': answer.answer_text,
+                    }
+                })
 
             return JsonResponse(response_dict)
         else:
@@ -1651,6 +1858,10 @@ class Questions(View):
             q.is_removed = True
             q.save(is_update=True)
 
+            response_dict.update({
+                "result": "success",
+                "description": "Deleted a question."
+            })
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
@@ -1658,7 +1869,7 @@ class Questions(View):
 
 
 @csrf_exempt
-@require_POST
+@require_GET
 def simple_view_answer(request, question_id):
     """
     POST - /v1/answer/view/simple
@@ -1668,13 +1879,10 @@ def simple_view_answer(request, question_id):
     :return - question_title, question_text, answer({answer_num, answer_text, answer_count})
     """
     if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
         api_key = get_api_key(request)
         if not api_key:
             desc = "Can't get a valid api key."
             return error_return(desc)
-
-        question_id = data.get('question_id')
 
         response_dict = {}
         answer_list = []
@@ -1713,9 +1921,9 @@ def simple_view_answer(request, question_id):
 
 
 @csrf_exempt
+@require_GET
 def to_private(request, question_id):
     if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
         api_key = get_api_key(request)
         if not api_key:
             desc = "Can't get a valid api key."
@@ -1730,7 +1938,12 @@ def to_private(request, question_id):
             desc = 'The Question does not exist in followed api key.'
             return error_return(desc, 404)
 
-        q.update(is_private=True)
+        q.is_private = True
+        q.save(is_update=True)
+        response_dict.update({
+            "result": "success",
+            "description": "Switched to the private question."
+        })
         return JsonResponse(response_dict)
     else:
         desc = 'This request url is not authenticated in followed api_key.'
@@ -1746,7 +1959,9 @@ class Answers(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            response_dict = {}
+            response_dict = {
+                'answers': {}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
@@ -1760,91 +1975,94 @@ class Answers(View):
                 if answer_text:
                     new_answer = Answer(question=q, answer_text=answer_text, answer_num=key)
                     new_answer.save()
-
-                    for index, answer in enumerate(q.answers.all(), start=1):
-                        response_dict['answer'+str(index)] = serializers.serialize('json', [answer])
                 else:
-                    desc = 'answer_text is None'
-                    return error_return(desc)
+                    pass
 
-            return JsonResponse(response_dict)
-        else:
-            desc = 'This request url is not authenticated in followed api_key.'
-            return error_return(desc, 401)
+            '''
+            load data for response json
+            '''
+            a = q.answers.filter(is_removed=False).order_by('answer_num')
 
-    def get(self, request, question_id):
-        if match_domain(request):
-            api_key = get_api_key(request)
-            if not api_key:
-                desc = "Can't get a valid api key."
-                return error_return(desc)
-
-            response_dict = {}
-            answer_list = []
-
-            try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
-            except ObjectDoesNotExist:
-                desc = 'The Question does not exist in followed api key.'
-                return error_return(desc, 404)
-
-            a = q.answers.all()
-            if a:
-                for answer in a:
-                    answer_list.append({
+            for answer in a:
+                response_dict['answers'].update({
+                    answer.answer_num : {
                         'id': answer.id,
-                        'answer_num': answer.answer_num,
                         'answer_text': answer.answer_text,
                         'answer_count': answer.get_answer_count
-                    })
-
-                response_dict.update({
-                    'answers': answer_list
+                    }
                 })
-            else:
-                desc = 'The Answer does not exist.'
-                return error_return(desc, 404)
 
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
-    def get(self, request, question_id, answer_num):
+    def get(self, request, *args, **kwargs):
+        question_id=kwargs['question_id']
+        answer_num=kwargs.get('answer_num')
         if match_domain(request):
             api_key = get_api_key(request)
             if not api_key:
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            response_dict = {}
-            answer_list = []
+            response_dict = {
+                'answers':{}
+            }
 
-            try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
-            except ObjectDoesNotExist:
-                desc = 'The Question does not exist in followed api key.'
-                return error_return(desc, 404)
+            '''
+            logic for get answer list
+            '''
+            if not answer_num:
+                try:
+                    a = ApiKey.objects.get(key=api_key)
+                    q = Question.objects.get(api_key=a, id=question_id)
+                except ObjectDoesNotExist:
+                    desc = 'The Question does not exist in followed api key.'
+                    return error_return(desc, 404)
 
-            a = q.answers.get(answer_num=answer_num)
-            if a:
-                answer_list.append({
-                    'id': a.id,
-                    'answer_num': a.answer_num,
-                    'answer_text': a.answer_text,
-                    'answer_count': a.get_answer_count
-                })
+                a = q.answers.filter(is_removed=False)
+                if a:
+                    for answer in a:
+                        response_dict['answers'].update({
+                            answer.answer_num : {}
+                        })
+                        response_dict['answers'][answer.answer_num].update({
+                            'id': answer.id,
+                            'answer_text': answer.answer_text,
+                            'answer_count': answer.get_answer_count
+                        })
+                else:
+                    desc = 'The Answer does not exist.'
+                    return error_return(desc, 404)
 
-                response_dict.update({
-                    'answers': answer_list
-                })
-            else:
-                desc = 'The Answer does not exist.'
-                return error_return(desc, 404)
+                return JsonResponse(response_dict)
+            '''
+            logic for get one answer
+            '''
+            if answer_num:
+                try:
+                    a = ApiKey.objects.get(key=api_key)
+                    q = Question.objects.get(api_key=a, id=question_id)
+                except ObjectDoesNotExist:
+                    desc = 'The Question does not exist in followed api key.'
+                    return error_return(desc, 404)
 
-            return JsonResponse(response_dict)
+                a = q.answers.get(answer_num=answer_num, is_removed=False)
+                if a:
+                    response_dict['answers'].update({
+                        a.answer_num : {}
+                    })
+                    response_dict['answers'][a.answer_num].update({
+                        'id': a.id,
+                        'answer_text': a.answer_text,
+                        'answer_count': a.get_answer_count
+                    })
+                else:
+                    desc = 'The Answer does not exist.'
+                    return error_return(desc, 404)
+
+                return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
@@ -1868,19 +2086,26 @@ class Answers(View):
             for a in answer:
                 a.is_removed = True
                 a.save()
+
+            response_dict.update({
+                "result": "success",
+                "description": "Deleted this answer."
+            })
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
-    def put(self, request, question_id, answer_num):
+    def put(self, request, question_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = get_api_key(request)
             if not api_key:
                 desc = "Can't get a valid api key."
                 return error_return(desc)
-            response_dict = {}
+            response_dict = {
+                'answers': {}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
@@ -1889,11 +2114,29 @@ class Answers(View):
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
-            answer_text = data.get('answer_text')
-            update_a = Answer.objects.get(question=q, answer_num=answer_num)
-            update_a.update(answer_text=answer_text)
-            for index, answer in enumerate(q.answers.all(), start=1):
-                response_dict['answer'+str(index)] = serializers.serialize('json', [answer])
+            for key, value in data.get('answers').items():
+                update_a = Answer.objects.get(question=q, answer_num=key)
+                answer_text = value.get('answer_text')
+                if answer_text:
+                    update_a.answer_text = answer_text
+                    update_a.save()
+                else:
+                    pass
+
+            '''
+            load data for response json
+            '''
+            a = q.answers.filter(is_removed=False).order_by('answer_num')
+
+            for answer in a:
+                response_dict['answers'].update({
+                    answer.answer_num : {
+                        'id': answer.id,
+                        'answer_text': answer.answer_text,
+                        'answer_count': answer.get_answer_count
+                    }
+                })
+
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
@@ -1902,19 +2145,20 @@ class Answers(View):
 
 class Useranswers(View):
     def post(self, request, question_id, answer_num):
-        # todo update_num => answer_num document modify
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
             api_key = get_api_key(request)
             if not api_key:
                 desc = "Can't get a valid api key."
                 return error_return(desc)
-            unique_user = data.get('unique_user')
-            response_dict = {}
+            unique_user = data['useranswer'].get('unique_user')
+            response_dict = {
+                'useranswer': {}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
@@ -1935,8 +2179,11 @@ class Useranswers(View):
                     desc = 'The UserAnswer does not exist in followed id.'
                     return error_return(desc, 404)
 
-                response_dict.update({
-                    'useranswer': serializers.serialize('json', [curr_useranswer])
+                response_dict['useranswer'].update({
+                    'id': curr_useranswer.id,
+                    'created_dt': curr_useranswer.created_dt,
+                    'unique_user': curr_useranswer.unique_user,
+                    'answer_num': curr_useranswer.answer.answer_num
                 })
             else:
                 desc = 'The Answer does not exist.'
@@ -1947,22 +2194,84 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
-    def get(self, request, question_id, unique_user):
+    def get(self, request, question_id, *args, **kwargs):
+        unique_user = kwargs.get('unique_user')
+        answer_num = kwargs.get('answer_num')
         if match_domain(request):
             api_key = get_api_key(request)
             if not api_key:
                 desc = "Can't get a valid api key."
                 return error_return(desc)
-            response_dict = {}
+
+            response_dict = {
+                'useranswers': {}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
-            if q.answers:
+            '''
+            case 1. get all useranswers
+            '''
+            if not unique_user and not answer_num:
+                try:
+                    answers = Answer.objects.filter(question=q, is_removed=False)
+                except ObjectDoesNotExist:
+                    desc = 'The Answer does not exist in followed answer_num.'
+                    return error_return(desc, 404)
+
+                for a in answers:
+                    response_dict['useranswers'].update({
+                        a.answer_num : []
+                    })
+                    try:
+                        useranswers = UserAnswer.objects.filter(answer=a, is_removed=False)
+                    except UserAnswer.DoesNotExist:
+                        desc = 'No such user answered this question.'
+                        return error_return(desc, 404)
+                    for u in useranswers:
+                        response_dict['useranswers'][a.answer_num].append({
+                            "unique_user": u.unique_user,
+                            "id": u.id,
+                            "created_dt": u.created_dt
+                        })
+                return JsonResponse(response_dict)
+            '''
+            case 2. get all useranswers of one answer
+            '''
+            if answer_num and (not unique_user):
+                try:
+                    answer = Answer.objects.get(question=q, answer_num=answer_num, is_removed=False)
+                except ObjectDoesNotExist:
+                    desc = 'The Answer does not exist in followed answer_num.'
+                    return error_return(desc, 404)
+
+                response_dict['useranswers'].update({
+                    answer.answer_num: []
+                })
+
+                try:
+                    useranswers = UserAnswer.objects.filter(answer=answer, is_removed=False)
+                except ObjectDoesNotExist:
+                    desc = 'No such user answered this question.'
+                    return error_return(desc, 404)
+
+                for u in useranswers:
+                    response_dict['useranswers'][answer.answer_num].append({
+                        "unique_user": u.unique_user,
+                        "id": u.id,
+                        "created_dt": u.created_dt
+                    })
+                return JsonResponse(response_dict)
+
+            '''
+            case 3. get one useranswer
+            '''
+            if unique_user:
                 try:
                     answers = Answer.objects.filter(question=q, is_removed=False)
                 except ObjectDoesNotExist:
@@ -1970,25 +2279,21 @@ class Useranswers(View):
                     return error_return(desc, 404)
 
                 try:
-                    u = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
+                    useranswer = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'No such user answered this question.'
                     return error_return(desc, 404)
 
-                try:
-                    get_u = UserAnswer.objects.get(id=u.id, is_removed=False)
-                except ObjectDoesNotExist:
-                    desc = 'The UserAnswer does not exist in followed id.'
-                    return error_return(desc, 404)
-
-                response_dict.update({
-                    'useranswer': serializers.serialize('json', [get_u])
+                response_dict['useranswers'].update({
+                    useranswer.answer.answer_num: {}
                 })
-            else:
-                desc = 'The Answer does not exist.'
-                return error_return(desc, 404)
 
-            return JsonResponse(response_dict)
+                response_dict['useranswers'][useranswer.answer.answer_num].update({
+                    "unique_user": useranswer.unique_user,
+                    "id": useranswer.id,
+                    "created_dt": useranswer.created_dt
+                })
+                return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
@@ -2003,19 +2308,24 @@ class Useranswers(View):
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
             try:
-                useranswer = UserAnswer.objects.get(answer__in=q.answers, unique_user=unique_user, is_removed=False)
+                answers = Answer.objects.filter(question=q, is_removed=False)
+                useranswer = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
                 useranswer.is_removed = True
                 useranswer.save()
             except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed unique_user.'
                     return error_return(desc, 404)
 
+            response_dict.update({
+                "result": "success",
+                "description": "Deleted this useranswer."
+            })
             return JsonResponse(response_dict)
         else:
             desc = 'This request url is not authenticated in followed api_key.'
@@ -2029,26 +2339,43 @@ class Useranswers(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
             answer_num = data.get('answer_num')
-            response_dict = {}
+            response_dict = {
+                'useranswer':{}
+            }
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
-                    desc = 'The Question does not exist in followed api_key.'
-                    return error_return(desc, 404)
+                desc = 'The Question does not exist in followed api_key.'
+                return error_return(desc, 404)
 
             if q.is_editable:
                 try:
-                    u = UserAnswer.objects.get(answer__in=q.answers, unique_user=unique_user, is_removed=False)
+                    answers = Answer.objects.filter(question=q, is_removed=False)
+                    u = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed unique_user.'
                     return error_return(desc, 404)
 
-                u.update(answer_num=answer_num)
+                try:
+                    new_answer = Answer.objects.get(question=q, answer_num=answer_num)
+                except ObjectDoesNotExist:
+                    desc = 'The new Answer instance does not exist in followed unique_user.'
+                    return error_return(desc, 404)
+
+                u.answer = new_answer
+                u.save()
+
+                response_dict['useranswer'].update({
+                    "answer_num": u.answer.answer_num,
+                    "unique_user": u.unique_user,
+                    "created_dt": u.created_dt,
+                    'id': u.id
+                })
                 return JsonResponse(response_dict)
             else:
-                desc = 'Property "is_editable" of this question is currently False. Set True for this request.'
+                desc = 'Property [is_editable] of this question is currently False. Set True for this request.'
                 return error_return(desc)
         else:
             desc = 'This request url is not authenticated in followed api_key.'

@@ -36,7 +36,7 @@
                             <div class="panel-body">
                                 {% with answerDict=answers|get_value:key %}
                                     {% for a in answerDict %}
-                                        <button class="btn btn-default answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ value.question_id }}">
+                                        <button class="btn btn-default multi answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ value.question_id }}">
                                             {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
                                         </button>
                                     {% endfor %}
@@ -69,46 +69,4 @@
     </div>
 {% endblock %}
 
-{% block script %}
-    <script>
-        $(document).ready(function(){
-            function unique_set(myType){
-                //if (myType === "default"){
-                    var d = new Date();
-                    return d.getTime();
-                //}
-            }
-
-            $('.answerBtn').click(function () {
-                var api_key = "{{ api_key }}";
-                var update_num = $(this).attr('a_num');
-                var question_title = "";
-                var question_id = $(this).attr('q_id');
-                var unique_user = unique_set("default");
-                var params = {
-                    'api_key': api_key,
-                    'question_title': question_title,
-                    'question_id': question_id,
-                    'update_num': update_num,
-                    'unique_user': unique_user,
-                };
-                self.qc.createUserAnswer(params, function(){
-                    $('.nav-tabs li[q_id="'+question_id+'"] a').html('<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>');
-                    if(question_id == "122"){
-                        $('#resultModal').modal('show');
-                        setTimeout(function(){
-                            location.reload();
-                        },2000);
-                    }else{
-                        var next = parseInt(question_id) + 1;
-                        $('.nav-tabs li[q_id="'+next+'"] a').tab('show');
-                    }
-                });
-            });
-
-            $('.nav-tabs li:first').addClass('active');
-            $('.tab-pane:first').addClass('active');
-            $('#myTabs a:first').tab('show');
-        });
-    </script>
-{% endblock %}
+{% block script %}{% endblock %}

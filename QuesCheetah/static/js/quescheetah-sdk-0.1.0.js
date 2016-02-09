@@ -1,8 +1,7 @@
 // This javascript file must be inserted after the jQuery file.
-
 function QuesCheetah(config){
     this.apiKey = config.apiKey;
-    this.baseUrl = "http://localhost:8000/v1/";
+    this.baseUrl = "http://127.0.0.1:8000/v1/";
     this.callBackUrl = config.callBackUrl;
 }
 
@@ -73,8 +72,10 @@ QuesCheetah.prototype.updateUserAnswer = function (params, success, error) {
 QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCallback) {
     $.ajax({
         url : url,
-        headers: { 'jwt': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NTM5MzkyMDAsImFwaS1rZXkiOiJhNmE5YmM5MjczNWVmMTJlOGJhOTUyMjY1ZjMzNGJhNjU3MzliNWZjIiwiZXhwIjoxNDU0MTEyMDAwfQ.g4tuzokeuqxuns1tMCBLhtghXA0BdNvXHKbjFCnob0o",
-                    'kid': 2
+        headers: {
+            //'jwt': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NTM5MzkyMDAsImFwaS1rZXkiOiJhNmE5YmM5MjczNWVmMTJlOGJhOTUyMjY1ZjMzNGJhNjU3MzliNWZjIiwiZXhwIjoxNDU0MTEyMDAwfQ.g4tuzokeuqxuns1tMCBLhtghXA0BdNvXHKbjFCnob0o",
+            //'kid': 2
+            "api-key": "a6a9bc92735ef12e8ba952265f334ba65739b5fc"
         },
         contentType: "application/json",
         type : type,
@@ -107,34 +108,35 @@ QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCal
     });
 };
 
-// from here ajax request start
-function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-
-var csrftoken = getCookie('csrftoken');
-
-function csrfSafeMethod(method) {
-    // these HTTP methods do not require CSRF protection
-    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-}
-
-$.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
-            xhr.setRequestHeader("X-CSRFToken", csrftoken);
-        }
-    }
-});
+//
+//// from here ajax request start
+//function getCookie(name) {
+//        var cookieValue = null;
+//        if (document.cookie && document.cookie != '') {
+//            var cookies = document.cookie.split(';');
+//            for (var i = 0; i < cookies.length; i++) {
+//                var cookie = jQuery.trim(cookies[i]);
+//                // Does this cookie string begin with the name we want?
+//                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+//                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+//                    break;
+//                }
+//            }
+//        }
+//        return cookieValue;
+//    }
+//
+//var csrftoken = getCookie('csrftoken');
+//
+//function csrfSafeMethod(method) {
+//    // these HTTP methods do not require CSRF protection
+//    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+//}
+//
+//$.ajaxSetup({
+//    beforeSend: function(xhr, settings) {
+//        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+//            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+//        }
+//    }
+//});
