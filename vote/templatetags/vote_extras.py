@@ -8,4 +8,4 @@ register = template.Library()
 def get_value(dic, key):
     """get value from key"""
 
-    return dic[int(key)]
+    return dic[str(key)]

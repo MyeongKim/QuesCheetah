@@ -30,7 +30,7 @@
                 </div>
                 <div class="panel-body">
                     {% for a in answers|dictsort:"answer_num" %}
-                            <button class="btn btn-default single answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ question_id }}">
+                            <button class="btn btn-default single answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ id }}">
                                 {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
                             </button>
                     {% endfor %}

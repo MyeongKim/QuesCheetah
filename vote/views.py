@@ -43,66 +43,37 @@ def new(request, api_key):
     return render(request, 'vote/pages/new.html', context)
 
 
-def get_vote(request, api_key, question_title):
+def get_vote(request, api_key, question_id):
     context = {
         'api_key': api_key
     }
 
     '''
-    1. request to get_question rest api
+    request to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/question/get'
-    param = {
-        'api_key': api_key,
-        'question_title': question_title
-    }
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/SimpleResult'
 
-    data = json.dumps(param).encode('utf-8')
     req = urllib.request.Request(url)
-    req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
+    req.add_header('api-key', api_key)
 
     try:
-        response_json = urllib.request.urlopen(req, data=data).read()
+        response_json = urllib.request.urlopen(req).read()
         response_json = json.loads(response_json.decode('utf-8'))
     except HTTPError:
         messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        # return redirect('main:user_mypage', request.user.id)
+        return HttpResponse(HTTPError.reason, HTTPError)
 
     question_json_response = response_json
     context.update(question_json_response)
-    '''
-    2. request to get_answer rest api
-    '''
-    url = 'http://127.0.0.1:8000/v1/answer/get'
-    param = {
-        'api_key': api_key,
-        'question_title': question_title
-    }
-
-    data = json.dumps(param).encode('utf-8')
-    req = urllib.request.Request(url)
-    req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
-
-    try:
-        response_json = urllib.request.urlopen(req, data=data).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        # return redirect('main:user_mypage', request.user.id)
-
-    answer_json_response = response_json
-    context.update(answer_json_response)
+    print(response_json)
 
     return render(request, 'vote/pages/action.html', context)
 
 
 def get_multiple_vote(request, api_key, group_name):
     context = {
-        'api_key': api_key,
-        'group_name': group_name
+        'api_key': api_key
     }
-    questions = {}
-    answers = {}
 
     try:
         a = ApiKey.objects.get(key=api_key)
@@ -112,63 +83,24 @@ def get_multiple_vote(request, api_key, group_name):
         messages.add_message(request, messages.ERROR, desc)
         return redirect('main:user_mypage', request.user.id)
 
-    for index, q in enumerate(m.question_elements.all()):
-        '''
-        1. request to get_question rest api
-        '''
-        url = 'http://127.0.0.1:8000/v1/question/get'
-        param = {
-            'api_key': api_key,
-            'question_title': q.question_title
-        }
+    '''
+    request to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(m.id)
 
-        data = json.dumps(param).encode('utf-8')
-        req = urllib.request.Request(url)
-        req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
 
-        try:
-            response_json = urllib.request.urlopen(req, data=data).read()
-            response_json = json.loads(response_json.decode('utf-8'))
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
 
-        # except HTTPError as e:
-        #     content = e.read()
-        #     return HttpResponse(content)
-        except HTTPError:
-            messages.add_message(request, messages.ERROR, 'Fail to get data.')
-            return redirect('main:user_mypage', request.user.id)
+    context.update(response_json)
 
-        question_json_response = response_json
-        questions[index] = question_json_response
-
-        '''
-        2. request to get_answer rest api
-        '''
-        url = 'http://127.0.0.1:8000/v1/answer/get'
-        param = {
-            'api_key': api_key,
-            'question_title': q.question_title
-        }
-
-        data = json.dumps(param).encode('utf-8')
-        req = urllib.request.Request(url)
-        req.add_header('api-key', 'a6a9bc92735ef12e8ba952265f334ba65739b5fc')
-
-        try:
-            response_json = urllib.request.urlopen(req, data=data).read()
-            response_json = json.loads(response_json.decode('utf-8'))
-        except HTTPError:
-            messages.add_message(request, messages.ERROR, 'Fail to get data.')
-            return redirect('main:user_mypage', request.user.id)
-
-        answer_json_response = response_json
-        answers[index] = answer_json_response['answers']
-
-        context.update({
-            'questions': questions
-        })
-        context.update({
-            'answers': answers
-        })
+    print(response_json)
 
     return render(request, 'vote/pages/multi_action.html', context)
 
@@ -1352,6 +1284,7 @@ class Groups(View):
             for question in q:
                 response_dict['questions'].update({
                     question.question_num : {
+                        'id': question.id,
                         'question_title': question.question_title,
                         'question_text': question.question_text,
                         'start_dt': question.start_dt,
@@ -1369,7 +1302,9 @@ class Groups(View):
                 for answer in a:
                     response_dict['answers'][question.question_num].update({
                         answer.answer_num : {
+                            'id': answer.id,
                             'answer_text': answer.answer_text,
+                            'answer_count': answer.get_answer_count
                         }
                     })
 
@@ -1672,6 +1607,7 @@ class Questions(View):
             '''
             response_dict['questions'].update({
                 q.question_num : {
+                    'id': q.id,
                     'question_title': q.question_title,
                     'question_text': q.question_text,
                     'start_dt': q.start_dt,
@@ -1689,6 +1625,7 @@ class Questions(View):
             for answer in a:
                 response_dict['answers'][q.question_num].update({
                     answer.answer_num : {
+                        'id': answer.id,
                         'answer_text': answer.answer_text,
                     }
                 })
@@ -1883,18 +1820,18 @@ def simple_view_answer(request, question_id):
         if not api_key:
             desc = "Can't get a valid api key."
             return error_return(desc)
-
         response_dict = {}
         answer_list = []
 
         try:
             a = ApiKey.objects.get(key=api_key)
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api_key.'
                 return error_return(desc, 404)
 
         response_dict.update({
+            'id': q.id,
             'question_title': q.question_title,
             'question_text': q.question_text
         })
@@ -1902,18 +1839,17 @@ def simple_view_answer(request, question_id):
         if a:
             for answer in a:
                 answer_list.append({
+                    'id': answer.id,
                     'answer_num': answer.answer_num,
                     'answer_text': answer.answer_text,
-                    'answer_count': answer.get_answer_count,
+                    'answer_count': answer.get_answer_count
                 })
-
             response_dict.update({
-                'answer': answer_list
+                'answers': answer_list
             })
         else:
             desc = 'The Answer does not exist.'
             return error_return(desc, 404)
-
         return JsonResponse(response_dict)
     else:
         desc = 'This request url is not authenticated in followed api_key.'

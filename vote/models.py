@@ -127,7 +127,7 @@ class Answer(models.Model):
 
     @property
     def get_answer_count(self):
-        return self.user_answers.count()
+        return self.answer.count()
 
 
 # user vote info 따로 관리
