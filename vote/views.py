@@ -1217,7 +1217,7 @@ class Groups(View):
 
             try:
                 mq = MultiQuestion.objects.get(id=new_multiq.id, is_removed=False)
-                q = mq.question_elements.all().order_by('question_num')
+                q = mq.question_elements.filter(is_removed=False).order_by('question_num')
 
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
@@ -1240,7 +1240,7 @@ class Groups(View):
                     }
                 })
 
-                a = question.answers.all().order_by('answer_num')
+                a = question.answers.filter(is_removed=False).order_by('answer_num')
                 response_dict['answers'].update({
                     question.question_num : {}
                 })
@@ -1270,10 +1270,10 @@ class Groups(View):
             }
 
             try:
-                m = MultiQuestion.objects.get(id=group_id)
-                q = m.question_elements.all().order_by('question_num')
+                m = MultiQuestion.objects.get(id=group_id, is_removed=False)
+                q = m.question_elements.filter(is_removed=False).order_by('question_num')
             except ObjectDoesNotExist:
-                desc = 'The MultiQuestion doees not exist in follwed api key'
+                desc = 'The MultiQuestion does not exist in follwed api key'
                 return error_return(desc, 404)
 
             response_dict.update({
@@ -1294,7 +1294,7 @@ class Groups(View):
                     }
                 })
 
-                a = question.answers.all().order_by('answer_num')
+                a = question.answers.filter(is_removed=False).order_by('answer_num')
                 response_dict['answers'].update({
                     question.question_num : {}
                 })
@@ -1334,7 +1334,7 @@ class Groups(View):
                 desc = 'The ApiKey does not exist in followed key.'
                 return error_return(desc, 404)
 
-            m = MultiQuestion.objects.get(api_key=a, id=group_id)
+            m = MultiQuestion.objects.get(api_key=a, id=group_id, is_removed=False)
             group_name = data.get('group_name')
 
             if group_name:
@@ -1351,7 +1351,7 @@ class Groups(View):
                     is_private = question_value.get('is_private') == 'True'
 
                     try:
-                        selected_q = m.question_elements.get(question_num=question_key)
+                        selected_q = m.question_elements.get(question_num=question_key, is_removed=False)
                     except ObjectDoesNotExist:
                         desc = 'Question does not exist.'
                         return error_return(desc, 404)
@@ -1393,7 +1393,7 @@ class Groups(View):
                             answer_text = answer_value.get('answer_text')
 
                             try:
-                                selected_a = selected_q.answers.get(answer_num=answer_key)
+                                selected_a = selected_q.answers.get(answer_num=answer_key, is_removed=False)
                             except ObjectDoesNotExist:
                                 desc = 'Answer does not exist.'
                                 return error_return(desc, 404)
@@ -1412,7 +1412,7 @@ class Groups(View):
             '''
             try:
                 mq = MultiQuestion.objects.get(id=m.id, is_removed=False)
-                q = mq.question_elements.all().order_by('question_num')
+                q = mq.question_elements.filter(is_removed=False).order_by('question_num')
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
                 return error_return(desc, 404)
@@ -1434,7 +1434,7 @@ class Groups(View):
                     }
                 })
 
-                a = question.answers.all().order_by('answer_num')
+                a = question.answers.filter(is_removed=False).order_by('answer_num')
                 response_dict['answers'].update({
                     question.question_num : {}
                 })
@@ -1468,11 +1468,11 @@ class Groups(View):
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
-            questions = m.question_elements.all()
+            questions = m.question_elements.filter(is_removed=False)
             for q in questions:
-                answers = q.answers.all()
+                answers = q.answers.filter(is_removed=False)
                 for answer in answers:
-                    useranswers = answer.user_answers.all()
+                    useranswers = answer.user_answers.filter(is_removed=False)
                     for useranswer in useranswers:
                         useranswer.is_removed = True
                         useranswer.save()
@@ -1566,7 +1566,7 @@ class Questions(View):
                 }
             })
 
-            a = q.answers.all().order_by('answer_num')
+            a = q.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
                 q.question_num : {}
             })
@@ -1597,7 +1597,7 @@ class Questions(View):
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
@@ -1617,7 +1617,7 @@ class Questions(View):
                 }
             })
 
-            a = q.answers.all().order_by('answer_num')
+            a = q.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
                 q.question_num : {}
             })
@@ -1626,6 +1626,7 @@ class Questions(View):
                 response_dict['answers'][q.question_num].update({
                     answer.answer_num : {
                         'id': answer.id,
+                        'answer_count': answer.get_answer_count,
                         'answer_text': answer.answer_text,
                     }
                 })
@@ -1666,7 +1667,7 @@ class Questions(View):
                 is_private = question_data.get('is_private') == 'True'
 
                 try:
-                    selected_q = Question.objects.get(api_key=a, id=question_id)
+                    selected_q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'Question does not exist.'
                     return error_return(desc, 404)
@@ -1708,7 +1709,7 @@ class Questions(View):
                         answer_text = answer_value.get('answer_text')
 
                         try:
-                            selected_a = selected_q.answers.get(answer_num=answer_key)
+                            selected_a = selected_q.answers.get(answer_num=answer_key, is_removed=False)
                         except ObjectDoesNotExist:
                             desc = 'Answer does not exist.'
                             return error_return(desc, 404)
@@ -1739,7 +1740,7 @@ class Questions(View):
                 }
             })
 
-            a = updated_q.answers.all().order_by('answer_num')
+            a = updated_q.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
                 updated_q.question_num : {}
             })
@@ -1764,27 +1765,19 @@ class Questions(View):
                 desc = "Can't get a valid api key."
                 return error_return(desc)
 
-            question_title = data.get('question_title')
-            question_id = data.get('question_id')
-
             response_dict = {}
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                if question_title and question_id:
-                    q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-                elif question_id:
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-                elif question_title:
-                    q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
 
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
-            answers = q.answers.all()
+            answers = q.answers.filter(is_removed=False)
             for answer in answers:
-                useranswers = answer.user_answers.all()
+                useranswers = answer.user_answers.filter(is_removed=False)
                 for useranswer in useranswers:
                     useranswer.is_removed = True
                     useranswer.save()
@@ -1835,7 +1828,7 @@ def simple_view_answer(request, question_id):
             'question_title': q.question_title,
             'question_text': q.question_text
         })
-        a = q.answers.all()
+        a = q.answers.filter(is_removed=False)
         if a:
             for answer in a:
                 answer_list.append({
@@ -1869,7 +1862,7 @@ def to_private(request, question_id):
 
         try:
             a = ApiKey.objects.get(key=api_key)
-            q = Question.objects.get(api_key=a, id=question_id)
+            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
         except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api key.'
             return error_return(desc, 404)
@@ -1901,7 +1894,7 @@ class Answers(View):
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
@@ -1952,7 +1945,7 @@ class Answers(View):
             if not answer_num:
                 try:
                     a = ApiKey.objects.get(key=api_key)
-                    q = Question.objects.get(api_key=a, id=question_id)
+                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api key.'
                     return error_return(desc, 404)
@@ -1979,7 +1972,7 @@ class Answers(View):
             if answer_num:
                 try:
                     a = ApiKey.objects.get(key=api_key)
-                    q = Question.objects.get(api_key=a, id=question_id)
+                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api key.'
                     return error_return(desc, 404)
@@ -2013,7 +2006,7 @@ class Answers(View):
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
@@ -2045,13 +2038,13 @@ class Answers(View):
 
             try:
                 a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id)
+                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
             for key, value in data.get('answers').items():
-                update_a = Answer.objects.get(question=q, answer_num=key)
+                update_a = Answer.objects.get(question=q, answer_num=key, is_removed=False)
                 answer_text = value.get('answer_text')
                 if answer_text:
                     update_a.answer_text = answer_text
@@ -2295,7 +2288,7 @@ class Useranswers(View):
                     return error_return(desc, 404)
 
                 try:
-                    new_answer = Answer.objects.get(question=q, answer_num=answer_num)
+                    new_answer = Answer.objects.get(question=q, answer_num=answer_num, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The new Answer instance does not exist in followed unique_user.'
                     return error_return(desc, 404)
