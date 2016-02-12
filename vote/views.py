@@ -63,9 +63,7 @@ def get_vote(request, api_key, question_id):
         messages.add_message(request, messages.ERROR, 'Fail to get data.')
         return HttpResponse(HTTPError.reason, HTTPError)
 
-    question_json_response = response_json
-    context.update(question_json_response)
-    print(response_json)
+    context.update(response_json)
 
     return render(request, 'vote/pages/action.html', context)
 
@@ -100,8 +98,6 @@ def get_multiple_vote(request, api_key, group_name):
 
     context.update(response_json)
 
-    print(response_json)
-
     return render(request, 'vote/pages/multi_action.html', context)
 
 
@@ -112,21 +108,17 @@ def dashboard(request, api_key, question_id):
     '''
     request to full_view_answer rest api
     '''
-    url = 'http://127.0.0.1:8000/vote/answer/view/full'
-    param = {
-        'api_key': api_key,
-        'question_id': question_id
-    }
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/SimpleResult'
 
-    data = json.dumps(param).encode('utf-8')
     req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
 
     try:
-        response_json = urllib.request.urlopen(req, data=data).read()
+        response_json = urllib.request.urlopen(req).read()
         response_json = json.loads(response_json.decode('utf-8'))
     except HTTPError:
-            messages.add_message(request, messages.ERROR, 'Fail to get data.')
-            return redirect('main:user_mypage', request.user.id)
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
     return render(request, 'vote/pages/dashboard.html', context)
@@ -145,29 +137,25 @@ def multiple_dashboard(request, api_key, group_name):
         messages.add_message(request, messages.ERROR, desc)
         return redirect('main:user_mypage', request.user.id)
 
-    questions = m.question_elements.all()
+    questions = m.question_elements.filter(is_removed=False)
     length = questions.count()
-    questions_all = {}
 
-    for index, q in enumerate(questions):
-        '''
-        request to simple_view_answer rest api
-        '''
-        url = 'http://localhost:8000/vote/answer/view/simple'
-        param = {
-            'api_key': api_key,
-            'question_id': q.id
-        }
+    '''
+    request to simple_view_answer rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(m.id)
 
-        data = json.dumps(param).encode('utf-8')
-        req = urllib.request.Request(url)
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
 
-        response_json = urllib.request.urlopen(req, data=data).read()
+    try:
+        response_json = urllib.request.urlopen(req).read()
         response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
 
-        questions_all[index] = response_json
-
-    context.update({'questions_all': questions_all})
+    context.update(response_json)
     context.update({'length': length})
 
     return render(request, 'vote/pages/multi_dashboard.html', context)
