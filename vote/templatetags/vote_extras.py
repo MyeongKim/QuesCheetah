@@ -9,3 +9,8 @@ def get_value(dic, key):
     """get value from key"""
 
     return dic[str(key)]
+
+@register.filter
+def itemsort(dic):
+    """sort set """
+    return sorted(dic)

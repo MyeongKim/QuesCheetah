@@ -22,8 +22,8 @@
     <div class="row">
         <div class="col-sm-4 col-sm-offset-4">
             <ul class="nav nav-tabs" role="tablist">
-                {% for key, value in questions.items|dictsort:"0.lower" %}
-                    <li role="presentation" q_id="{{ value.id }}"><a href="#q{{ value.id }}" aria-controls="q{{ value.id }}" role="tab" data-toggle="tab">Q{{ key }}</a></li>
+                {% for key, value in questions.items|itemsort %}
+                    <li tab="{{ key }}"" role="presentation" q_id="{{ value.id }}"><a href="#q{{ value.id }}" aria-controls="q{{ value.id }}" role="tab" data-toggle="tab">Q{{ key }}</a></li>
                 {% endfor %}
             </ul>
             <div class="tab-content">
@@ -35,7 +35,7 @@
                             </div>
                             <div class="panel-body">
                                 {% with answerDict=answers|get_value:key %}
-                                    {% for ak, av in answerDict.items|dictsort:"0.lower" %}
+                                    {% for ak, av in answerDict.items|itemsort %}
                                         <button class="btn btn-default multi answerBtn" type="button" a_num="{{ ak }}" q_id="{{ value.id }}">
                                             {{ av.answer_text }}<span class="badge">{{ av.answer_count }}</span>
                                         </button>

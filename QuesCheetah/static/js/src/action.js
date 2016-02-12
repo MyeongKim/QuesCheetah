@@ -19,7 +19,9 @@ export function Action() {
             'question_title': question_title,
             'question_id': question_id,
             'answer_num': update_num,
-            'unique_user': unique_user
+            "useranswer":{
+                "unique_user": unique_user
+            }
         };
         qc.createUserAnswer(params, function () {
             location.reload();
