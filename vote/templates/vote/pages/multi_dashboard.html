@@ -19,66 +19,95 @@
             margin-bottom: 20px;
         }
 
+        .dashboard-div{
+            margin-left: 240px;
+            margin-right: 15px;
+        }
+
+        .group-info{
+            overflow: auto;
+            border-bottom: solid #cfcfcf 1px;
+            margin-bottom: 30px;
+        }
+
+        .group-status{
+            text-align: center;
+            color: #707979;
+        }
+
+        .row{
+            margin-left: 0;
+            margin-right: 0;
+            margin-top: -40px;
+        }
+
+        .graph-test{
+            margin-right: 30px;
+        }
+
+        .group-answer-bar-chart-btn{
+            text-align: right;
+            margin-top: 30px;
+            margin-right: 10px;
+        }
+
+        .group-answer-bar-chart-btn button{
+            width: 100px;
+        }
     </style>
 {% endblock %}
+{% block nav %}
+    {% include "main/pages/side_nav.html" %}
+{% endblock %}
 {% block content %}
-    {{ msg }}
-    <div class="row">
-        <h1>Welcome to multiple dashboard page</h1>
-        <div id="helper-msg"></div>
-        <div class="col-sm-8 col-sm-offset-2">
-            <div class="question-btn">
-                <div class="btn-group" role="group" aria-label="...">
-                    {% for index, q in questions_all.items %}
-                        <button class="btn btn-default" qnum="{{ forloop.counter }}">Q{{ forloop.counter }}</button>
-                    {% endfor %}
+    <div class="dashboard-div">
+        {{ msg }}
+        <div class="row">
+            <div class="group-info">
+                <h3>Group-name</h3>
+                <div class="group-status">
+                    <div class="col-sm-2">
+                        <p>created_dt</p>
+                        <p>2016-01-01</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>end_dt</p>
+                        <p>2016-01-01</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>id</p>
+                        <p>8593</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>is_closed</p>
+                        <p>False</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>is_editable</p>
+                        <p>False</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>is_private</p>
+                        <p>False</p>
+                    </div>
                 </div>
             </div>
-            {% for index, q in questions_all.items %}
-                <div class="panel panel-default q{{ forloop.counter }}">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
-                            <p>question text : {{ q.question_text }}</p>
-                            <p>question title : {{ q.question_title }}</p>
-                        </h3>
-                    </div>
-                    <div class="panel-body">
-                        <table class="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>answer_text</th>
-                                <th>answer_count</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for a in q.answer|dictsort:"answer_num" %}
-                                <tr>
-                                    <th scope="row">{{ a.answer_num }}</th>
-                                    <td>{{ a.answer_text }}</td>
-                                    <td>{{ a.answer_count }}</td>
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                        <div class="chart-div">
-                            <div class="show-btn">
-                                <div class="btn-group" role="group" aria-label="...">
-                                    <button class="btn btn-default active" id="graph1" qnum="{{ forloop.counter }}">Graph1</button>
-                                    <button class="btn btn-default" id="graph2" qnum="{{ forloop.counter }}">Graph2</button>
-                                    <button class="btn btn-default" id="graph3" qnum="{{ forloop.counter }}">Graph3</button>
-                                </div>
-                            </div>
-                            <canvas class="chart" id="q{{ forloop.counter }}Chart1" width="600" height="400"></canvas>
-                            <canvas class="chart" id="q{{ forloop.counter }}Chart2" width="600" height="400"></canvas>
-                            <canvas class="chart" id="q{{ forloop.counter }}Chart3" width="600" height="400"></canvas>
-                        </div>
-                    </div>
+            <div id="helper-msg"></div>
+            <div class="graph-test">
+                <div id="container1" style="width:100%; height:400px;"></div>
+                <div class="group-answer-bar-chart-btn">
+                    <button class="btn btn-default active">Q1</button>
+                    <button class="btn btn-default">Q2</button>
+                    <button class="btn btn-default">Q3</button>
                 </div>
-            {% endfor %}
+                <div id="container2" style="width:100%; height:400px;"></div>
+            </div>
         </div>
     </div>
 {% endblock %}
 
-{% block script %}
+{% block script %}  
+    <script type="application/javascript">
+        System.import("{% static "js/src/chart.js" %}");
+    </script>
 {% endblock %}

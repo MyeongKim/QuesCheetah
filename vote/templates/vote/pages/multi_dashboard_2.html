@@ -1,0 +1,182 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}
+    <style>
+        .question-btn{
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .chart-div{
+            text-align: center;
+        }
+
+        .chart-div .show-btn{
+            text-align: right;
+            margin-right: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-div{
+            margin-left: 240px;
+            margin-right: 15px;
+        }
+
+        .group-info{
+            overflow: auto;
+            border-bottom: solid #cfcfcf 1px;
+            margin-bottom: 30px;
+        }
+
+        .group-status{
+            text-align: center;
+            color: #707979;
+        }
+
+        .row{
+            margin-left: 0;
+            margin-right: 0;
+            margin-top: -40px;
+        }
+
+        .graph-test{
+            margin-right: 30px;
+        }
+
+        .group-answer-bar-chart-btn{
+            text-align: right;
+            margin-top: 30px;
+            margin-right: 10px;
+        }
+
+        .group-answer-bar-chart-btn button{
+            width: 100px;
+        }
+
+        .filter-question-navi.row{
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .filter-question-navi .col-sm-3{
+            margin: 3px;
+        }
+
+        .filter-question-navi div.dropdown{
+            background-color: rgba(59, 148, 96, 0.27);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .filter-question-navi div.dropdown span {
+            right: 5px;
+            position: absolute;
+        }
+
+        .filter-question-navi a{
+            color: #3E3B3B;
+        }
+    
+        .dropdown-menu{
+            width: 100%;
+        }
+    </style>
+{% endblock %}
+{% block nav %}
+    {% include "main/pages/side_nav.html" %}
+{% endblock %}
+{% block content %}
+    <div class="dashboard-div">
+        {{ msg }}
+        <div class="row">
+            <div id="helper-msg"></div>
+            <div class="group-info">
+                <h3>Group-name</h3>
+                <div class="group-status">
+                    <div class="col-sm-2">
+                        <p>created_dt</p>
+                        <p>2016-01-01</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>end_dt</p>
+                        <p>2016-01-01</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>id</p>
+                        <p>8593</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>is_closed</p>
+                        <p>False</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>is_editable</p>
+                        <p>False</p>
+                    </div>
+                    <div class="col-sm-2">
+                        <p>is_private</p>
+                        <p>False</p>
+                    </div>
+                </div>
+            </div>
+            <div class="filter-question-navi row">
+                <div class="col-sm-3">
+                    <div class="dropdown">
+                        <a id="navi-drop1" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                            Q1 text ?
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navi-drop1">
+                            <li><a href="#">Answer1</a></li>
+                            <li><a href="#">Answer2</a></li>
+                            <li><a href="#">Answer3</a></li>
+                        </ul>
+                    </div>
+                    <div class="appended-answer" id="appended-1"></div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="dropdown">
+                        <a id="navi-drop2" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                            Q2 text ?
+                        </a>
+                        <span><i class="fa fa-close"></i></span>
+                        <ul class="dropdown-menu" aria-labelledby="navi-drop2">
+                            <li><a href="#">Answer1</a></li>
+                            <li><a href="#">Answer2</a></li>
+                            <li><a href="#">Answer3</a></li>
+                        </ul>
+                    </div>
+                    <div class="appended-answer" id="appended-2"></div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="dropdown">
+                        <a id="navi-drop3" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
+                            Q3 text ?
+                        </a>
+                        <span><i class="fa fa-close"></i></span>
+                        <ul class="dropdown-menu" aria-labelledby="navi-drop3">
+                            <li><a href="#">Answer1</a></li>
+                            <li><a href="#">Answer2</a></li>
+                            <li><a href="#">Answer3</a></li>
+                        </ul>
+                    </div>
+                    <div class="appended-answer" id="appended-3"></div>
+                </div>
+            </div>
+            <div class="graph-test">
+                <div class="row">
+                    <div class="col-sm-6" id="container1" style="height:400px;"></div>
+                    <div class="col-sm-6" id="container2" style="height:400px;"></div>
+                    <div class="col-sm-6" id="container3" style="height:400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script type="application/javascript">
+        System.import("{% static "js/src/chart2.js" %}");
+    </script>
+{% endblock %}

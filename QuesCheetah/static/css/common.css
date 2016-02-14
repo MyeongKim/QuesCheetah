@@ -63,3 +63,9 @@ h1{
     border-radius: 0px;
     background-color: #059A47;
 }
+
+/*side navbar css*/
+ul.dropdown-menu{
+    border: 0;
+    opacity: 0.9;
+}

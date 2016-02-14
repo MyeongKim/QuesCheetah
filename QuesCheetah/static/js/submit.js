@@ -14,4 +14,6 @@ export function Submit() {
     MultiAction();
     New();
     Select();
+    // todo divide dashboard js file
+    $('.dropdown-toggle').dropdown();
 }

@@ -19,8 +19,10 @@ System.config({
     "babel": "npm:babel-core@5.8.35",
     "babel-runtime": "npm:babel-runtime@5.8.35",
     "bootstrap": "github:twbs/bootstrap@3.3.6",
-    "chart": "./QuesCheetah/static/js/Chart.min.js",
     "core-js": "npm:core-js@1.2.6",
+    //"highcharts": "npm:highcharts-browserify@2.0.2",
+    "highcharts": "npm:highcharts-release@4.2.3",
+    "highstock": "npm:highcharts-release@4.2.3/highstock.js",
     "jquery": "npm:jquery@2.2.0",
     "qc-init": "js/quescheetah-init.js",
     "qc-sdk": "js/quescheetah-sdk-0.1.0.js",
@@ -60,6 +62,13 @@ System.config({
       "util": "github:jspm/nodelibs-util@0.1.0",
       "when": "npm:when@3.7.7"
     },
+    "npm:highcharts-browserify@2.0.2": {
+      "highcharts-release": "npm:highcharts-release@4.2.3",
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
+    "npm:highcharts-release@4.2.3": {
+      "process": "github:jspm/nodelibs-process@0.1.2"
+    },
     "npm:inherits@2.0.1": {
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
@@ -82,6 +91,16 @@ System.config({
     },
     "npm:when@3.7.7": {
       "process": "github:jspm/nodelibs-process@0.1.2"
+    }
+  },
+  meta: {
+    "js/src/chart.js": {
+      //format: 'cjs',
+      deps: ['jquery', 'highstock', 'highcharts']
+    },
+    "js/src/chart2.js": {
+      //format: 'cjs',
+      deps: ['jquery', 'highstock', 'highcharts']
     }
   }
 });

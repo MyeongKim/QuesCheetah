@@ -189,3 +189,12 @@ def jwt_new(request):
         return JsonResponse({'jwt': str(encoded.decode('utf-8'))})
     else:
         return JsonResponse({'error': 'Not valid secret key.'})
+
+def dashboard_overview(request):
+    return render(request, 'vote/pages/multi_dashboard.html')
+
+def dashboard_filter(request):
+    return render(request, 'vote/pages/multi_dashboard_2.html')
+
+def dashboard_users(request):
+    return render(request, 'vote/pages/multi_dashboard_3.html')
