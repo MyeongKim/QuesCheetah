@@ -1,7 +1,7 @@
-<img src="./QuesCheetah/static/images/quescheetah-logo.png" width="400">
+<img src="./QuesCheetah/static/images/qc_logo.jpg" width="100"><img src="./QuesCheetah/static/images/quescheetah-logo.png" width="400">
 
 
-<img src="http://acceleratingscience.com/wp-content/uploads/2015/02/istock_000013996600_medium.jpg" width="400">
+
 
 Web SDK for the easy Q&A of your site.
 
