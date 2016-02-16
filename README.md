@@ -1,4 +1,4 @@
-<img src="./QuesCheetah/static/images/qc_logo.jpg" width="100"><img src="./QuesCheetah/static/images/quescheetah-logo.png" width="400">
+<img src="./QuesCheetah/static/images/qc_logo.png" width="100"><img src="./QuesCheetah/static/images/quescheetah-logo.png" width="400">
 
 
 

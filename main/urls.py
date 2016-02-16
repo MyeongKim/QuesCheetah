@@ -1,4 +1,3 @@
-# 직접 개발한 코드
 from django.conf.urls import url
 from main import views
 
