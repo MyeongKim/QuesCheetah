@@ -1,4 +1,4 @@
-import {AjaxCall} from "ajax_call";
+import {AjaxCall} from "../ajax_call.js";
 
 export function Mypage(){
     $('#new-jwt-btn').click(function(e){

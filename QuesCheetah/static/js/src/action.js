@@ -1,6 +1,6 @@
 import "jquery";
 
-import { qc } from "qc-init";
+import { qc } from "../quescheetah-init.js";
 
 export function Action() {
     function unique_set(myType) {

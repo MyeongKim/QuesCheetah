@@ -20,6 +20,9 @@
     "jspm": "^0.16.26"
   },
   "jspm": {
+    "directories": {
+      "baseUrl": "QuesCheetah/static/js"
+    },
     "dependencies": {
       "bootstrap": "github:twbs/bootstrap@^3.3.6",
       "highcharts-browserify": "npm:highcharts-browserify@^2.0.2",

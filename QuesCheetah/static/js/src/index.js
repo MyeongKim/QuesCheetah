@@ -1,4 +1,4 @@
-import {AjaxCall} from "ajax_call";
+import {AjaxCall} from "../ajax_call.js";
 
 export function Index() {
     $('#signup-form').on('submit', function(e){

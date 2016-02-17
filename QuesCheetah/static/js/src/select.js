@@ -1,7 +1,7 @@
 import "jquery";
-import $ from "bootstrap";
+//import $ from "bootstrap";
 
-import { qc } from "qc-init";
+import { qc } from "../quescheetah-init.js";
 
 export function Select(){
     function reload(){
