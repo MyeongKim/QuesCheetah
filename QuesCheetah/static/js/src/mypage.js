@@ -18,9 +18,12 @@ export function Mypage(){
 
         var empty = false;
         $.each(post_data, function(key, value){
-            if (!value){
-                alert("You should create api key and secret key first.");
+            if (!value || value=='None'){
+                $('#jwt-error').text('You should create api key and secret key first.');
                 empty = true
+            }
+            else{
+                $('#jwt-error').text('');
             }
         });
 

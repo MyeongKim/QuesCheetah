@@ -41,7 +41,6 @@ export function New(){
             $('.group-form').show();
         }
         if(tabLength > 10){
-            alert("최대 10개까지 생성 가능합니다.");
         }else {
             tabCount = tabCount+1;
             var tabId = 'question_' + id;
@@ -93,7 +92,6 @@ export function New(){
         e.preventDefault();
         var newNum = $('.tab-pane.active .answer-wrapper .answer').length + 1;
         if(newNum > 10){
-            alert('9개 이상 등록하실 수 없습니다.');
         }else{
             $('.tab-pane.active .answer-wrapper').append('<div class="form-group answer">\
                     <label for="answer'+newNum+'" class="col-sm-2 control-label">보기'+newNum+'</label>\
@@ -124,15 +122,15 @@ export function New(){
         var curr_dt = new Date();
 
         if (start_dt_convert < curr_dt ){
-            alert('start_dt value should be larger than current time.');
+            $('#new-error').html('<p class="alert alert-danger">start_dt value should be larger than current time.</p>');
             return false;
         } else if (start_dt_convert > end_dt_convert){
-            alert('end_dt value shoudl be larger than start_dt value.');
+            $('#new-error').html('<p class="alert alert-danger">end_dt value shoudl be larger than start_dt value.</p>');
             return false;
         }
 
         if( ($('.group-form').css('display') !== 'none') && ($('.group-form input').val() == '') ){
-            alert('복수 질문을 등록하기 위해선 group name 이 반드시 필요합니다.');
+            $('#new-error').html('<p class="alert alert-danger">Group name is needed to make multiple questions.</p>');
         }else {
             // set optional values
             var is_editable = $('input[name="is_editable"]').is(':checked');
@@ -147,8 +145,9 @@ export function New(){
                     'answers': answers
                 };
                 qc.createGroup(params, function(){
-                    //location.reload();
+                    location.reload();
                 });
+                location.reload();
                 return false;
             }(); i++) {
                 var question_title = $('#question_' + i + ' input[name="question_title"]').val();
