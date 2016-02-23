@@ -70,40 +70,37 @@ QuesCheetah.prototype.updateUserAnswer = function (params, success, error) {
 };
 
 QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCallback) {
-    $.ajax({
-        url : url,
-        headers: {
-            //'jwt': "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE0NTM5MzkyMDAsImFwaS1rZXkiOiJhNmE5YmM5MjczNWVmMTJlOGJhOTUyMjY1ZjMzNGJhNjU3MzliNWZjIiwiZXhwIjoxNDU0MTEyMDAwfQ.g4tuzokeuqxuns1tMCBLhtghXA0BdNvXHKbjFCnob0o",
-            //'kid': 2
-            "api-key": "a6a9bc92735ef12e8ba952265f334ba65739b5fc"
-        },
-        contentType: "application/json",
-        type : type,
-        dataType: 'json',
-        data : JSON.stringify(post_body),
-        success : function(json){
-            if(json.error){
-                if(errorCallback){
+    var request = new XMLHttpRequest();
+    request.open(type, url, true);
+
+    // you can use jwt with kid header instead of api-key header for more secure connection.
+    //request.setRequestHeader("jwt", "your jwt value");
+    //request.setRequestHeader("kid", "2");
+
+    request.setRequestHeader("api-key", "a6a9bc92735ef12e8ba952265f334ba65739b5fc");
+    request.setRequestHeader("Content-Type", "application/json");
+
+    request.onreadystatechange = function () {
+        if (request.status >= 200 && request.status < 400) {
+            var json = request.responseText;
+            if (json.error) {
+                if (errorCallback) {
                     errorCallback()
                 }
                 console.log(json.description);
-            }else{
-                if(success){
+            } else {
+                if (success) {
                     success(json);
                 }
             }
-        },
-        error : function(xhr, errmsg, err){
-            $('#helper-msg').html("<div class='alert-box alert radius' data-alert>Oops! We have encountered an error: "+errmsg+
-                    "</div>");
-            console.log(xhr.status + ": " + xhr.responseText);
-            console.log('---------------');
-            console.log(xhr);
-            console.log('---------------');
-            console.log(err);
-            if(errorCallback){
-                errorCallback(err, errmsg);
-            }
+        } else {
+            alert('There was a problem with the request.');
+
         }
-    });
+    };
+
+    request.onerror = function (e) {
+        alert("Error " + e.target.status + " occurred while receiving the document.");
+    };
+    request.send(JSON.stringify(post_body));
 };
