@@ -1,12 +1,21 @@
 import {AjaxCall} from "../ajax_call.js";
 
+function escapeHtml(text) {
+  return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+}
+
 export function Index() {
     $('#signup-form').on('submit', function(e){
         e.preventDefault();
-        var email = $('#signup-email').val();
-        var username = $('#signup-username').val();
-        var password = $('#signup-password').val();
-        var password2 = $('#signup-password2').val();
+        var email = escapeHtml($('#signup-email').val());
+        var username = escapeHtml($('#signup-username').val());
+        var password = escapeHtml($('#signup-password').val());
+        var password2 = escapeHtml($('#signup-password2').val());
 
         if (password === password2 ){
             AjaxCall('signup', {email : email ,username:username, password : password}, function(json){
@@ -31,8 +40,8 @@ export function Index() {
 
     $('#login-form').on('submit', function(e){
         e.preventDefault();
-        var email = $('#signin-email').val();
-        var password = $('#signin-password').val();
+        var email = escapeHtml($('#signin-email').val());
+        var password = escapeHtml($('#signin-password').val());
         AjaxCall('login', {email : email, password : password}, function(json){
             if(json.status === 'success'){
                 location.reload();

@@ -3,6 +3,15 @@ import $ from "bootstrap";
 
 import { qc } from "../quescheetah-init.js";
 
+function escapeHtml(text) {
+  return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+}
+
 export function New(){
     var tabCount = 1;
     $(".nav-tabs").on("click", "a", function (e) {
@@ -108,7 +117,7 @@ export function New(){
     $('#make-btn').click(function (e) {
         e.preventDefault();
 
-        var group_name = $('#group_name').val();
+        var group_name = escapeHtml($('#group_name').val());
         var questions = {};
         var answers = {};
         var q_length = $('.tab-pane').length;
@@ -150,8 +159,8 @@ export function New(){
                 location.reload();
                 return false;
             }(); i++) {
-                var question_title = $('#question_' + i + ' input[name="question_title"]').val();
-                var question_text = $('#question_' + i + ' input[name="question_text"]').val();
+                var question_title = escapeHtml($('#question_' + i + ' input[name="question_title"]').val());
+                var question_text = escapeHtml($('#question_' + i + ' input[name="question_text"]').val());
                 questions[i] = {
                     'question_title': question_title,
                     'question_text': question_text,
@@ -165,7 +174,7 @@ export function New(){
                 answers[i] = {};
                 for (var j = 1; j <= 9; j++) {
                     (function (new_j) {
-                        var answer_text = $('#question_' + i + ' input[name="answer' + new_j + '"]').val();
+                        var answer_text = escapeHtml($('#question_' + i + ' input[name="answer' + new_j + '"]').val());
                         if (answer_text) {
                             answers[i][new_j] = {
                                 'answer_text': answer_text
