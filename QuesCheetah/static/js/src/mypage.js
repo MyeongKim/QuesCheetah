@@ -19,7 +19,7 @@ export function Mypage(){
         var empty = false;
         $.each(post_data, function(key, value){
             if (!value || value=='None'){
-                $('#jwt-error').text('You should create api key and secret key first.');
+                $('#jwt-error').html('<p class="alert alert-danger">You should create api key and secret key first.</p>');
                 empty = true
             }
             else{
