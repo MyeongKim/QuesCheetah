@@ -24,7 +24,8 @@ export function Action() {
             }
         };
         qc.createUserAnswer(params, function () {
-            location.reload();
+            // Don't reload if you are using realtime socket.io response
+            //location.reload();
         });
     });
 }

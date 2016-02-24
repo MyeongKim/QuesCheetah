@@ -19,21 +19,22 @@
     <h1>You can vote here.  Create useranswer</h1>
     <div id="helper-msg"></div>
     <div class="col-sm-4 col-sm-offset-4">
-    <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" class="active" q_id="107"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Q1</a></li>
-    </ul>
-    <div class="tab-content">
-        <div role="tabpanel" class="tab-pane active" id="home">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{{ question_text }}</h3>
-                </div>
-                <div class="panel-body">
-                    {% for a in answers|dictsort:"answer_num" %}
-                            <button class="btn btn-default single answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ id }}">
-                                {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
-                            </button>
-                    {% endfor %}
+        <ul class="nav nav-tabs" role="tablist">
+            <li role="presentation" class="active" q_id="107"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Q1</a></li>
+        </ul>
+        <div class="tab-content">
+            <div role="tabpanel" class="tab-pane active" id="home">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">{{ question_text }}</h3>
+                    </div>
+                    <div class="panel-body">
+                        {% for a in answers|dictsort:"answer_num" %}
+                                <button class="btn btn-default single answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ id }}">
+                                    {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
+                                </button>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,9 +1,22 @@
-// This javascript file must be inserted after the jQuery file.
 function QuesCheetah(config){
     this.apiKey = config.apiKey;
     this.baseUrl = "http://127.0.0.1:8000/v1/";
     this.callBackUrl = config.callBackUrl;
+    this.receiveRealtimeResponse = config.receiveRealtimeResponse;
+
+    // If Realtime socket.io Response is used.
+    if (this.receiveRealtimeResponse){
+        socket = io('http://localhost:5000');
+        socket.on('connect', function(){});
+        socket.on('event', function(data){});
+        socket.on('disconnect', function(){});
+        socket.on('reply', function(data){
+            alert(JSON.stringify(data));
+        });
+    }
 }
+
+var socket= "";
 
 QuesCheetah.prototype.createGroup = function (params, success, error) {
     if ( params['group_name'] === ""){
@@ -25,8 +38,19 @@ QuesCheetah.prototype.createAnswer = function (params, success, error) {
 };
 
 QuesCheetah.prototype.createUserAnswer = function (params, success, error) {
+    var self = this;
     var url = this.baseUrl+'questions/'+params.question_id+'/answers/'+params.answer_num+'/useranswers';
-    this.doPost(url, "POST", params, success, error)
+    var successWithSend = function(){
+        success();
+
+        // If client realtime setting is true, send question_id to socket server.
+        if (self.receiveRealtimeResponse){
+            self.socketioAction($.extend({
+                "api-key": self.apiKey
+            },params));
+        }
+    };
+    this.doPost(url, "POST", params, successWithSend, error)
 };
 
 QuesCheetah.prototype.getQuestion = function (params, success, error) {
@@ -70,6 +94,7 @@ QuesCheetah.prototype.updateUserAnswer = function (params, success, error) {
 };
 
 QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCallback) {
+    var self = this;
     var request = new XMLHttpRequest();
     request.open(type, url, true);
 
@@ -80,7 +105,7 @@ QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCal
     request.setRequestHeader("api-key", "a6a9bc92735ef12e8ba952265f334ba65739b5fc");
     request.setRequestHeader("Content-Type", "application/json");
 
-    request.onreadystatechange = function () {
+    request.onload = function () {
         if (request.status >= 200 && request.status < 400) {
             var json = request.responseText;
             if (json.error) {
@@ -95,7 +120,6 @@ QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCal
             }
         } else {
             alert('There was a problem with the request.');
-
         }
     };
 
@@ -103,4 +127,9 @@ QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCal
         alert("Error " + e.target.status + " occurred while receiving the document.");
     };
     request.send(JSON.stringify(post_body));
+};
+
+// Receiving realtime socket.io data
+QuesCheetah.prototype.socketioAction = function(data){
+    socket.emit('send', data);
 };
