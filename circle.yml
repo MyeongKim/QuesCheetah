@@ -7,7 +7,6 @@ dependencies:
       install -y mysql-server-5.6
 database:
   override:
-    - mysql --user=root --password qc; audwn8593
 machine:
   python:
     version: 3.4.3

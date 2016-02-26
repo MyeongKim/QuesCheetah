@@ -53,17 +53,22 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE_CLASSES = [
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
 
     'corsheaders.middleware.CorsMiddleware',
+
     'django.middleware.common.CommonMiddleware',
+
+    'django.middleware.http.ConditionalGetMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
 ]
 
 ROOT_URLCONF = 'QuesCheetah.urls'
@@ -91,13 +96,22 @@ WSGI_APPLICATION = 'QuesCheetah.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'qc',
+    #     'USER': 'root',
+    #     'PASSWORD': 'audwn8593',
+    #     'HOST': 'localhost',
+    #     'PORT': '',
+    #     # 'OPTIONS': {'charset': 'utf8mb4'},
+    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'qc',
-        'USER': 'root',
-        'PASSWORD': 'audwn8593',
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'circle_test',
+        'USER': 'ubuntu',
+        # 'PASSWORD': 'audwn8593',
+        # 'HOST': 'localhost',
+        # 'PORT': '',
         # 'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
@@ -150,11 +164,12 @@ STATICFILES_DIRS = [
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
         'LOCATION': '127.0.0.1:11211',
     }
 }
 
+USE_ETAGS = True
 
 from django.core.urlresolvers import reverse_lazy
 
