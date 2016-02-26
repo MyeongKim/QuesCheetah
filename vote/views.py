@@ -1,8 +1,8 @@
-# 직접 개발한 코드
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
+from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django.views.generic.base import View
@@ -10,7 +10,7 @@ import urllib.request, urllib.error, urllib.parse
 from urllib.error import HTTPError
 import json
 from main.models import ApiKey, Domain
-from vote.models import Question, Answer, UserAnswer, Url, MultiQuestion
+from vote.models import Question, Answer, UserAnswer, MultiQuestion
 
 import jwt
 
@@ -30,7 +30,6 @@ def select_question(request, api_key):
     single_question = Question.objects.filter(api_key=q_api_key, multi_question=None, is_removed=False)
     m = MultiQuestion.objects.filter(api_key=q_api_key, is_removed=False)
     context.update({'multi_question': m, 'single_question': single_question})
-
     return render(request, 'vote/pages/question_select.html', context)
 
 
@@ -41,7 +40,7 @@ def new(request, api_key):
 
     return render(request, 'vote/pages/new.html', context)
 
-
+@never_cache
 def get_vote(request, api_key, question_id):
     context = {
         'api_key': api_key
@@ -225,56 +224,6 @@ def get_url_list(request):
         desc = 'This request url is not authenticated in followed api_key.'
         return error_return(desc)
 
-@require_POST
-def add_url(request):
-    """
-    POST - /v1/question/url/add
-
-    허용하는 url을 추가합니다.
-
-    :parameter - api_key, ( question_title / question_id ), urls
-    :return - urls
-    """
-    if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
-        api_key = data.get('api_key')
-        question_title = data.get('question_title')
-        question_id = data.get('question_id')
-        new_urls = data.get('urls')
-
-        response_dict = {}
-
-        try:
-            a = ApiKey.objects.get(key=api_key)
-
-            if question_title and question_id:
-                q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-            elif question_id:
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-            elif question_title:
-                q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-        except ObjectDoesNotExist:
-            desc = 'The Question does not exist in followed api key.'
-            return error_return(desc)
-
-        if new_urls:
-            for url in new_urls:
-                new_u = Url(question=q, full_url=url, is_removed=False)
-                new_u.save()
-
-            u = q.authenticated_urls
-            response_dict.update({
-                'urls': [url.full_url for url in u]
-            })
-        else:
-            desc = 'requested url is none'
-            return error_return(desc)
-
-        return JsonResponse(response_dict)
-    else:
-        desc = 'This request url is not authenticated in followed api_key.'
-        return error_return(desc)
-
 
 def error_return(desc, status=400):
     return JsonResponse({
@@ -366,6 +315,7 @@ class Groups(View):
             for question in q:
                 response_dict['questions'].update({
                     question.question_num : {
+                        'question_id': question.id,
                         'question_title': question.question_title,
                         'question_text': question.question_text,
                         'start_dt': question.start_dt,
@@ -692,6 +642,7 @@ class Questions(View):
             '''
             response_dict['questions'].update({
                 q.question_num : {
+                    'question_id': q.id,
                     'question_title': q.question_title,
                     'question_text': q.question_text,
                     'start_dt': q.start_dt,
@@ -912,10 +863,11 @@ class Questions(View):
 
             answers = q.answers.filter(is_removed=False)
             for answer in answers:
-                useranswers = answer.user_answers.filter(is_removed=False)
-                for useranswer in useranswers:
-                    useranswer.is_removed = True
-                    useranswer.save()
+                if answer.get('user_answers'):
+                    useranswers = answer.user_answers.filter(is_removed=False)
+                    for useranswer in useranswers:
+                        useranswer.is_removed = True
+                        useranswer.save()
 
                 answer.is_removed = True
                 answer.save()
