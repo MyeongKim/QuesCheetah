@@ -5,6 +5,3 @@ database:
 machine:
   python:
     version: 3.4.3
-dependencies:
-  pre:
-    - "mysql -u ubuntu -e 'create database circle_test;'"
