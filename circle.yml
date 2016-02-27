@@ -3,6 +3,6 @@ database:
     - python manage.py makemigrations
     - python manage.py migrate
 machine:
-  python
+  python:
     version: 3.4.3
 
