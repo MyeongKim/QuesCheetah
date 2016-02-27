@@ -1,8 +1,13 @@
 database:
-  post:
+  pre:
     - python manage.py makemigrations
     - python manage.py migrate
 machine:
   python:
     version: 3.4.3
-
+dependencies:
+  pre:
+    - sudo apt-get update
+    - pip install mysqlclient
+    - pip install django-pylibmc pylibmc
+    - sudo apt-get install python3-dev libmysqlclient-dev
