@@ -1,5 +1,5 @@
 database:
-  pre:
+  post:
     - python manage.py makemigrations
     - python manage.py migrate
 machine:
