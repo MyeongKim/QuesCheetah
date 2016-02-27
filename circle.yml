@@ -1,6 +1,5 @@
 database:
-  pre:
-    - mysql -u ubuntu < my-database-setup.sql
+  post:
     - python manage.py makemigrations
     - python manage.py migrate
 machine:
