@@ -96,24 +96,24 @@ WSGI_APPLICATION = 'QuesCheetah.wsgi.application'
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.mysql',
-    #     'NAME': 'qc',
-    #     'USER': 'root',
-    #     'PASSWORD': 'audwn8593',
-    #     'HOST': 'localhost',
-    #     'PORT': '',
-    #     # 'OPTIONS': {'charset': 'utf8mb4'},
-    # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'circle_test',
-        'USER': 'ubuntu',
-        # 'PASSWORD': 'audwn8593',
-        # 'HOST': 'localhost',
-        # 'PORT': '',
+        'NAME': 'qc',
+        'USER': 'root',
+        'PASSWORD': 'audwn8593',
+        'HOST': 'localhost',
+        'PORT': '',
         # 'OPTIONS': {'charset': 'utf8mb4'},
     }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'NAME': 'circle_test',
+    #     'USER': 'ubuntu',
+    #     # 'PASSWORD': 'audwn8593',
+    #     # 'HOST': 'localhost',
+    #     # 'PORT': '',
+    #     # 'OPTIONS': {'charset': 'utf8mb4'},
+    # }
 }
 
 
