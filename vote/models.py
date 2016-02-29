@@ -100,19 +100,6 @@ class Question(models.Model):
             return super(Question, self).save(**kwargs)
 
 
-class Url(models.Model):
-    question = models.ForeignKey(Question, related_name='authenticated_urls')
-    url_name = models.CharField(max_length=100, null=True, blank=True)
-    full_url = models.CharField(max_length=200)
-
-    created_dt = models.DateTimeField(auto_now_add=True)
-    updated_dt = models.DateTimeField(auto_now=True)
-    is_removed = models.BooleanField(default=False)
-
-    def __str__(self):
-        return '{}-({})'.format(self.url_name, self.full_url)
-
-
 class Answer(models.Model):
     question = models.ForeignKey(Question, related_name='answers')
     answer_text = models.CharField(max_length=50)
