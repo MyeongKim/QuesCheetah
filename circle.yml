@@ -1,13 +1,16 @@
+machine:
+  python:
+    version: 3.4.3
+  environment:
+    BUILD_ON_CRICLE: true
 database:
   pre:
     - python manage.py makemigrations
     - python manage.py migrate
-machine:
-  python:
-    version: 3.4.3
 dependencies:
   pre:
     - sudo apt-get update
+    - sudo apt-get install postgresql postgresql-contrib
+    - pip install psycopg2
     - pip install mysqlclient
-    - pip install django-pylibmc pylibmc
     - sudo apt-get install python3-dev libmysqlclient-dev

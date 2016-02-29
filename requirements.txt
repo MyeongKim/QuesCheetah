@@ -5,7 +5,9 @@ backports-abc==0.4
 defusedxml==0.4.1
 django-allauth==0.24.1
 django-cors-headers==1.1.0
+django-pylibmc==0.6.1
 oauthlib==1.0.3
+pylibmc==1.5.0
 python-dateutil==2.4.2
 python-engineio==0.8.1
 python-memcached==1.57

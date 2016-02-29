@@ -2,15 +2,17 @@ sudo: required
 language: python
 python:
   - "3.4"
-  - "3.5"
-  - "3.5-dev" # 3.5 development branch
 services:
   - mysql
 env:
+  global:
+    - BUILD_ON_TRAVIS=true
+  matrix:
   - DJANGO_VERSION=1.8.4
 install: "pip install -r requirements.txt"
 before_script:
-  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('audwn8593') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
-  - mysql -e 'create database qc;'
+  - mysql -e 'create database travis_ci_db;'
 script:
+  - python manage.py makemigrations
+  - python manage.py migrate
   - python manage.py test
