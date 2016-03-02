@@ -40,6 +40,8 @@
             font-size: 2em;
         }
         .feature{
+            width: 970px;
+            margin : 0 auto;
             text-align: center;
             margin-top : 50px;
         }
@@ -51,15 +53,30 @@
         }
 
         .feature .feature-element span{
-            font-size: 2em;
         }
 
         .sample-div{
-            background-color: #efefef;
+            background-color: #47505d;
+            height: 108px;
+            color: #fff;
+        }
+        
+        .sample-div .sample-div-inner{
+            height: inherit;
+        }
+        
+        .sample-div .sample-div-inner div{
+            height: inherit;
+            text-align: center;
+            padding: 31px;
+        }
+
+        .sample-div h3{
+            margin: 10px 0;
         }
 
         .sample-div a{
-            color: #757575;
+            color: #F7D46C;
         }
 
         .login-modal-close-btn{
@@ -95,8 +112,8 @@
         <h4>Web SDK for the easy Q&A of your site.</h4>
     </div>
     <div class="download-div">
-        <a href="https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/quescheetah-sdk-0.1.0.js" download><button class="btn btn-lg btn-default"><i class="fa fa-download"></i> Download SDK File</button></a>
-        <a href="https://github.com/mingkim/QuesCheetah" target="_blank"><button class="btn btn-lg btn-default"><i class="fa fa-github"></i> Github repository</button></a>
+        <a href="https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/quescheetah-sdk-0.1.0.js" download><button class="btn btn-lg btn-default"><i class="fa fa-download fa-2x"></i> Download SDK</button></a>
+        <a href="https://github.com/mingkim/QuesCheetah" target="_blank"><button class="btn btn-lg btn-default"><i class="fa fa-github fa-2x"></i> Github repo</button></a>
     </div>
     <div class="down-arrow">
         <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
@@ -104,27 +121,32 @@
     <div class="feature">
         <div class="row">
             <div class="col-sm-6 feature-element">
-                <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
-                <p>You can install QuesCheetah to your app easily.</p>
+                <span class="fa fa-wrench fa-5x" aria-hidden="true"></span>
+                <p>Install QuesCheetah to your app easily.</p>
             </div>
             <div class="col-sm-6 feature-element">
-                <span class="glyphicon glyphicon-stats" aria-hidden="true"></span>
+                <span class="fa fa-bar-chart fa-5x" aria-hidden="true"></span>
                 <p>Manage your results in our Dashboard.</p>
             </div>
 
             <div class="col-sm-6 feature-element">
-                <span class="glyphicon glyphicon-picture" aria-hidden="true"></span>
+                <span class="fa fa-picture-o fa-5x" aria-hidden="true"></span>
                 <p>Customize your Q&A freely.</p>
             </div>
             <div class="col-sm-6 feature-element">
-                <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>
+                <span class="fa fa-retweet fa-5x" aria-hidden="true"></span>
                 <p>Real-time Q&A result will be provided.</p>
-            </div>
-            <div class="col-sm-12 sample-div">
-                <a href="https://github.com/mingkim/QuesCheetah_sample" target="_blank"><h3>Check the sample project</h3></a>
             </div>
         </div>
     </div>
+    <div class="sample-div row">
+        <div class="sample-div-inner col-sm-10 col-sm-offset-1">
+            <div class="col-sm-12 sample-text">
+                <h3>Check our sample project with <a href="#">Jekyll</a>, <a href="#">Wordpress</a> and <a href="#">Tistory</a> blog!</h3>
+            </div>
+        </div>
+    </div>
+{% include "main/pages/footer.html"  %}
 {% endblock %}
 {% block modal %}
     {% include "main/pages/modal_login.html" %}

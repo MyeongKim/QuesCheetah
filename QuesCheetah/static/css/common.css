@@ -69,3 +69,32 @@ ul.dropdown-menu{
     border: 0;
     opacity: 0.9;
 }
+
+/* footer css */
+.footer{
+    height: 320px;
+    padding: 80px 160px;
+    text-align: left;
+    color: #47505d;
+}
+
+.footer .footer-nav{
+    height: 160px;
+}
+
+.footer .footer-title{
+    text-align: center;
+    color: #075651;
+    font-size: large;
+}
+
+.footer .footer-elements a{
+    color: #6f7c92;
+    text-decoration: none;
+}
+
+.footer .footer-license{
+    margin-top : 30px;
+    text-align: center;
+    color: #8d9eba;
+}
