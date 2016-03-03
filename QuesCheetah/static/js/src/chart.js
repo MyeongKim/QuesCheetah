@@ -8,10 +8,6 @@ $.getJSON('https://www.highcharts.com/samples/data/jsonp.php?filename=aapl-c.jso
         rangeSelector: {
             selected: 1
         },
-        title: {
-            text: 'Answer count time chart'
-        },
-
         series: [{
             name: 'AAPL',
             data: data,
@@ -27,7 +23,7 @@ $('#container2').highcharts({
         type: 'bar'
     },
     title: {
-        text: 'Answers'
+        text: null
     },
     xAxis: {
         categories: ['Apples', 'Bananas', 'Oranges']

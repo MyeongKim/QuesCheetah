@@ -12,10 +12,6 @@ h1{
     margin-bottom: 100px;
 }
 
-.navbar{
-    border-bottom: solid #e4dd34 5px ;
-}
-
 .navbar-right .dropdown-menu{
     left: 0;
     right: auto;

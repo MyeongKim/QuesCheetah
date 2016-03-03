@@ -3,7 +3,80 @@
 {% load staticfiles %}
 
 {% block stylesheet %}
+    <link href="{% static 'bootstrap/css/bootstrap-switch.min.css' %}" rel="stylesheet">
     <style>
+        /*Nav bar css for dashboard*/
+        .navbar-default{
+            background-color: #efefef;
+            border-bottom-width: 0px;
+        }
+
+        .navbar-default .navbar-brand{
+            color: #075651;
+            padding: 10px 0;
+        }
+
+        .navbar-default .navbar-brand p{
+            margin: 5px 0;
+            display: inline;
+        }
+
+        .navbar-brand img {
+            display: inline;
+            margin-top: -5px;
+        }
+
+        .navbar-default .navbar-brand:hover{
+            color: #075651;
+            opacity: 0.7;
+        }
+
+        .navbar-default .navbar-nav>li>a {
+            color: #929891;
+            font-size: small;
+        }
+
+        .navbar-default .navbar-nav>li>a:hover {
+            color : #075651;
+            opacity: 0.8;
+        }
+
+        .nav.navbar-right > li{
+            margin-left: 30px;
+        }
+
+        .navbar-default .navbar-nav>li.login {
+            background-color: #000;
+            width: 132px;
+        }
+
+        .navbar-default .navbar-nav>li.login p{
+            display: inline-block;
+            width: 92px;
+            margin-bottom: 0px;
+        }
+
+        .navbar-default .navbar-nav>li.login .nav-user-fa{
+            display: inline-block;
+            color: #929891;
+        }
+
+        .navbar-default .navbar-nav>li.login>a:hover {
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .navbar-default .navbar-nav>.open>a:focus{
+            color: #fff;
+            background-color: #000;
+            border: none;
+        }
+
+        .login .dropdown-menu{
+            min-width: inherit;
+            width: 132px;
+        }
+
         .question-btn{
             text-align: center;
             margin-bottom: 10px;
@@ -20,34 +93,48 @@
         }
 
         .dashboard-div{
-            margin-left: 240px;
-            margin-right: 15px;
+            width: 970px;
+            margin: 0 auto;
         }
 
         .group-info{
-            overflow: auto;
+            height: 150px;
             border-bottom: solid #cfcfcf 1px;
             margin-bottom: 30px;
         }
 
+        .group-info .dropdown-menu{
+            height: auto;
+            max-height: 100px;
+            overflow-x: hidden;
+        }
+
         .group-status{
-            text-align: center;
             color: #707979;
+        }
+
+        .group-status .group-status-state p{
+            display: inline-block;
+            width: 30%;
+        }
+
+        .p-title{
+            color:#47505d;
         }
 
         .row{
             margin-left: 0;
             margin-right: 0;
-            margin-top: -40px;
         }
 
-        .graph-test{
-            margin-right: 30px;
+        .graph-div{
+            margin: 0 50px;
+            text-align: center;
         }
 
         .group-answer-bar-chart-btn{
-            text-align: right;
-            margin-top: 30px;
+            text-align: left;
+            margin-top: 100px;
             margin-right: 10px;
         }
 
@@ -56,58 +143,89 @@
         }
     </style>
 {% endblock %}
+
 {% block nav %}
-    {% include "main/pages/side_nav.html" %}
+    {% include "main/pages/nav_dashboard.html" %}
 {% endblock %}
+
 {% block content %}
     <div class="dashboard-div">
         {{ msg }}
         <div class="row">
             <div class="group-info">
-                <h3>Group-name</h3>
-                <div class="group-status">
-                    <div class="col-sm-2">
-                        <p>created_dt</p>
-                        <p>2016-01-01</p>
+                <div class="col-sm-4">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle btn-lg" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            Group_name
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            <li><a href="#">name2</a></li>
+                            <li><a href="#">name3</a></li>
+                            <li><a href="#">name4</a></li>
+                            <li><a href="#">name5</a></li>
+                            <li><a href="#">name6</a></li>
+                        </ul>
                     </div>
-                    <div class="col-sm-2">
-                        <p>end_dt</p>
-                        <p>2016-01-01</p>
-                    </div>
-                    <div class="col-sm-2">
-                        <p>id</p>
+                </div>
+                <div class="group-status col-sm-8">
+                    <div class="col-sm-2 col-sm-offset-2">
+                        <p class="p-title">Id</p>
                         <p>8593</p>
                     </div>
-                    <div class="col-sm-2">
-                        <p>is_closed</p>
-                        <p>False</p>
+                    <div class="col-sm-4">
+                        <p class="p-title">Time</p>
+                        <p>2016-01-01 ~ 2016-01-01</p>
                     </div>
-                    <div class="col-sm-2">
-                        <p>is_editable</p>
-                        <p>False</p>
-                    </div>
-                    <div class="col-sm-2">
-                        <p>is_private</p>
-                        <p>False</p>
+                    <div class="col-sm-4">
+                        <p class="p-title">Status</p>
+                        <div class="group-status-state">
+                            <div>
+                                <p>closed</p>
+                                <input type="checkbox" name="my-checkbox" checked data-size="mini">
+                            </div>
+                            <div>
+                                <p>editable</p>
+                                <input type="checkbox" name="my-checkbox" checked data-size="mini">
+                            </div>
+                            <div>
+                                <p>private</p>
+                                <input type="checkbox" name="my-checkbox" checked data-size="mini">
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                        <div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div id="helper-msg"></div>
-            <div class="graph-test">
-                <div id="container1" style="width:100%; height:400px;"></div>
-                <div class="group-answer-bar-chart-btn">
-                    <button class="btn btn-default active">Q1</button>
-                    <button class="btn btn-default">Q2</button>
-                    <button class="btn btn-default">Q3</button>
+            {% block graph %}
+                <div class="graph-div">
+                    <h3>Answers count time chart</h3>
+                    <div id="container1" style="width:100%; height:400px;"></div>
+                    <div class="group-answer-bar-chart-btn">
+                        <div class="btn-group" role="group">
+                            <button type="button" class="btn btn-default active">Q1</button>
+                            <button type="button" class="btn btn-default">Q2</button>
+                            <button type="button" class="btn btn-default">Q3</button>
+                        </div>
+                    </div>
+                    <h3>Answer count detail chart</h3>
+                    <div id="container2" style="width:100%; height:400px;"></div>
                 </div>
-                <div id="container2" style="width:100%; height:400px;"></div>
-            </div>
+            {% endblock %}
         </div>
     </div>
 {% endblock %}
 
-{% block script %}  
+{% block script %}
+    <script src="{% static 'bootstrap/js/bootstrap-switch.min.js' %}"></script>
     <script type="application/javascript">
         System.import("{% static "js/src/chart.js" %}");
+
+        // move to js package file
+        $("[name='my-checkbox']").bootstrapSwitch();
     </script>
 {% endblock %}

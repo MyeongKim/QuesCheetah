@@ -1,0 +1,36 @@
+{% load staticfiles %}
+<div class="navbar-back"></div>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% url 'main:index' %}">
+                <img src="{% static 'images/qc_logo.png' %}" height="40">
+                <p>QuesCheetah</p>
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="#">Questions</a></li>
+                <li><a href="#">Overview</a></li>
+                <li><a href="#">Analysis</a></li>
+                <li><a href="#">Users</a></li>
+                {% if user.is_authenticated %}
+                    <li class="login dropdown">
+                        <a href="#" class="dropdown-toggle btn" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                            <p>{{ user.username }}</p>
+                            <div class="nav-user-fa">
+                                <i class="fa fa-angle-down"></i>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'main:user_mypage' user.id %}">Account</a></li>
+                            <li><a href="#">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="#" class="btn login" data-toggle="modal" data-target="#myModal">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
