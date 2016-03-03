@@ -120,7 +120,16 @@ elif os.getenv('BUILD_ON_CRICLE', None):
         }
     }
 else:
-    pass
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'qc',
+            'USER': 'root',
+            'PASSWORD': 'audwn8593',
+            'HOST': 'localhost',
+            'PORT': ''
+        }
+    }
 
 
 # Password validation
