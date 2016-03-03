@@ -67,7 +67,7 @@ class ApiKeyManager(models.Manager):
 
 class ApiKey(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='api_keys')
-    key = models.CharField(max_length=40)
+    key = models.CharField(max_length=40, null=True)
     secret_key = models.CharField(max_length=100, null=True)
 
     created_dt = models.DateTimeField(auto_now_add=True)

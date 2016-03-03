@@ -21,7 +21,7 @@
     {% if messages %}
         <div class="messages row">
             {% for message in messages %}
-            <div{% if message.tags %} class="alert alert-{{ message.tags }} col-sm-6 col-sm-offset-3"{% endif %}>{{ message }}</div>
+            <div{% if message.tags %} class="alert alert-{{ message.tags }} alert-danger col-sm-6 col-sm-offset-3"{% endif %}>{{ message }}</div>
             {% endfor %}
         </div>
     {% endif %}

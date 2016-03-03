@@ -55,9 +55,27 @@ h1{
     color: #fff
 }
 
-.navbar-default .navbar-nav>li>a.login {
+.navbar-default .navbar-nav>li.login {
     border-radius: 0px;
     background-color: #059A47;
+    margin-left: 20px;
+    width: 120px;
+}
+
+.navbar-default .navbar-nav>li.login p {
+    display: inline-block;
+    width: 70px;
+    margin-bottom: 0px;
+}
+
+.navbar-default .navbar-nav>li.login .nav-user-fa {
+    display: inline-block;
+    color: #fff;
+}
+
+.navbar-default .navbar-nav>li.login .dropdown-menu{
+    min-width: inherit;
+    width: 120px;
 }
 
 /*side navbar css*/

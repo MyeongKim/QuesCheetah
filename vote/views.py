@@ -17,10 +17,17 @@ import jwt
 ''' server view function '''
 
 
-def select_question(request, api_key):
+def select_question(request):
     context = {
-        'api_key': api_key
     }
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
     try:
         q_api_key = ApiKey.objects.get(key=api_key)
     except ObjectDoesNotExist:

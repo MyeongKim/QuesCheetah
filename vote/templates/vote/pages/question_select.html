@@ -4,18 +4,108 @@
 
 {% block stylesheet %}
     <style>
-        .question-div{
-            margin-top: 10px;
-            margin-bottom: 20px;
+        .questions-create-btn{
+            text-align: center;
+            margin-bottom: 100px;
         }
 
-        .single-question-div button{
-            margin-bottom: 3px;
+        .questions-wrapper{
+            width: 870px;
+            height: auto;
+            overflow: hidden;
+            margin: 0 auto;
+
         }
 
-        .question-select-div{
+        .questions-wrapper .questions-condition{
+            border-right: solid #cfcfcf 1px;
             text-align: center;
         }
+
+        .questions-wrapper .questions-items a{
+            text-decoration: none;
+            color: #000;
+        }
+
+        .questions-wrapper .questions-items .questions-element{
+            height: 70px;
+            width: 100%;
+            border: solid #cfcfcf 1px;
+            border-radius: 6px;
+            background-color: #fcfcfc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        .questions-element .questions-element-status{
+            float: left;
+        }
+
+        .questions-element .questions-element-status.ongoing{
+            float: left;
+            color: #6BC35D;
+        }
+
+        .questions-element .questions-element-status.completed{
+            float: left;
+            color: #666669;
+        }
+
+        .questions-element .questions-element-status.scheduled{
+            float: left;
+            color: #6dbfc3;
+        }
+
+        .questions-element .questions-element-delete{
+            float: right;
+            color: #47505d;
+            background-color: Transparent;
+            background-repeat:no-repeat;
+            border: none;
+            cursor:pointer;
+            overflow: hidden;
+            outline:none;
+        }
+
+        .questions-element .questions-element-delete.btn{
+            padding: 0;
+        }
+
+        .questions-element .questions-element-title{
+            clear: both;
+            float: left;
+            font-size: 20px;
+            margin-left: 30px;
+            color: #47505d;
+        }
+
+        .questions-element .questions-element-info{
+            margin-top: 10px;
+            float: right;
+        }
+
+        .questions-element .questions-element-info .element-title{
+            display: inline-block;
+            width: 100px;
+            color: #47505d;
+        }
+
+        .questions-element .questions-element-info .element-data{
+            display: inline-block;
+            margin-bottom: 0;
+            color: #8d9eba;
+            width: 20px;
+            margin-right: 10px;
+        }
+
+
+        .questions-wrapper .questions-items .questions-element.questions-element-empty{
+            padding: 24px;
+            color: #448205;
+            background-color: #F4FFE9;
+            text-align: center;
+        }
+
     </style>
 {% endblock %}
 {% block content %}
@@ -27,67 +117,58 @@
                 {% endfor %}
             </ul>
         {% endif %}
-        <h1>Question select</h1>
         <div id="helper-msg"></div>
-        <a href="{% url 'v1:new' api_key %}"><button class="btn btn-info">make a new question?</button></a>
+        <div class="questions-create-btn">
+            <a href="{% url 'v1:new' api_key %}"><button class="btn btn-success btn-lg">Make a new question?</button></a>
+        </div>
         <div class="row">
-            <div class="col-sm-6 col-sm-offset-3">
-                <div class="">
-                    <h3>Group Questions</h3>
+            <div class="questions-wrapper">
+                <div class="questions-condition col-sm-3">
+                    <p><input type="checkbox" checked> Group</p>
+                    <p><input type="checkbox" checked> Single</p>
+                </div>
+                <div class="questions-items col-sm-9">
                     {% for m in multi_question %}
-                        <div class="question-div col-sm-10 col-sm-offset-1">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <a href="{% url 'v1:get_multiple_vote' api_key m.group_name %}"><button class="btn btn-default">Answer</button></a>
-                                    <a href="{% url 'v1:multiple_dashboard' api_key m.group_name %}"><button class="btn btn-default">Dashboard</button></a>
-                                    <button class="btn btn-danger multi-delete-btn" gid="{{ m.id }}">Delete</button>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">id</button>
-                                        {{ m.id }}
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">group_name</button>
-                                        {{ m.group_name }}
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">question_count</button>
-                                        {{ m.get_question_count }}
-                                    </div>
+                        <a href="{% url 'v1:multiple_dashboard' api_key m.group_name %}">
+                            <div class="questions-element">
+                                <div class="questions-element-status ongoing">Ongoing</div>
+                                <button class="questions-element-delete btn btn-danger multi-delete-btn" gid="{{ m.id }}"><i class="fa fa-close"></i></button>
+                                <div class="questions-element-title">{{ m.group_name }}</div>
+                                <div class="questions-element-info">
+                                    <div class="element-title">Questions</div>
+                                    <div class="element-data">{{ m.get_question_count }}</div>
+                                    <div class="element-title">Useranswers</div>
+                                    <div class="element-data">{{ m.get_useranswer_count }}</div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
+                    {% empty %}
+                        <a href="{% url 'v1:new' api_key %}">
+                            <div class="questions-element questions-element-empty">
+                                There is no group question. How about making this now?
+                            </div>
+                        </a>
                     {% endfor %}
-                    <hr>
-                    <div>
-                        <h3 class="col-sm-12">Single Questions</h3>
-                    </div>
                     {% for q in single_question %}
-                        <div class="question-div col-sm-10 col-sm-offset-1">
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
-                                    <a href="{% url 'v1:get_vote' api_key q.id %}"><button class="btn btn-default">Answer</button></a>
-                                    <a href="{% url 'v1:dashboard' api_key q.id %}"><button class="btn btn-default">Dashboard</button></a>
-                                    <button class="btn btn-danger single-delete-btn" qid="{{ q.id }}" qt="{{ q.question_title }}">Delete</button>
-                                </div>
-                                <div class="panel-body">
-                                    <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">id</button>
-                                        {{ q.id }}
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">question_text</button>
-                                        {{ q.question_text }}
-                                    </div>
-                                    <div class="col-sm-12">
-                                        <button class="btn btn-default col-sm-5">question_title</button>
-                                        {{ q.question_title }}
-                                    </div>
+                        <a href="{% url 'v1:dashboard' api_key q.id %}">
+                            <div class="questions-element">
+                                <div class="questions-element-status ongoing">Ongoing</div>
+                                <button class="questions-element-delete btn btn-danger single-delete-btn" qid="{{ q.id }}" qt="{{ q.question_title }}"><i class="fa fa-close"></i></button>
+                                <div class="questions-element-title">{{ q.question_title}}</div>
+                                <div class="questions-element-info">
+                                    <div class="element-title">Questions</div>
+                                    <div class="element-data">1</div>
+                                    <div class="element-title">Useranswers</div>
+                                    <div class="element-data">{{ q.get_useranswer_count }}</div>
                                 </div>
                             </div>
-                        </div>
-                        <hr>
+                        </a>
+                    {% empty %}
+                        <a href="{% url 'v1:new' api_key %}">
+                            <div class="questions-element questions-element-empty">
+                                There is no single question. Let's try this now!
+                            </div>
+                        </a>
                     {% endfor %}
                 </div>
             </div>

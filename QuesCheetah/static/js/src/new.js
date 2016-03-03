@@ -61,34 +61,34 @@ export function New(){
                 '<form class="form-horizontal" action="" method="post">\
                 <input type="hidden" value="{{ api_key }}" name="api_key">\
                     <div class="form-group">\
-                        <label for="question_title" class="col-sm-2 control-label">질문 제목</label>\
-                        <div class="col-sm-10">\
-                            <input type="text" class="form-control" id="question_title" name="question_title" placeholder="관리자가 보는 질문 제목을 입력하세요.(중복 불가)">\
+                        <label for="question_title" class="col-sm-4 control-label">Question title</label>\
+                        <div class="col-sm-8">\
+                            <input type="text" class="form-control" id="question_title" name="question_title" placeholder="Enter question title for admin. (Please avoid duplication.)">\
                         </div>\
                     </div>\
                     <div class="form-group">\
-                        <label for="question_text" class="col-sm-2 control-label">질문</label>\
-                        <div class="col-sm-10">\
-                            <input type="text" class="form-control" id="question_text" name="question_text" placeholder="질문을 입력하세요.">\
+                        <label for="question_text" class="col-sm-4 control-label">Question text</label>\
+                        <div class="col-sm-8">\
+                            <input type="text" class="form-control" id="question_text" name="question_text" placeholder="Enter question text.">\
                         </div>\
                     </div>\
                     <hr>\
                     <div class="answer-wrapper">\
                         <div class="form-group answer">\
-                            <label for="answer1" class="col-sm-2 control-label">보기1</label>\
-                            <div class="col-sm-10">\
+                            <label for="answer1" class="col-sm-4 control-label">Answer text1</label>\
+                            <div class="col-sm-8">\
                                 <input type="text" class="form-control" id="answer1" placeholder="answer1", name="answer1">\
                             </div>\
                         </div>\
                         <div class="form-group answer">\
-                            <label for="answer2" class="col-sm-2 control-label">보기2</label>\
-                            <div class="col-sm-10">\
+                            <label for="answer2" class="col-sm-4 control-label">Answer text2</label>\
+                            <div class="col-sm-8">\
                                 <input type="text" class="form-control" id="answer2" placeholder="answer2", name="answer2">\
                             </div>\
                         </div>\
                     </div>\
-                    <div>\
-                        <button class="btn btn-info add-answer-btn" id="">보기 추가하기</button>\
+                    <div class="answer-btn">\
+                        <button class="btn btn-default add-answer-btn" id="">Add answer</button>\
                     </div>\
                     <hr>\
                 </form></div>';
@@ -106,8 +106,8 @@ export function New(){
         if(newNum > 10){
         }else{
             $('.tab-pane.active .answer-wrapper').append('<div class="form-group answer">\
-                    <label for="answer'+newNum+'" class="col-sm-2 control-label">보기'+newNum+'</label>\
-                    <div class="col-sm-10">\
+                    <label for="answer'+newNum+'" class="col-sm-4 control-label">Answer text'+newNum+'</label>\
+                    <div class="col-sm-8">\
                         <input type="text" class="form-control" id="answer'+newNum+'" placeholder="answer'+newNum+'", name="answer'+newNum+'">\
                     </div>\
                 </div>');
@@ -156,10 +156,11 @@ export function New(){
                     'questions': questions,
                     'answers': answers
                 };
+                qc.apiKey = $('input[name="api_key"]').val();
                 qc.createGroup(params, function(){
-                    location.reload();
+                    //location.reload();
                 });
-                location.reload();
+                //location.reload();
                 return false;
             }(); i++) {
                 var question_title = escapeHtml($('#question_' + i + ' input[name="question_title"]').val());

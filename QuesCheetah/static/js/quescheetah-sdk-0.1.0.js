@@ -102,7 +102,7 @@ QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCal
     //request.setRequestHeader("jwt", "your jwt value");
     //request.setRequestHeader("kid", "2");
 
-    request.setRequestHeader("api-key", "a6a9bc92735ef12e8ba952265f334ba65739b5fc");
+    request.setRequestHeader("api-key", self.apiKey);
     request.setRequestHeader("Content-Type", "application/json");
 
     request.onload = function () {

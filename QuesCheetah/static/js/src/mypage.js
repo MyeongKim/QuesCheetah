@@ -19,10 +19,14 @@ export function Mypage(){
         var empty = false;
         $.each(post_data, function(key, value){
             if (!value || value=='None'){
-                $('#jwt-error').html('<p class="alert alert-danger">You should create api key and secret key first.</p>');
+                $('#jwt-error').addClass('alert');
+                $('#jwt-error').addClass('alert-danger');
+                $('#jwt-error').html('You should create api key and secret key first.');
                 empty = true
             }
             else{
+                $('#jwt-error').removeClass('alert');
+                $('#jwt-error').removeClass('alert-danger');
                 $('#jwt-error').text('');
             }
         });

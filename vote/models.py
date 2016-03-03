@@ -26,6 +26,9 @@ class MultiQuestion(models.Model):
     def get_question_count(self):
         return self.question_elements.filter(is_removed=False).count()
 
+    @property
+    def get_useranswer_count(self):
+        return sum(int(question.get_useranswer_count) for question in self.question_elements.all())
 
 class Question(models.Model):
     TYPE_SURVEY = 'SURV'
@@ -60,6 +63,10 @@ class Question(models.Model):
 
     def __str__(self):
         return 'id:{},{}'.format(self.id, self.question_text)
+
+    @property
+    def get_useranswer_count(self):
+        return sum(int(answer.get_answer_count) for answer in self.answers.all())
 
     @classmethod
     def check_same_title(cls, api_key, new_title):

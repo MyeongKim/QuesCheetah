@@ -4,77 +4,129 @@
 
 {% block stylesheet %}
     <style>
-        .account-info-dev{
-            text-align: center;
+        .account-wrapper{
+            height: auto;
+            width: 770px;
+            margin: 0 auto;
+            padding: 40px 30px;
+            min-height: 300px;
+            overflow: hidden;
         }
 
-        .account-info-dev button{
-            margin-bottom: 5px;
+        .account-wrapper .account-col p{
+            border-bottom: solid #cfcfcf 1px;
+            height: 50px;
+            padding: 14px;
+            font-size:15px
         }
 
-        .api-key-info{
-            margin-top: 20px;
+        .account-wrapper .account-col p.border-remove{
+            border-bottom: none;
+        }
+
+        .account-wrapper .account-content p{
+            height: 50px;
+            padding: 14px;
+            font-size:15px
+        }
+
+        .account-wrapper .account-content .account-content-jwt{
+            height: 150px;
+            padding: 14px;
+            width: 400px;
+        }
+
+        .account-wrapper .account-content .account-content-jwt div{
+            margin-bottom: 10px;
+        }
+
+        .account-wrapper .account-content .account-content-jwt div div{
+            display: inline-block;
+            width: 100px;
+        }
+
+        .account-wrapper .account-jwt-date{
+            display: inline-block;
+            width: 180px;
+            margin-left: 30px;
+        }
+
+        .account-content .account-content-jwt #new-jwt-btn{
+            width: 70px;
+            margin-left: 240px;
+        }
+
+        .account-content .account-apikey-new{
+            height: 50px;
+            padding: 14px;
+        }
+
+        .account-content .account-apikey-new button{
+{#            height: 22px;#}
+        }
+
+
+        .account-content .account-url{
+            min-height: 200px;
+            padding: 14px;
+        }
+
+        .account-content .account-url .form-group input{
+            width: 90%;
+            display: inline-block;
         }
     </style>
 {% endblock %}
 {% block content %}
-    <h1>This is user page. Thank you!</h1>
     <div class="row account-info-dev">
-        <div class="col-sm-6 col-sm-offset-3">
-            <div class="col-sm-12">
-                <button class="btn btn-default col-sm-2">Email</button>
-                {{ user.email }}
+        <div class="account-wrapper">
+            <div class="account-col col-sm-4">
+                <!--<p>Id</p>-->
+                <p>Email</p>
+                {% if api_key %}
+                    <p>Api key</p>
+                    <p class="border-remove">Secret key</p>
+                    <p></p>
+                    <p class="border-remove">Json Web Token</p>
+                    <p class="border-remove"></p>
+                    <p class="border-remove"></p>
+                    <p></p>
+                    <p class="border-remove">Authenticated URLs</p>
+                {% else %}
+                    <p class="border-remove">Api key</p>
+                {% endif %}
             </div>
-            <div class="col-sm-12">
-                <button class="btn btn-default col-sm-2">Id</button>
-                {{ userId }}
-            </div>
-            {% if api_key %}
-                <div class="col-sm-12">
-                    <button class="btn btn-default col-sm-2">Api key</button>
-                    <a href="{% url 'v1:select_question' api_key.key %}" id="key_value" value="{{ api_key.key }}">{{ api_key.key }}</a>
-                </div>
-                <div class="col-sm-12">
-                    <button class="btn btn-default col-sm-2">Secret key</button>
-                    <div class="col-sm-10">
+            <div class="account-content col-sm-8">
+                <!--<p>{{ userId }}</p>-->
+                <p>{{ user.email }}</p>
+                {% if api_key %}
+                    <p><a href="{% url 'v1:select_question'%}" id="key_value" value="{{ api_key.key }}">{{ api_key.key }}</a></p>
+                    <p>
                         <a id="secret_value" value="{{ api_key.secret_key }}">{{ api_key.secret_key }}</a>
                         <a href="{% url 'main:secret_key_new' api_key.key %}"class="btn btn-info">renew</a>
-                        <p class="help-block">If secret key is regenerated, prior JWT can not be used.</p>
-                    </div>
-                </div>
-                <div class="col-sm-12">
-                    <button class="btn btn-default col-sm-2">JWT</button>
-                    <div class="col-sm-4">
-                        <label class="col-sm-4 control-label">Expiration</label>
-                        <div class="col-sm-8">
-                            <input type="date" class="form-control" id="exp">
+                    </p>
+                    <p class="help-block">If secret key is regenerated, prior JWT can not be used.</p>
+                    <!--json web token-->
+                    <div class="account-content-jwt">
+                        <div>
+                            <div>Expiration</div>
+                            <input type="date" class="account-jwt-date form-control" id="exp">
                         </div>
-                    </div>
-                    <div class="col-sm-4">
-                        <label class="col-sm-4 control-label">Not before</label>
-                        <div class="col-sm-8">
-                            <input type="date" class="form-control" id="nbf">
+                        <div>
+                            <div>Not before</div>
+                            <input type="date" class="account-jwt-date form-control" id="nbf">
                         </div>
+                        <a href="" class="btn btn-primary" id="new-jwt-btn">create</a>
                     </div>
-                    <a href="" class="btn btn-primary" id="new-jwt-btn">create</a>
-                    <div class="col-sm-10 col-sm-offset-2">
-                        <p class="help-block" id="jwt-error"></p>
-                    </div>
-                </div>
-            {% else %}
-                <div class="col-sm-12 api-key-info">
-                    <p class="text-primary">You don't have a api key.</p>
-                    <a href="{% url 'main:apikey_new' %}" class="btn btn-primary">new api key </a>
-                </div>
-            {% endif %}
-            <div class="col-sm-12">
-                <button class="btn btn-default col-sm-2">Site URL</button>
-                <div class="col-sm-10">
+                    <p class="help-block" id="jwt-error">Select date properties of your JWT.</p>
+
+                <div class="account-url">
                     <table class="table table-striped">
                         <thead>
                         <tr>
                             <th>#</th>
                             <th>URL</th>
+                            <th></th>
                         </tr>
                         </thead>
                         <tbody>
@@ -82,20 +134,29 @@
                             <tr>
                                 <th>{{ forloop.counter }}</th>
                                 <th>{{ domain }}</th>
+                                <th><i class="fa fa-remove"></i></th>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
-                    <form class="form-inline" action="/domain/new" method="post">
+                    <form class="form" action="/domain/new" method="post">
                         {% csrf_token %}
                         <div class="form-group">
                             <input type="hidden" value="{{ api_key.key }}" name="api_key">
                             <input type="text" class="form-control" name="domain" placeholder="My domain">
                             <button type="submit" class="btn btn-default">+</button>
-                            <p class="help-block">Set a domain you want to accept in this api key.</p>
                         </div>
                     </form>
                 </div>
+                <p class="help-block">Set a domain you want to accept in this api key.</p>
+                {% else %}
+                    <div class="account-apikey-new">
+                        <form action="/apikey/new" method="post">
+                            {% csrf_token %}
+                            <button class="btn btn-success" type="submit">Get my api key</button>
+                        </form>
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
