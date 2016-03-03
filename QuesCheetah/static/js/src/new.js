@@ -158,9 +158,9 @@ export function New(){
                 };
                 qc.apiKey = $('input[name="api_key"]').val();
                 qc.createGroup(params, function(){
-                    //location.reload();
+                    location.reload();
                 });
-                //location.reload();
+                location.reload();
                 return false;
             }(); i++) {
                 var question_title = escapeHtml($('#question_' + i + ' input[name="question_title"]').val());

@@ -12,6 +12,15 @@
         .answerBtn{
             width: 45%;
         }
+
+        .action-wrapper{
+            width: 300px;
+            margin: 0 auto;
+        }
+
+        .nav-tabs a{
+            color: #999;
+        }
     </style>
 {% endblock %}
 {% block content %}
@@ -20,10 +29,10 @@
     <h1>You can vote here.</h1>
     <div id="helper-msg"></div>
     <div class="row">
-        <div class="col-sm-4 col-sm-offset-4">
+        <div class="action-wrapper">
             <ul class="nav nav-tabs" role="tablist">
                 {% for key, value in questions.items|itemsort %}
-                    <li tab="{{ key }}"" role="presentation" q_id="{{ value.id }}"><a href="#q{{ value.id }}" aria-controls="q{{ value.id }}" role="tab" data-toggle="tab">Q{{ key }}</a></li>
+                    <li tab="{{ key }}" role="presentation" q_id="{{ value.id }}"><a href="#q{{ value.id }}" aria-controls="q{{ value.id }}" role="tab" data-toggle="tab">Q{{ key }}</a></li>
                 {% endfor %}
             </ul>
             <div class="tab-content">
@@ -37,7 +46,7 @@
                                 {% with answerDict=answers|get_value:key %}
                                     {% for ak, av in answerDict.items|itemsort %}
                                         <button class="btn btn-default multi answerBtn" type="button" a_num="{{ ak }}" q_id="{{ value.id }}">
-                                            {{ av.answer_text }}<span class="badge">{{ av.answer_count }}</span>
+                                            {{ av.answer_text }}
                                         </button>
                                     {% endfor %}
                                 {% endwith %}

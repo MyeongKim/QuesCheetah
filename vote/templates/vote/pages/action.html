@@ -11,14 +11,18 @@
         .panel-body{
             text-align: center;
         }
+
+        .action-wrapper{
+            width: 300px;
+            margin: 0 auto;
+        }
     </style>
 {% endblock %}
 {% block content %}
     {{ msg }}
     <div class="row">
-    <h1>You can vote here.  Create useranswer</h1>
     <div id="helper-msg"></div>
-    <div class="col-sm-4 col-sm-offset-4">
+    <div class="action-wrapper">
         <ul class="nav nav-tabs" role="tablist">
             <li role="presentation" class="active" q_id="107"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Q1</a></li>
         </ul>
@@ -31,7 +35,7 @@
                     <div class="panel-body">
                         {% for a in answers|dictsort:"answer_num" %}
                                 <button class="btn btn-default single answerBtn" type="button" a_num="{{ a.answer_num }}" q_id="{{ id }}">
-                                    {{ a.answer_text }}<span class="badge">{{ a.answer_count }}</span>
+                                    {{ a.answer_text }}
                                 </button>
                         {% endfor %}
                     </div>
