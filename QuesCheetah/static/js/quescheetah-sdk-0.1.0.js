@@ -53,6 +53,11 @@ QuesCheetah.prototype.createUserAnswer = function (params, success, error) {
     this.doPost(url, "POST", params, successWithSend, error)
 };
 
+QuesCheetah.prototype.getGroup = function (params, success, error) {
+    var url = this.baseUrl+'groups/'+params.group_id;
+    this.doPost(url, "GET", params, success, error)
+};
+
 QuesCheetah.prototype.getQuestion = function (params, success, error) {
     var url = this.baseUrl+'questions/'+params.question_id;
     this.doPost(url, "GET", params, success, error)

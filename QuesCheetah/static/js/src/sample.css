@@ -1,0 +1,26 @@
+.action-wrapper{
+    min-width: 300px;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.action-wrapper .panel-heading{
+    text-align: left;
+}
+
+.action-wrapper .panel-body{
+    text-align: center;
+}
+
+.action-wrapper .answerBtn{
+    width: 45%;
+    margin: 2.5%;
+}
+
+.action-wrapper .answerBtn[disabled='disabled']{
+   cursor: auto;
+}
+
+.action-wrapper .nav-tabs a{
+    color: #999;
+}

@@ -37,6 +37,7 @@ System.config({
     "babel-runtime": "npm:babel-runtime@5.8.35",
     "bootstrap": "github:twbs/bootstrap@3.3.6",
     "core-js": "npm:core-js@1.2.6",
+    "css": "github:systemjs/plugin-css@0.1.20",
     "highcharts": "npm:highcharts-release@4.2.3",
     "highstock": "npm:highcharts-release@4.2.3/highstock.js",
     "jquery": "npm:jquery@2.2.0",
@@ -44,6 +45,7 @@ System.config({
     "qc-sdk": "js/quescheetah-sdk-0.1.0.js",
     "submit": "js/submit.js",
     "systemjs": "npm:systemjs@0.19.18",
+    "text": "github:systemjs/plugin-text@0.0.7",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },
@@ -77,10 +79,6 @@ System.config({
       "systemjs-json": "github:systemjs/plugin-json@0.1.0",
       "util": "github:jspm/nodelibs-util@0.1.0",
       "when": "npm:when@3.7.7"
-    },
-    "npm:highcharts-browserify@2.0.2": {
-      "highcharts-release": "npm:highcharts-release@4.2.3",
-      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:highcharts-release@4.2.3": {
       "process": "github:jspm/nodelibs-process@0.1.2"

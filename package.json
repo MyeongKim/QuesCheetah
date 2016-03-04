@@ -3,8 +3,7 @@
   "version": "0.0.1",
   "description": "<img src=\"./QuesCheetah/static/images/quescheetah-logo.png\" width=\"400\">",
   "main": "index.js",
-  "scripts": {
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mingkim/QuesCheetah.git"
@@ -24,25 +23,16 @@
     },
     "dependencies": {
       "bootstrap": "github:twbs/bootstrap@^3.3.6",
+      "css": "github:systemjs/plugin-css@^0.1.20",
       "highcharts-browserify": "npm:highcharts-browserify@^2.0.2",
       "jquery": "npm:jquery@^2.2.0",
-      "systemjs": "npm:systemjs@^0.19.18"
+      "systemjs": "npm:systemjs@^0.19.18",
+      "text": "github:systemjs/plugin-text@^0.0.7"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.8.24",
       "babel-runtime": "npm:babel-runtime@^5.8.24",
       "core-js": "npm:core-js@^1.1.4"
-    },
-    "overrides": {
-      "npm:highcharts-browserify@2.0.2": {
-        "shim": {
-          "highcharts-browserify": {
-            "deps": [
-              "jquery"
-            ]
-          }
-        }
-      }
     }
   },
   "dependencies": {
