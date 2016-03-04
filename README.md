@@ -12,9 +12,9 @@ Web SDK for the easy Q&A of your site.
 
 [On developing yet.]()
 
-**Source code**
+**Sample code**
 
-[https://github.com/mingkim/QuesCheetah](https://github.com/mingkim/QuesCheetah)
+[https://github.com/mingkim/QuesCheetah_sample](https://github.com/mingkim/QuesCheetah_sample)
 
 **REST API Documentation**
 
