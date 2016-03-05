@@ -3,10 +3,15 @@ import $ from "bootstrap";
 
 import { qc } from "../quescheetah-init.js";
 
+import sample_text from "./sample.html!text";
+import "./sample.css!css";
+
 // This function is based on the site which has only one vote per pages.
 // For using multiple votes in one page, getting ID(question / group) and
 // cookie setting part should be changed.
 export function Sample(){
+    $('#systemjs-sample').html(sample_text);
+
     // Get id information from DOM element
     var qid = $('#systemjs-sample').attr('qid');
     var gid = $('#systemjs-sample').attr('gid');
