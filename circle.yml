@@ -1,12 +1,20 @@
+deployment:
+  dockerhub:
+    branch: master
+    commands:
+      - $DOCKER_HUB_TRIGGER
+
 machine:
   python:
     version: 3.4.3
   environment:
     BUILD_ON_CRICLE: true
+
 database:
   pre:
     - python manage.py makemigrations
     - python manage.py migrate
+
 dependencies:
   pre:
     - sudo apt-get update
