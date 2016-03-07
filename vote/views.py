@@ -106,49 +106,23 @@ def get_multiple_vote(request, api_key, group_name):
     return render(request, 'vote/pages/multi_action.html', context)
 
 
-def dashboard(request, api_key, question_id):
+def dashboard_overview(request, question_id):
     context = {
-        'api_key': api_key
+
     }
-    '''
-    request to full_view_answer rest api
-    '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/SimpleResult'
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-    return render(request, 'vote/pages/dashboard.html', context)
-
-
-def multiple_dashboard(request, api_key, group_name):
-    context = {
-        'api_key': api_key
-    }
-
-    try:
-        a = ApiKey.objects.get(key=api_key)
-        m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
-    except ObjectDoesNotExist:
-        desc = 'The MultiQuestion does not exist in followed api key.'
-        messages.add_message(request, messages.ERROR, desc)
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
         return redirect('main:user_mypage', request.user.id)
-
-    questions = m.question_elements.filter(is_removed=False)
-    length = questions.count()
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
 
     '''
-    request to simple_view_answer rest api
+    request question data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(m.id)
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -161,10 +135,271 @@ def multiple_dashboard(request, api_key, group_name):
         return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
-    context.update({'length': length})
 
-    return render(request, 'vote/pages/multi_dashboard.html', context)
+    '''
+    request useranswer data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/answers/useranswers'
 
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    return render(request, 'vote/pages/dashboard_overview.html', context)
+
+
+def dashboard_filter(request, question_id):
+    context = {
+
+    }
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
+
+    '''
+    request question data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    '''
+    request useranswer data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/answers/useranswers'
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+    return render(request, 'vote/pages/dashboard_filter.html')
+
+
+def dashboard_users(request, question_id):
+    context = {
+
+    }
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
+
+    '''
+    request question data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    '''
+    request useranswer data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/answers/useranswers'
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+    return render(request, 'vote/pages/dashboard_users.html')
+
+
+def dashboard_group_overview(request, group_id):
+    context = {
+
+    }
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
+
+    '''
+    request group data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    '''
+    request useranswer data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(group_id)+'/answers/useranswers'
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+    return render(request, 'vote/pages/dashboard_users.html')
+
+
+def dashboard_group_filter(request, group_id):
+    context = {
+
+    }
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
+
+    '''
+    request group data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    '''
+    request useranswer data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(group_id)+'/answers/useranswers'
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+    return render(request, 'vote/pages/dashboard_users.html')
+
+
+
+def dashboard_group_users(request, group_id):
+    context = {
+
+    }
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
+
+    '''
+    request group data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    '''
+    request useranswer data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/questions/'+str(group_id)+'/answers/useranswers'
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+    return render(request, 'vote/pages/dashboard_users.html')
 
 def match_domain(request):
     api_key = get_api_key(request)
@@ -1217,9 +1452,11 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
-    def get(self, request, question_id, *args, **kwargs):
+    def get(self, request, *args, **kwargs):
+        question_id = kwargs.get('question_id')
         unique_user = kwargs.get('unique_user')
         answer_num = kwargs.get('answer_num')
+        group_id = kwargs.get('group_id')
         if match_domain(request):
             api_key = get_api_key(request)
             if not api_key:
@@ -1230,17 +1467,18 @@ class Useranswers(View):
                 'useranswers': {}
             }
 
-            try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-            except ObjectDoesNotExist:
-                desc = 'The Question does not exist in followed api key.'
-                return error_return(desc, 404)
+            if not group_id:
+                try:
+                    a = ApiKey.objects.get(key=api_key)
+                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                except ObjectDoesNotExist:
+                    desc = 'The Question does not exist in followed api key.'
+                    return error_return(desc, 404)
 
             '''
             case 1. get all useranswers
             '''
-            if not unique_user and not answer_num:
+            if not unique_user and not answer_num and not group_id:
                 try:
                     answers = Answer.objects.filter(question=q, is_removed=False)
                 except ObjectDoesNotExist:
@@ -1317,6 +1555,43 @@ class Useranswers(View):
                     "created_dt": useranswer.created_dt
                 })
                 return JsonResponse(response_dict)
+            '''
+            case 4. get all useranswers of one group
+            '''
+            if group_id:
+                try:
+                    questions = Question.objects.filter(multi_question_id=group_id)
+                except ObjectDoesNotExist:
+                    desc = 'The question does not exist in followed group_id.'
+                    return error_return(desc, 404)
+
+                for q in questions:
+                    response_dict['useranswers'].update({
+                            q.question_num : {}
+                        })
+
+                    try:
+                        answers = Answer.objects.filter(question=q, is_removed=False)
+                    except ObjectDoesNotExist:
+                        continue
+
+                    for a in answers:
+                        response_dict['useranswers'][q.question_num].update({
+                            a.answer_num : []
+                        })
+                        try:
+                            useranswers = UserAnswer.objects.filter(answer=a, is_removed=False)
+                        except UserAnswer.DoesNotExist:
+                            continue
+
+                        for u in useranswers:
+                            response_dict['useranswers'][q.question_num][a.answer_num].append({
+                                "unique_user": u.unique_user,
+                                "id": u.id,
+                                "created_dt": u.created_dt
+                            })
+                return JsonResponse(response_dict)
+
         else:
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)

@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.views.decorators.cache import cache_page, cache_control, never_cache
 from django.views.decorators.csrf import csrf_exempt
 from main.forms import UserCreationForm
 from main.models import User, ApiKey, Domain
@@ -14,7 +15,6 @@ from main.models import User, ApiKey, Domain
 from urllib.parse import urlparse
 import json
 import jwt
-
 
 def index(request):
     context = {
@@ -95,7 +95,7 @@ def user_logout(request):
     logout(request)
     return redirect('main:index')
 
-
+@never_cache
 @login_required
 def user_mypage(request, id):
     context = {
@@ -107,7 +107,8 @@ def user_mypage(request, id):
         a = ApiKey.objects.get(user=u)
         d = Domain.objects.filter(api_key=a)
     except ObjectDoesNotExist:
-        pass
+        a = None
+        d = None
 
     context.update({
         'api_key': a,
@@ -122,8 +123,6 @@ def apikey_new(request):
     if request.method == 'POST':
         ApiKey.objects.generate(request.user)
         return redirect('main:user_mypage', request.user.id)
-    else:
-        return render(request, 'main/pages/apikey_new.html', context)
 
 
 @login_required
@@ -188,12 +187,3 @@ def jwt_new(request):
         return JsonResponse({'jwt': str(encoded.decode('utf-8'))})
     else:
         return JsonResponse({'error': 'Not valid secret key.'})
-
-def dashboard_overview(request):
-    return render(request, 'vote/pages/multi_dashboard.html')
-
-def dashboard_filter(request):
-    return render(request, 'vote/pages/multi_dashboard_2.html')
-
-def dashboard_users(request):
-    return render(request, 'vote/pages/multi_dashboard_3.html')
