@@ -332,12 +332,20 @@
                             var qcStockData = [];
 
                             qcStockData[0] = {data: []};
+                            var sort_array= [];
                             $.each(data['useranswers'], function(answer_num, answer_value){
-                                $.each(answer_value, function(index, useranswer_value){
-                                    qcStockData[0]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), Number(answer_num)]);
-                                });
+                                // If answer list is not empty
+                                if (answer_value[0]) {
+                                    $.each(answer_value, function (index, answer) {
+                                        sort_array.push(answer);
+                                    });
+                                }
+
                             });
-                            qcStockData[0]['data'].sort(function(a, b){return a[0]- b[0]});
+                            sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+                            $.each(sort_array, function(index, useranswer_value){
+                                qcStockData[0]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
+                            });
 
                             $('#container1').highcharts('StockChart', {
                                 rangeSelector: {

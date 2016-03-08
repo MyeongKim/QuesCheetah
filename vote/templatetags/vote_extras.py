@@ -1,5 +1,5 @@
 from django import template
-from django.template.defaultfilters import stringfilter
+import collections
 
 register = template.Library()
 
@@ -14,3 +14,11 @@ def get_value(dic, key):
 def itemsort(dic):
     """sort set """
     return sorted(dic)
+
+@register.filter
+def dictsort(value):
+    new_dict = collections.OrderedDict()
+    key_list = sorted(value)
+    for key in key_list:
+        new_dict[key] = value[key]
+    return new_dict

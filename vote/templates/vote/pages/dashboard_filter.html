@@ -1,7 +1,7 @@
 {% extends 'vote/pages/dashboard_overview.html' %}
 
 {% load staticfiles %}
-
+{% load vote_extras %}
 {% block stylesheet %}
     {{ block.super }}
     <style>
@@ -55,10 +55,21 @@
         .filter-question-navi a{
             color: #3E3B3B;
         }
-    
-        .dropdown-menu{
-            width: 100%;
+
+        #filter-time-chart-title{
+            text-align: center;
+            margin-top: 50px;
         }
+
+        .filter-question-element:hover{
+            cursor: pointer;
+        }
+
+        .filter-question-element.active{
+            font-weight: bold;
+            color: #000;
+        }
+
     </style>
 {% endblock %}
 
@@ -67,89 +78,61 @@
         <div class="filter-checkbox-wrapper">
             <div class="col-sm-3 filter-questions">
                 <p class="p-title">Questions</p>
-                <p><input type="checkbox"> Q1</p>
-                <p><input type="checkbox"> Q2</p>
-                <p><input type="checkbox"> Q3</p>
-                <p><input type="checkbox"> Q4</p>
-                <p><input type="checkbox"> Q5</p>
+                {% with sorted_questions=questions|dictsort %}
+                    {% for question_num, question_val in sorted_questions.items %}
+                        <p class="filter-question-element"><input type="checkbox" checked q_num="{{ question_num }}"> {{ question_val.question_text }}</p>
+                    {% endfor %}
+                {% endwith %}
             </div>
             <div class="col-sm-3 filter-answers">
                 <p class="p-title">Answers</p>
-                <p><input type="checkbox"> Answer1</p>
-                <p><input type="checkbox"> Answer2</p>
-                <p><input type="checkbox"> Answer3</p>
-                <p><input type="checkbox"> Answer4</p>
-                <p><input type="checkbox"> Answer5</p>
+                {% with sorted_answers=answers|dictsort %}
+                    {% for question_num, question_val in sorted_answers.items %}
+                        {% with sorted_question_val=question_val|dictsort %}
+                        <div id="answers-filter-q{{ question_num }}" style="display: none;">
+                            {% for answer_num, answer_val in sorted_question_val.items %}
+                                <p><input type="checkbox" q_num={{ question_num }} a_num={{ answer_num }} checked> {{ answer_val.answer_text }}</p>
+                            {% endfor %}
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                {% endwith %}
             </div>
             <div class="col-sm-6 filter-selected">
                 <p class="p-title">Selected</p>
-                <div class="">
-                    <h4>
+                {% with sorted_questions=questions|dictsort %}
+                    {% for question_num1, question_val in sorted_questions.items %}
+                        <h4>
                         <a href="#">
-                            <span class="label label-primary">Q1 <i class="fa fa-times"></i></span>
+                            <span class="label label-primary label-question" q_num="{{ question_num1 }}">Q{{ question_num1 }} <i class="fa fa-times"></i></span>
                         </a>
-                        <a href="#"><span class="label label-default">Answer1 <i class="fa fa-times"></i></span></a>
-                        <a href="#"><span class="label label-default">Answer2 <i class="fa fa-times"></i></span></a>
-                    </h4>
-                </div>
-                <div class="">
-                    <h4>
-                        <a href="#"><span class="label label-primary">Q2 <i class="fa fa-times"></i></span></a>
-                        <a href="#"><span class="label label-default">Answer1 <i class="fa fa-times"></i></span></a>
-                        <a href="#"><span class="label label-default">Answer2 <i class="fa fa-times"></i></span></a>
-                        <a href="#"><span class="label label-default">Answer3 <i class="fa fa-times"></i></span></a>
-                    </h4>
-                </div>
-            </div>
-        </div>
-        <div class="filter-question-navi row">
-            <div class="col-sm-3">
-                <div class="dropdown">
-                    <a id="navi-drop1" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
-                        Q1 text ?
-                    </a>
-                    <ul class="dropdown-menu" aria-labelledby="navi-drop1">
-                        <li><a href="#">Answer1</a></li>
-                        <li><a href="#">Answer2</a></li>
-                        <li><a href="#">Answer3</a></li>
-                    </ul>
-                </div>
-                <div class="appended-answer" id="appended-1"></div>
-            </div>
-            <div class="col-sm-3">
-                <div class="dropdown">
-                    <a id="navi-drop2" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
-                        Q2 text ?
-                    </a>
-                    <span><i class="fa fa-close"></i></span>
-                    <ul class="dropdown-menu" aria-labelledby="navi-drop2">
-                        <li><a href="#">Answer1</a></li>
-                        <li><a href="#">Answer2</a></li>
-                        <li><a href="#">Answer3</a></li>
-                    </ul>
-                </div>
-                <div class="appended-answer" id="appended-2"></div>
-            </div>
-            <div class="col-sm-3">
-                <div class="dropdown">
-                    <a id="navi-drop3" href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="false" aria-expanded="false">
-                        Q3 text ?
-                    </a>
-                    <span><i class="fa fa-close"></i></span>
-                    <ul class="dropdown-menu" aria-labelledby="navi-drop3">
-                        <li><a href="#">Answer1</a></li>
-                        <li><a href="#">Answer2</a></li>
-                        <li><a href="#">Answer3</a></li>
-                    </ul>
-                </div>
-                <div class="appended-answer" id="appended-3"></div>
+                        {% with sorted_answers=answers|dictsort %}
+                            {% for question_num2, question_val in sorted_answers.items %}
+                                {% ifequal question_num1 question_num2 %}
+                                    {% with sorted_question_val=question_val|dictsort %}
+                                            {% for answer_num, answer_val in sorted_question_val.items %}
+                                                <a href="#"><span class="label label-default label-answer" a_num="{{ answer_num }}" q_num="{{ question_num2 }}">{{ answer_val.answer_text }} <i class="fa fa-times"></i></span></a>
+                                            {% endfor %}
+                                    {% endwith %}
+                                {% endifequal %}
+                            {% endfor %}
+                        {% endwith %}
+                        </h4>
+                    {% endfor %}
+                {% endwith %}
+
+
             </div>
         </div>
         <div class="graph-test">
+            <h3 id="filter-time-chart-title">Filtered answers count time chart</h3>
+            <div class="col-sm-6" id="qc-filter-time-chart" style="width:100%; height:400px;"></div>
             <div class="row">
-                <div class="col-sm-6" id="container1" style="height:400px;"></div>
-                <div class="col-sm-6" id="container2" style="height:400px;"></div>
-                <div class="col-sm-6" id="container3" style="height:400px;"></div>
+            {% with sorted_questions=questions|dictsort %}
+                {% for question_num, question_val in sorted_questions.items %}
+                    <div class="col-sm-4" id="qc-filter-pie-chart{{ question_num }}" style="height:400px;"></div>
+                {% endfor %}
+            {% endwith %}
             </div>
         </div>
     </div>
@@ -158,9 +141,341 @@
 {% block script %}
     <script src="{% static 'bootstrap/js/bootstrap-switch.min.js' %}"></script>
     <script type="application/javascript">
-        System.import("{% static "js/src/chart2.js" %}");
+        System.import("{% static "js/src/chart.js" %}")
+                .then(function(){
+                    var time_chart_list = [];
+                    var pie_chart_list = [];
+                    var full_useranswer_time_data;
+                    var full_useranswer_count_data;
+
+                    // Choose one question to display answers.
+                    $('.filter-question-element').click(function(){
+                        $('[id^="answers-filter-q"]').hide();
+                        $('.filter-question-element').removeClass('active');
+
+                        var q_num = $(this).children('input').attr('q_num');
+                        $('#answers-filter-q'+q_num).show();
+                        $(this).addClass('active');
+
+                    });
+
+                    // Check and uncheck question
+                    $('.filter-question-element input').click(function(){
+                        var q_num = $(this).attr('q_num');
+                        if($(this).is(":checked")){
+                            // user checked
+
+                            // all answers become checked
+                            $('#answers-filter-q'+q_num+' input').prop('checked', true);
+                            // all selected label removed
+                            $('.filter-selected span[q_num="'+q_num+'"]').show();
+
+                            update_nums();
+                        }else{
+                            // user unchecked
+
+                            // all answers become unchecked
+                            $('#answers-filter-q'+q_num+' input').prop('checked', false);
+                            // all selected label removed
+                            $('.filter-selected span[q_num="'+q_num+'"]').hide();
+
+                            update_nums();
+                        }
+
+                    });
+
+                    // Check and uncheck answer
+                    $('.filter-answers input').click(function(){
+                        var q_num = $(this).attr('q_num');
+                        var a_num = $(this).attr('a_num');
+                        if($(this).is(":checked")){
+                            // user checked
+
+                            // selected label removed
+                            $('.filter-selected span[a_num="'+a_num+'"][q_num="'+q_num+'"]').show();
+
+                            if(!$('.filter-question-element input[q_num="'+q_num+'"]').is(":checked") ){
+                                // If unchecked question is checked by answer
+                                $('.filter-question-element input[q_num="'+q_num+'"]').prop('checked', true);
+                                $('.filter-selected .label-question[q_num="'+q_num+'"]').show();
+                            }
+                            update_nums();
+                        }else{
+                            // user unchecked
+
+                            // selected label removed
+                            $('.filter-selected span[a_num="'+a_num+'"][q_num="'+q_num+'"]').hide();
+
+                            if(!$('.filter-answers input[q_num="'+q_num+'"]').is(":checked")){
+                                // If all answers are unchecked, uncheck question.
+                                $('.filter-question-element input[q_num="'+q_num+'"]').click();
+                            }else{
+                                update_nums();
+                            }
+                        }
+                    });
+
+                    // Click selected label
+                    $('')
+
+                    // assign selected q_num, a_num values
+                    function update_nums(){
+                        var current_nums = {};
+                        $('.filter-selected .label-answer:visible').each(function(index){
+                            var q_num = $(this).attr('q_num');
+                            var a_num = $(this).attr('a_num');
+                            if(current_nums[q_num]){
+                                if($.inArray(a_num, current_nums[q_num]) < 0){
+                                    current_nums[q_num].push(a_num)
+                                }
+                            }else{
+                                current_nums[q_num] = [a_num]
+                            }
+                        });
+                        update_time_data(current_nums);
+                    }
+
+                    // Initiate with first question
+                    $('.filter-question-element:first').click();
+
+
+                    /// Dict argument example format is {'1':[1,2,3], '2':[1,2,3]}
+                    function update_time_data(dict){
+                        if ('{{ group_name }}'){
+                            // When page is dealing with group data.
+                            var updated_data = [];
+                            var count = 0;
+                            $.each(dict, function(question_num, answers){
+                                var sort_array = [];
+                                updated_data[count] = {data: []};
+
+                                $.each(answers, function(answer){
+                                    // If answer list is not empty
+                                    var selected_answer_list = full_useranswer_time_data['useranswers'][question_num][answer];
+                                    if (selected_answer_list){
+                                        $.each(selected_answer_list, function(index, answer_val){
+                                            sort_array.push(answer_val);
+                                        });
+                                    }
+
+                                    // Sort values by datetime of created_dt
+                                    sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+
+                                    // Make a new series list from sort_array
+                                    $.each(sort_array, function(index, useranswer_value){
+                                        updated_data[count]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
+                                    });
+                                });
+                                count++;
+                            });
+                            $('#qc-filter-time-chart').highcharts('StockChart', {
+                                rangeSelector: {
+                                    selected: 1
+                                },
+                                series: updated_data,
+                                plotOptions: {
+                                    series: {
+                                        allowPointSelect: true
+                                    }
+                                },
+                                yAxis: {
+                                    allowDecimals:false
+                                }
+                            });
+                        }else{
+                            // When page is dealing with single quesion data.
+                            var updated_data = [];
+                            $.each(dict, function(question_num, answers){
+                                var sort_array = [];
+                                updated_data[question_num-1] = {data: []};
+                                $.each(answers, function(answer){
+                                    // If answer list is not empty
+                                    var selected_answer_list = full_useranswer_time_data['useranswers'][answer];
+                                    if (selected_answer_list[0]){
+                                        $.each(selected_answer_list, function(index, answer_val){
+                                            sort_array.push(answer_val);
+                                        });
+                                    }
+
+                                    // Sort values by datetime of created_dt
+                                    sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+
+                                    // Make a new series list from sort_array
+                                    $.each(sort_array, function(index, useranswer_value){
+                                    updated_data[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
+                                    });
+                                });
+                            });
+                            $('#qc-filter-time-chart').highcharts('StockChart').series[0].setData(updated_data);
+                        }
+                    }
+
+                    function update_count_data(){
+
+                    }
+
+                    $.ajaxSetup({
+                        headers : {
+                            'api-key' : '4ae1772ba6c8439a8249901cdeffa7fe10900595'
+                        }
+                    });
+
+
+                    {% if group_name %}
+                        // If this page is for group question
+
+                        // Render timeline count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){
+                            full_useranswer_time_data = data;
+                            var qcStockData = [];
+
+                            $.each(data['useranswers'], function(question_num, value){
+                                qcStockData[question_num-1] = {data: []};
+                                var sort_array= [];
+
+                                $.each(value, function(answer_num, answer_value){
+                                    if (answer_value[0]){
+                                        $.each(answer_value, function(index, answer){
+                                            sort_array.push(answer);
+                                        });
+                                    }
+                                });
+                                sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+                                $.each(sort_array, function(index, useranswer_value){
+                                    qcStockData[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
+                                });
+                            });
+
+                            $('#qc-filter-time-chart').highcharts('StockChart', {
+                                rangeSelector: {
+                                    selected: 1
+                                },
+                                series: qcStockData,
+                                plotOptions: {
+                                    series: {
+                                        allowPointSelect: true
+                                    }
+                                },
+                                yAxis: {
+                                    allowDecimals:false
+                                }
+                            });
+                        });
+
+                        // Render bar count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}', function(data){
+                            full_useranswer_count_data = data;
+                            $.each(data['questions'], function(question_num, question_val){
+                                var pie_data = [];
+                                $.each(data['answers'][question_num], function(answer_num, answer_val){
+                                    pie_data.push({
+                                        name: answer_val['answer_text'],
+                                        y: answer_val['answer_count']
+                                    })
+                                });
+
+                                $('#qc-filter-pie-chart'+question_num).highcharts({
+                                    chart: {
+                                        plotBackgroundColor: null,
+                                        plotBorderWidth: null,
+                                        type: 'pie'
+                                    },
+                                    title: {
+                                        text: question_val['question_text']
+                                    },
+                                    plotOptions: {
+                                        pie: {
+                                            cursor: 'pointer',
+                                            dataLabels: {
+                                                enabled: false
+                                            }
+                                        }
+                                    },
+                                    series: [{
+                                        name: question_val['question_text'],
+                                        colorByPoint: true,
+                                        data: pie_data
+                                    }]
+                                });
+                            });
+                        });
+                    {% else %}
+                        // If this page is for single question
+
+                        // Render timeline count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}'+'/answers/useranswers', function(data){
+                            full_useranswer_time_data = data;
+                            var qcStockData = [];
+
+                            qcStockData[0] = {data: []};
+                            var sort_array= [];
+                            $.each(data['useranswers'], function(answer_num, answer_value){
+                                // If answer list is not empty
+                                if (answer_value[0]) {
+                                    $.each(answer_value, function (index, answer) {
+                                        sort_array.push(answer);
+                                    });
+                                }
+
+                            });
+                            sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+                            $.each(sort_array, function(index, useranswer_value){
+                                qcStockData[0]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
+                            });
+
+                            $('#qc-filter-time-chart').highcharts('StockChart', {
+                                rangeSelector: {
+                                    selected: 1
+                                },
+                                series: qcStockData,
+                                yAxis: {
+                                    allowDecimals:false
+                                }
+                            });
+                        });
+
+                        // Render bar count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}', function(data){
+                            full_useranswer_count_data = data;
+                            $.each(data['questions'], function(question_num, question_val){
+                                var pie_data = [];
+                                $.each(data['answers'][question_num], function(answer_num, answer_val){
+                                    pie_data.push({
+                                        name: answer_val['answer_text'],
+                                        y: answer_val['answer_count']
+                                    })
+                                });
+
+                                $('#qc-filter-pie-chart'+question_num).highcharts({
+                                    chart: {
+                                        plotBackgroundColor: null,
+                                        plotBorderWidth: null,
+                                        type: 'pie'
+                                    },
+                                    title: {
+                                        text: question_val['question_text']
+                                    },
+                                    plotOptions: {
+                                        pie: {
+                                            cursor: 'pointer',
+                                            dataLabels: {
+                                                enabled: false
+                                            }
+                                        }
+                                    },
+                                    series: [{
+                                        name: question_val['question_text'],
+                                        colorByPoint: true,
+                                        data: pie_data
+                                    }]
+                                });
+                            });
+                        });
+                    {% endif %}
+                });
 
         // move to js package file
-        $("[name='my-checkbox']").bootstrapSwitch();
+        $(".group-status-state input").bootstrapSwitch();
+
     </script>
 {% endblock %}
