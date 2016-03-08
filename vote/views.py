@@ -106,6 +106,29 @@ def get_multiple_vote(request, api_key, group_name):
     return render(request, 'vote/pages/multi_action.html', context)
 
 
+def dashboard_select(request):
+    context = {
+
+    }
+    if not hasattr(request.user, 'api_keys'):
+        messages.add_message(request, messages.ERROR, 'You should create api key first.')
+        return redirect('main:user_mypage', request.user.id)
+    else:
+        api_key = request.user.api_keys.key
+        context.update({
+            'api_key': api_key
+        })
+
+    if MultiQuestion.objects.get(api_key__key=api_key):
+        m_id = MultiQuestion.objects.get(api_key__key=api_key).id
+        return redirect('v1:dashboard_group_overview', m_id)
+    elif Question.objects.get(api_key__key=api_key):
+        q_id = Question.objects.get(api_key__key=api_key).id
+        return redirect('v1:dashboard_overview', q_id)
+    else:
+        # If user didn't make any question or group question, redirect to create page.
+        return redirect('v1:new', api_key)
+
 def dashboard_overview(request, question_id):
     context = {
 
@@ -152,6 +175,36 @@ def dashboard_overview(request, question_id):
         return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
+
+    '''
+    provide other question/group info for navigation
+    '''
+    context.update({
+            'nav_group': [],
+            'nav_question': []
+        })
+
+    try:
+        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for g in groups:
+            context['nav_group'].append({
+                "group_name": g.group_name,
+                "id": g.id
+            })
+
+    try:
+        questions = Question.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for q in questions:
+            context['nav_question'].append({
+                "question_title": q.question_title,
+                "id": q.id
+            })
 
     return render(request, 'vote/pages/dashboard_overview.html', context)
 
@@ -202,7 +255,37 @@ def dashboard_filter(request, question_id):
         return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
-    return render(request, 'vote/pages/dashboard_filter.html')
+
+    '''
+    provide other question/group info for navigation
+    '''
+    context.update({
+            'nav_group': [],
+            'nav_question': []
+        })
+
+    try:
+        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for g in groups:
+            context['nav_group'].append({
+                "group_name": g.group_name,
+                "id": g.id
+            })
+
+    try:
+        questions = Question.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for q in questions:
+            context['nav_question'].append({
+                "question_title": q.question_title,
+                "id": q.id
+            })
+    return render(request, 'vote/pages/dashboard_filter.html', context)
 
 
 def dashboard_users(request, question_id):
@@ -251,7 +334,37 @@ def dashboard_users(request, question_id):
         return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
-    return render(request, 'vote/pages/dashboard_users.html')
+
+    '''
+    provide other question/group info for navigation
+    '''
+    context.update({
+            'nav_group': [],
+            'nav_question': []
+        })
+
+    try:
+        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for g in groups:
+            context['nav_group'].append({
+                "group_name": g.group_name,
+                "id": g.id
+            })
+
+    try:
+        questions = Question.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for q in questions:
+            context['nav_question'].append({
+                "question_title": q.question_title,
+                "id": q.id
+            })
+    return render(request, 'vote/pages/dashboard_users.html', context)
 
 
 def dashboard_group_overview(request, group_id):
@@ -287,7 +400,7 @@ def dashboard_group_overview(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(group_id)+'/answers/useranswers'
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -300,7 +413,38 @@ def dashboard_group_overview(request, group_id):
         return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
-    return render(request, 'vote/pages/dashboard_users.html')
+
+    '''
+    provide other question/group info for navigation
+    '''
+    context.update({
+            'nav_group': [],
+            'nav_question': []
+        })
+
+    try:
+        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for g in groups:
+            context['nav_group'].append({
+                "group_name": g.group_name,
+                "id": g.id
+            })
+
+    try:
+        questions = Question.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for q in questions:
+            context['nav_question'].append({
+                "question_title": q.question_title,
+                "id": q.id
+            })
+
+    return render(request, 'vote/pages/dashboard_overview.html', context)
 
 
 def dashboard_group_filter(request, group_id):
@@ -336,7 +480,7 @@ def dashboard_group_filter(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(group_id)+'/answers/useranswers'
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -349,8 +493,37 @@ def dashboard_group_filter(request, group_id):
         return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
-    return render(request, 'vote/pages/dashboard_users.html')
 
+    '''
+    provide other question/group info for navigation
+    '''
+    context.update({
+            'nav_group': [],
+            'nav_question': []
+        })
+
+    try:
+        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for g in groups:
+            context['nav_group'].append({
+                "group_name": g.group_name,
+                "id": g.id
+            })
+
+    try:
+        questions = Question.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for q in questions:
+            context['nav_question'].append({
+                "question_title": q.question_title,
+                "id": q.id
+            })
+    return render(request, 'vote/pages/dashboard_filter.html', context)
 
 
 def dashboard_group_users(request, group_id):
@@ -386,7 +559,7 @@ def dashboard_group_users(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(group_id)+'/answers/useranswers'
+    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -399,7 +572,38 @@ def dashboard_group_users(request, group_id):
         return HttpResponse(HTTPError.reason, HTTPError)
 
     context.update(response_json)
-    return render(request, 'vote/pages/dashboard_users.html')
+
+    '''
+    provide other question/group info for navigation
+    '''
+    context.update({
+            'nav_group': [],
+            'nav_question': []
+        })
+
+    try:
+        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for g in groups:
+            context['nav_group'].append({
+                "group_name": g.group_name,
+                "id": g.id
+            })
+
+    try:
+        questions = Question.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for q in questions:
+            context['nav_question'].append({
+                "question_title": q.question_title,
+                "id": q.id
+            })
+    return render(request, 'vote/pages/dashboard_users.html', context)
+
 
 def match_domain(request):
     api_key = get_api_key(request)

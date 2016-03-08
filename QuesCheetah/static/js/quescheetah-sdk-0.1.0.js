@@ -4,13 +4,14 @@ function QuesCheetah(config){
     this.callBackUrl = config.callBackUrl;
     this.receiveRealtimeResponse = config.receiveRealtimeResponse;
 
-    // If Realtime socket.io Response is used.
+    // If Realtime response is used.
     if (this.receiveRealtimeResponse){
         socket = io('http://localhost:5000');
         socket.on('connect', function(){});
         socket.on('event', function(data){});
         socket.on('disconnect', function(){});
         socket.on('reply', function(data){
+            // callback function after receiving data from socket server
             alert(JSON.stringify(data));
         });
     }
@@ -65,6 +66,11 @@ QuesCheetah.prototype.getQuestion = function (params, success, error) {
 
 QuesCheetah.prototype.getAnswer = function (params, success, error) {
     var url = this.baseUrl+'questions/'+params.question_id+'/answers/'+params.answer_num;
+    this.doPost(url, "GET", params, success, error)
+};
+
+QuesCheetah.prototype.getUseranswersOfGroup = function (params, success, error) {
+    var url = this.baseUrl+'groups/'+params.group_id+'/answers/useranswers';
     this.doPost(url, "GET", params, success, error)
 };
 
@@ -134,7 +140,7 @@ QuesCheetah.prototype.doPost = function (url, type, post_body, success, errorCal
     request.send(JSON.stringify(post_body));
 };
 
-// Receiving realtime socket.io data
+// Submit data to socket server
 QuesCheetah.prototype.socketioAction = function(data){
     socket.emit('send', data);
 };

@@ -1,0 +1,408 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}
+    <link href="{% static 'bootstrap/css/bootstrap-switch.min.css' %}" rel="stylesheet">
+    <style>
+        /*Nav bar css for dashboard*/
+        .navbar-default{
+            background-color: #efefef;
+            border-bottom-width: 0px;
+        }
+
+        .navbar-default .navbar-brand{
+            color: #075651;
+            padding: 10px 0;
+        }
+
+        .navbar-default .navbar-brand p{
+            margin: 5px 0;
+            display: inline;
+        }
+
+        .navbar-brand img {
+            display: inline;
+            margin-top: -5px;
+        }
+
+        .navbar-default .navbar-brand:hover{
+            color: #075651;
+            opacity: 0.7;
+        }
+
+        .navbar-default .navbar-nav>li>a {
+            color: #929891;
+            font-size: small;
+        }
+
+        .navbar-default .navbar-nav>li>a:hover {
+            color : #075651;
+            opacity: 0.8;
+        }
+
+        .nav.navbar-right > li{
+            margin-left: 30px;
+        }
+
+        .navbar-default .navbar-nav>li.login {
+            background-color: #000;
+            width: 132px;
+        }
+
+        .navbar-default .navbar-nav>li.login p{
+            display: inline-block;
+            width: 92px;
+            margin-bottom: 0px;
+        }
+
+        .navbar-default .navbar-nav>li.login .nav-user-fa{
+            display: inline-block;
+            color: #929891;
+        }
+
+        .navbar-default .navbar-nav>li.login>a:hover {
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .navbar-default .navbar-nav>.open>a:focus{
+            color: #fff;
+            background-color: #000;
+            border: none;
+        }
+
+        .login .dropdown-menu{
+            min-width: inherit;
+            width: 132px;
+        }
+
+        .question-btn{
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .chart-div{
+            text-align: center;
+        }
+
+        .chart-div .show-btn{
+            text-align: right;
+            margin-right: 10px;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-div{
+            width: 970px;
+            margin: 0 auto;
+        }
+
+        .group-info{
+            height: 150px;
+            border-bottom: solid #cfcfcf 1px;
+            margin-bottom: 30px;
+        }
+
+        .group-info .dropdown-menu{
+            height: auto;
+            max-height: 100px;
+            overflow-x: hidden;
+        }
+
+        .group-status{
+            color: #707979;
+        }
+
+        .group-status .group-status-state p{
+            display: inline-block;
+            width: 30%;
+        }
+
+        .p-title{
+            color:#47505d;
+        }
+
+        .row{
+            margin-left: 0;
+            margin-right: 0;
+        }
+
+        .graph-div{
+            margin: 0 50px;
+            text-align: center;
+        }
+
+        .group-answer-bar-chart-btn{
+            text-align: left;
+            margin-right: 10px;
+        }
+
+        .group-answer-bar-chart-btn button{
+            width: 100px;
+        }
+
+        #bar-chart-header{
+            margin-top: 50px;
+        }
+    </style>
+{% endblock %}
+
+{% block nav %}
+    {% include "main/pages/nav_dashboard.html" %}
+{% endblock %}
+
+{% block content %}
+    <div class="dashboard-div">
+        {{ msg }}
+        <div class="row">
+            <div class="group-info">
+                <div class="col-sm-4">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle btn-lg" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            {% if group_name %}
+                                {{ group_name }}
+                            {% else %}
+                                {{ questions.1.question_title }}
+                            {% endif %}
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                            {% for group in nav_group %}
+                                <li><a href="{% url 'v1:dashboard_group_overview' group.id %}">{{ group.group_name }}</a></li>
+                            {% endfor %}
+                            <li role="separator" class="divider"></li>
+                            {% for question in nav_question %}
+                                <li><a href="{% url 'v1:dashboard_overview' question.id %}">{{ question.question_title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                <div class="group-status col-sm-8">
+                    <div class="col-sm-2 col-sm-offset-2">
+                        <p class="p-title">Id</p>
+                        <p>
+                            {% if group_name %}
+                                {{ group_id }}
+                            {% else %}
+                                {{ questions.1.id }}
+                            {% endif %}
+                        </p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="p-title">Time</p>
+                        <p>
+                        {{ questions.1.start_dt|slice:"0:10"}} ~ {{ questions.1.end_dt|slice:"0:10"}}
+                        </p>
+                    </div>
+                    <div class="col-sm-4">
+                        <p class="p-title">Status</p>
+                        <div class="group-status-state">
+                            <div>
+                                <p>closed</p>
+                                <input type="checkbox" name="closed" data-size="mini">
+                            </div>
+                            <div>
+                                <p>editable</p>
+                                <input type="checkbox" name="editable" {% ifequal questions.1.is_editable True%}checked{% endifequal %} data-size="mini">
+                            </div>
+                            <div>
+                                <p>private</p>
+                                <input type="checkbox" name="private" {% ifequal questions.1.is_private True%}checked{% endifequal %} data-size="mini">
+                            </div>
+                        </div>
+                        <div>
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="helper-msg"></div>
+            {% block graph %}
+                <div class="graph-div">
+                    <h3>Answers count time chart</h3>
+                    <div id="container1" style="width:100%; height:400px;"></div>
+                    <h3 id="bar-chart-header">Answer count detail chart</h3>
+                    {% if group_name %}
+                        <div class="group-answer-bar-chart-btn">
+                            <div class="btn-group" role="group">
+                                {% for question in questions %}
+                                    <button type="button" class="btn btn-default" q_num="{{ forloop.counter }}">Q{{ forloop.counter }}</button>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% for question in questions %}
+                            <div id="qc-bar-chart{{ question }}" style="width:870px; height:400px;"></div>
+                        {% endfor %}
+                    {% else %}
+                        <div id="qc-bar-chart" style="width:870px; height:400px;"></div>
+                    {% endif %}
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'bootstrap/js/bootstrap-switch.min.js' %}"></script>
+    <script type="application/javascript">
+        System.import("{% static "js/src/chart.js" %}")
+                .then(function(){
+
+                    $.ajaxSetup({
+                        headers : {
+                            'api-key' : '4ae1772ba6c8439a8249901cdeffa7fe10900595'
+                        }
+                    });
+
+
+                    {% if group_name %}
+                        // If this page is for group question
+
+                        // Render timeline count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){
+                            var qcStockData = [];
+
+                            $.each(data['useranswers'], function(question_num, value){
+                                qcStockData[question_num-1] = {data: []};
+                                $.each(value, function(answer_num, answer_value){
+                                    $.each(answer_value, function(index, useranswer_value){
+                                        qcStockData[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), Number(answer_num)]);
+                                    });
+                                    qcStockData[question_num-1]['data'].sort(function(a, b){return a[0]- b[0]});
+                                });
+                            });
+
+                            $('#container1').highcharts('StockChart', {
+                                rangeSelector: {
+                                    selected: 1
+                                },
+                                series: qcStockData,
+                                yAxis: {
+                                    allowDecimals:false
+                                }
+                            });
+                        });
+
+                        // Render bar count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}', function(data){
+                            $.each(data['questions'], function(question_num, question_val){
+                                var xAxisCat = [];
+                                var yAxisData = [];
+                                $.each(data['answers'][question_num], function(answer_num, answer_val){
+                                    xAxisCat.push(answer_val['answer_text']);
+                                    yAxisData.push(answer_val['answer_count']);
+                                });
+                                $('#qc-bar-chart'+question_num).highcharts({
+                                    chart: {
+                                        type: 'bar'
+                                    },
+                                    title: {
+                                        text: null
+                                    },
+                                    xAxis: {
+                                        categories: xAxisCat
+                                    },
+                                    yAxis: {
+                                        allowDecimals:false,
+                                        title: {
+                                            text: 'useranswer count'
+                                        }
+                                    },
+                                    legend: {
+                                        enabled: false
+                                    },
+                                    series: [{
+                                        data: yAxisData
+                                    }]
+                                });
+                            });
+                        });
+                    {% else %}
+                        // If this page is for single question
+
+                        // Render timeline count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}'+'/answers/useranswers', function(data){
+                            var qcStockData = [];
+
+                            qcStockData[0] = {data: []};
+                            $.each(data['useranswers'], function(answer_num, answer_value){
+                                $.each(answer_value, function(index, useranswer_value){
+                                    qcStockData[0]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), Number(answer_num)]);
+                                });
+                            });
+                            qcStockData[0]['data'].sort(function(a, b){return a[0]- b[0]});
+
+                            $('#container1').highcharts('StockChart', {
+                                rangeSelector: {
+                                    selected: 1
+                                },
+                                series: qcStockData,
+                                yAxis: {
+                                    allowDecimals:false
+                                }
+                            });
+                        });
+
+                        // Render bar count chart
+                        $.getJSON('http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}', function(data){
+                            var xAxisCat = [];
+                            var yAxisData = [];
+                            $.each(data['answers']['1'], function(answer_num, answer_val){
+                                xAxisCat.push(answer_val['answer_text']);
+                                yAxisData.push(answer_val['answer_count']);
+                            });
+                            $('#qc-bar-chart').highcharts({
+                                chart: {
+                                    type: 'bar'
+                                },
+                                title: {
+                                    text: null
+                                },
+                                xAxis: {
+                                    categories: xAxisCat
+                                },
+                                yAxis: {
+                                    allowDecimals:false,
+                                    title: {
+                                        text: 'useranswer count'
+                                    }
+                                },
+                                legend: {
+                                    enabled: false
+                                },
+                                series: [{
+                                    data: yAxisData
+                                }]
+                            });
+                        });
+                    {% endif %}
+
+                });
+
+        // move to js package file
+        $(".group-status-state input").bootstrapSwitch();
+
+        // Compare end_dt and now
+        var now = new Date().getTime();
+        var end_dt = '{{ questions.1.end_dt}}';
+        if (Number(new Date(end_dt).getTime()) <= Number(now)){
+            // close
+            $('input[name="closed"]').bootstrapSwitch('state', true, true);
+        }
+
+        // Display one bar chart only in active statue
+        $('.group-answer-bar-chart-btn button').click(function(){
+            $('[id^="qc-bar-chart"]').hide();
+            $('.group-answer-bar-chart-btn button').removeClass('active');
+            $(this).addClass('active');
+
+            var question_num = $(this).attr('q_num');
+            $('#qc-bar-chart'+question_num).show();
+        });
+
+        // Activate first bar chart
+        $('.group-answer-bar-chart-btn button:first').click();
+
+    </script>
+{% endblock %}

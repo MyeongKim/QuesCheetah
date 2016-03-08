@@ -14,7 +14,7 @@
                         <li><a href="https://mingkim.gitbooks.io/quescheetah-document/content/" target="_blank">REST API docs</a></li>
                     </ul>
                 </li>
-                <li><a href="#">Dashboard</a></li>
+                <li><a href="{% url 'v1:dashboard_select' %}">Dashboard</a></li>
                 {% if user.is_authenticated %}
                     <li class="login dropdown">
                         <a href="#" class="dropdown-toggle btn" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

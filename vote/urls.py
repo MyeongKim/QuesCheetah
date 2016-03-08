@@ -17,11 +17,12 @@ urlpatterns = [
 
     # Dashboard management url
 
-    url(r'dashboard/groups/(?P<group_id>\w+)/overview$', views.dashboard_group_overview, name='dashboard_overview'),
+    url(r'dashboard/select$', views.dashboard_select, name='dashboard_select'),
+    url(r'dashboard/groups/(?P<group_id>\w+)/overview$', views.dashboard_group_overview, name='dashboard_group_overview'),
     url(r'dashboard/(?P<question_id>\w+)/overview$', views.dashboard_overview, name='dashboard_overview'),
-    url(r'dashboard/groups/(?P<group_id>\w+)/filter$', views.dashboard_group_filter, name='dashboard_filter'),
+    url(r'dashboard/groups/(?P<group_id>\w+)/filter$', views.dashboard_group_filter, name='dashboard_group_filter'),
     url(r'dashboard/(?P<question_id>\w+)/filter$', views.dashboard_filter, name='dashboard_filter'),
-    url(r'dashboard/groups/(?P<group_id>\w+)/users$', views.dashboard_group_users, name='dashboard_users'),
+    url(r'dashboard/groups/(?P<group_id>\w+)/users$', views.dashboard_group_users, name='dashboard_group_users'),
     url(r'dashboard/(?P<question_id>\w+)/users$', views.dashboard_users, name='dashboard_users'),
 
     # REST API URLS

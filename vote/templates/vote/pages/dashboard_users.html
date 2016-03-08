@@ -1,0 +1,81 @@
+{% extends 'vote/pages/dashboard_overview.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}
+    {{ block.super }}
+    <style>
+        .dashboard-user-list .input-group{
+            width: 300px;
+            float: right;
+            margin-bottom: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block graph %}
+    <div class="row">
+        <div class="dashboard-user-list">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="fa fa-search"></i></span>
+                <input id="filter" type="text" class="form-control" placeholder="Search items">
+            </div>
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Unique name</th>
+                    <th>Question</th>
+                    <th>Answer</th>
+                </tr>
+                </thead>
+                <tbody class="searchable">
+                <tr>
+                    <td>222</td>
+                    <td>BJ</td>
+                    <td>Question text1</td>
+                    <td>Answer3</td>
+                </tr>
+                <tr>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>Question text2</td>
+                    <td>Answer4</td>
+                </tr>
+                <tr>
+                    <td>224</td>
+                    <td>MJ</td>
+                    <td>Question text1</td>
+                    <td>Answer1</td>
+                </tr>
+                <tr>
+                    <td>225</td>
+                    <td>Love</td>
+                    <td>Question text2</td>
+                    <td>Answer3</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'bootstrap/js/bootstrap-switch.min.js' %}"></script>
+    <script type="application/javascript">
+        System.import("{% static "js/src/chart3.js" %}");
+
+        // move to js package file
+        $("[name='my-checkbox']").bootstrapSwitch();
+
+        // search in users tab
+        $('#filter').keyup(function () {
+            var rex = new RegExp($(this).val(), 'i');
+            $('.searchable tr').hide();
+            $('.searchable tr').filter(function () {
+                return rex.test($(this).text());
+            }).show();
+
+        })
+    </script>
+{% endblock %}
