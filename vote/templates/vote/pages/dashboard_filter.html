@@ -69,6 +69,10 @@
             font-weight: bold;
             color: #000;
         }
+    
+        .filter-selected .label:hover{
+            cursor: pointer;
+        }
 
     </style>
 {% endblock %}
@@ -91,7 +95,7 @@
                         {% with sorted_question_val=question_val|dictsort %}
                         <div id="answers-filter-q{{ question_num }}" style="display: none;">
                             {% for answer_num, answer_val in sorted_question_val.items %}
-                                <p><input type="checkbox" q_num={{ question_num }} a_num={{ answer_num }} checked> {{ answer_val.answer_text }}</p>
+                                <p><input type="checkbox" q_num={{ question_num }} a_num={{ answer_num }} checked> {{ answer_val.answer_count }}</p>
                             {% endfor %}
                         </div>
                         {% endwith %}
@@ -103,15 +107,13 @@
                 {% with sorted_questions=questions|dictsort %}
                     {% for question_num1, question_val in sorted_questions.items %}
                         <h4>
-                        <a href="#">
                             <span class="label label-primary label-question" q_num="{{ question_num1 }}">Q{{ question_num1 }} <i class="fa fa-times"></i></span>
-                        </a>
                         {% with sorted_answers=answers|dictsort %}
                             {% for question_num2, question_val in sorted_answers.items %}
                                 {% ifequal question_num1 question_num2 %}
                                     {% with sorted_question_val=question_val|dictsort %}
                                             {% for answer_num, answer_val in sorted_question_val.items %}
-                                                <a href="#"><span class="label label-default label-answer" a_num="{{ answer_num }}" q_num="{{ question_num2 }}">{{ answer_val.answer_text }} <i class="fa fa-times"></i></span></a>
+                                                <span class="label label-default label-answer" a_num="{{ answer_num }}" q_num="{{ question_num2 }}">{{ answer_val.answer_text }} <i class="fa fa-times"></i></span>
                                             {% endfor %}
                                     {% endwith %}
                                 {% endifequal %}
@@ -216,7 +218,18 @@
                     });
 
                     // Click selected label
-                    $('')
+                    $('.filter-selected span.label').click(function(){
+                        var q_num = $(this).attr('q_num');
+                        var a_num = $(this).attr('a_num');
+
+                        if($(this).is('.label-question')){
+                            // If label-question is clicked
+                           $('.filter-question-element input[q_num="'+q_num+'"]').click();
+                       }else{
+                           // If label-answer is clicked
+                            $('.filter-answers input[q_num="'+q_num+'"][a_num="'+a_num+'"]').click();
+                       }
+                    });
 
                     // assign selected q_num, a_num values
                     function update_nums(){
@@ -233,11 +246,11 @@
                             }
                         });
                         update_time_data(current_nums);
+                        update_count_data(current_nums);
                     }
 
                     // Initiate with first question
                     $('.filter-question-element:first').click();
-
 
                     /// Dict argument example format is {'1':[1,2,3], '2':[1,2,3]}
                     function update_time_data(dict){
@@ -249,7 +262,7 @@
                                 var sort_array = [];
                                 updated_data[count] = {data: []};
 
-                                $.each(answers, function(answer){
+                                $.each(answers, function(index, answer){
                                     // If answer list is not empty
                                     var selected_answer_list = full_useranswer_time_data['useranswers'][question_num][answer];
                                     if (selected_answer_list){
@@ -258,13 +271,13 @@
                                         });
                                     }
 
-                                    // Sort values by datetime of created_dt
-                                    sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+                                });
+                                // Sort values by datetime of created_dt
+                                sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
 
-                                    // Make a new series list from sort_array
-                                    $.each(sort_array, function(index, useranswer_value){
-                                        updated_data[count]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
-                                    });
+                                // Make a new series list from sort_array
+                                $.each(sort_array, function(index, useranswer_value){
+                                    updated_data[count]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
                                 });
                                 count++;
                             });
@@ -288,30 +301,81 @@
                             $.each(dict, function(question_num, answers){
                                 var sort_array = [];
                                 updated_data[question_num-1] = {data: []};
-                                $.each(answers, function(answer){
+                                $.each(answers, function(index, answer){
                                     // If answer list is not empty
                                     var selected_answer_list = full_useranswer_time_data['useranswers'][answer];
-                                    if (selected_answer_list[0]){
+                                    if (selected_answer_list){
                                         $.each(selected_answer_list, function(index, answer_val){
                                             sort_array.push(answer_val);
                                         });
                                     }
 
-                                    // Sort values by datetime of created_dt
-                                    sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+                                });
+                                // Sort values by datetime of created_dt
+                                sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
 
-                                    // Make a new series list from sort_array
-                                    $.each(sort_array, function(index, useranswer_value){
-                                    updated_data[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
-                                    });
+                                // Make a new series list from sort_array
+                                $.each(sort_array, function(index, useranswer_value){
+                                updated_data[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
                                 });
                             });
-                            $('#qc-filter-time-chart').highcharts('StockChart').series[0].setData(updated_data);
+                            $('#qc-filter-time-chart').highcharts('StockChart', {
+                                rangeSelector: {
+                                    selected: 1
+                                },
+                                series: updated_data,
+                                plotOptions: {
+                                    series: {
+                                        allowPointSelect: true
+                                    }
+                                },
+                                yAxis: {
+                                    allowDecimals:false
+                                }
+                            });
                         }
                     }
 
-                    function update_count_data(){
+                    // Dict argument example format is {'1':[1,2,3], '2':[1,2,3]}
+                    function update_count_data(dict){
+                        // Because received format is same,
+                        // This function doesn't care if this page renders group question or single question.
+                        $.each(dict, function(question_num, answers){
+                            var updated_data = [];
 
+                            $.each(answers, function(index, answer_num){
+                                var selected_answer_info = full_useranswer_count_data['answers'][question_num][answer_num];
+                                updated_data.push({
+                                    name: selected_answer_info['answer_text'],
+                                    y: selected_answer_info['answer_count']
+                                });
+                            });
+
+                            var question_text = full_useranswer_count_data['questions'][question_num]['question_text'];
+                            $('#qc-filter-pie-chart'+question_num).highcharts({
+                                chart: {
+                                    plotBackgroundColor: null,
+                                    plotBorderWidth: null,
+                                    type: 'pie'
+                                },
+                                title: {
+                                    text: question_text
+                                },
+                                plotOptions: {
+                                    pie: {
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                            enabled: false
+                                        }
+                                    }
+                                },
+                                series: [{
+                                    name: question_text,
+                                    colorByPoint: true,
+                                    data: updated_data
+                                }]
+                            });
+                        });
                     }
 
                     $.ajaxSetup({
@@ -362,43 +426,7 @@
                             });
                         });
 
-                        // Render bar count chart
-                        $.getJSON('http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}', function(data){
-                            full_useranswer_count_data = data;
-                            $.each(data['questions'], function(question_num, question_val){
-                                var pie_data = [];
-                                $.each(data['answers'][question_num], function(answer_num, answer_val){
-                                    pie_data.push({
-                                        name: answer_val['answer_text'],
-                                        y: answer_val['answer_count']
-                                    })
-                                });
-
-                                $('#qc-filter-pie-chart'+question_num).highcharts({
-                                    chart: {
-                                        plotBackgroundColor: null,
-                                        plotBorderWidth: null,
-                                        type: 'pie'
-                                    },
-                                    title: {
-                                        text: question_val['question_text']
-                                    },
-                                    plotOptions: {
-                                        pie: {
-                                            cursor: 'pointer',
-                                            dataLabels: {
-                                                enabled: false
-                                            }
-                                        }
-                                    },
-                                    series: [{
-                                        name: question_val['question_text'],
-                                        colorByPoint: true,
-                                        data: pie_data
-                                    }]
-                                });
-                            });
-                        });
+                        var pie_get_url = 'http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}';
                     {% else %}
                         // If this page is for single question
 
@@ -434,44 +462,45 @@
                             });
                         });
 
-                        // Render bar count chart
-                        $.getJSON('http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}', function(data){
-                            full_useranswer_count_data = data;
-                            $.each(data['questions'], function(question_num, question_val){
-                                var pie_data = [];
-                                $.each(data['answers'][question_num], function(answer_num, answer_val){
-                                    pie_data.push({
-                                        name: answer_val['answer_text'],
-                                        y: answer_val['answer_count']
-                                    })
-                                });
+                        var pie_get_url = 'http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}';
+                    {% endif %}
+                    // Render pie count chart
+                    $.getJSON(pie_get_url, function(data){
+                        full_useranswer_count_data = data;
+                        $.each(data['questions'], function(question_num, question_val){
+                            var pie_data = [];
+                            $.each(data['answers'][question_num], function(answer_num, answer_val){
+                                pie_data.push({
+                                    name: answer_val['answer_text'],
+                                    y: answer_val['answer_count']
+                                })
+                            });
 
-                                $('#qc-filter-pie-chart'+question_num).highcharts({
-                                    chart: {
-                                        plotBackgroundColor: null,
-                                        plotBorderWidth: null,
-                                        type: 'pie'
-                                    },
-                                    title: {
-                                        text: question_val['question_text']
-                                    },
-                                    plotOptions: {
-                                        pie: {
-                                            cursor: 'pointer',
-                                            dataLabels: {
-                                                enabled: false
-                                            }
+                            $('#qc-filter-pie-chart'+question_num).highcharts({
+                                chart: {
+                                    plotBackgroundColor: null,
+                                    plotBorderWidth: null,
+                                    type: 'pie'
+                                },
+                                title: {
+                                    text: question_val['question_text']
+                                },
+                                plotOptions: {
+                                    pie: {
+                                        cursor: 'pointer',
+                                        dataLabels: {
+                                            enabled: false
                                         }
-                                    },
-                                    series: [{
-                                        name: question_val['question_text'],
-                                        colorByPoint: true,
-                                        data: pie_data
-                                    }]
-                                });
+                                    }
+                                },
+                                series: [{
+                                    name: question_val['question_text'],
+                                    colorByPoint: true,
+                                    data: pie_data
+                                }]
                             });
                         });
-                    {% endif %}
+                    });
                 });
 
         // move to js package file

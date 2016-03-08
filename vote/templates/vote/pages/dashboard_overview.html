@@ -231,12 +231,10 @@
                                 {% endfor %}
                             </div>
                         </div>
+                    {% endif %}
                         {% for question in questions %}
                             <div id="qc-bar-chart{{ question }}" style="width:870px; height:400px;"></div>
                         {% endfor %}
-                    {% else %}
-                        <div id="qc-bar-chart" style="width:870px; height:400px;"></div>
-                    {% endif %}
                 </div>
             {% endblock %}
         </div>
@@ -290,40 +288,7 @@
                             });
                         });
 
-                        // Render bar count chart
-                        $.getJSON('http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}', function(data){
-                            $.each(data['questions'], function(question_num, question_val){
-                                var xAxisCat = [];
-                                var yAxisData = [];
-                                $.each(data['answers'][question_num], function(answer_num, answer_val){
-                                    xAxisCat.push(answer_val['answer_text']);
-                                    yAxisData.push(answer_val['answer_count']);
-                                });
-                                $('#qc-bar-chart'+question_num).highcharts({
-                                    chart: {
-                                        type: 'bar'
-                                    },
-                                    title: {
-                                        text: null
-                                    },
-                                    xAxis: {
-                                        categories: xAxisCat
-                                    },
-                                    yAxis: {
-                                        allowDecimals:false,
-                                        title: {
-                                            text: 'useranswer count'
-                                        }
-                                    },
-                                    legend: {
-                                        enabled: false
-                                    },
-                                    series: [{
-                                        data: yAxisData
-                                    }]
-                                });
-                            });
-                        });
+                        var get_bar_url = 'http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}';
                     {% else %}
                         // If this page is for single question
 
@@ -358,15 +323,19 @@
                             });
                         });
 
-                        // Render bar count chart
-                        $.getJSON('http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}', function(data){
+                        var get_bar_url = 'http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}';
+
+                    {% endif %}
+                    // Render bar count chart
+                    $.getJSON(get_bar_url, function(data) {
+                        $.each(data['questions'], function (question_num, question_val) {
                             var xAxisCat = [];
                             var yAxisData = [];
-                            $.each(data['answers']['1'], function(answer_num, answer_val){
+                            $.each(data['answers'][question_num], function (answer_num, answer_val) {
                                 xAxisCat.push(answer_val['answer_text']);
                                 yAxisData.push(answer_val['answer_count']);
                             });
-                            $('#qc-bar-chart').highcharts({
+                            $('#qc-bar-chart' + question_num).highcharts({
                                 chart: {
                                     type: 'bar'
                                 },
@@ -377,7 +346,7 @@
                                     categories: xAxisCat
                                 },
                                 yAxis: {
-                                    allowDecimals:false,
+                                    allowDecimals: false,
                                     title: {
                                         text: 'useranswer count'
                                     }
@@ -390,8 +359,7 @@
                                 }]
                             });
                         });
-                    {% endif %}
-
+                    });
                 });
 
         // move to js package file
