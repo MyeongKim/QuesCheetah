@@ -177,12 +177,12 @@ STATICFILES_DIRS = [
     ("home", BASE_DIR)
 ]
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
-        'LOCATION': '127.0.0.1:11211',
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django_pylibmc.memcached.PyLibMCCache',
+#         'LOCATION': '127.0.0.1:11211',
+#     }
+# }
 
 USE_ETAGS = True
 

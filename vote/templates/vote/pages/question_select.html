@@ -129,7 +129,7 @@
                 </div>
                 <div class="questions-items col-sm-9">
                     {% for m in multi_question %}
-                        <a href="{% url 'v1:multiple_dashboard' api_key m.group_name %}">
+                        <a href="{% url 'v1:dashboard_group_overview' m.id %}">
                             <div class="questions-element">
                                 <div class="questions-element-status ongoing">Ongoing</div>
                                 <button class="questions-element-delete btn btn-danger multi-delete-btn" gid="{{ m.id }}"><i class="fa fa-close"></i></button>
@@ -150,7 +150,7 @@
                         </a>
                     {% endfor %}
                     {% for q in single_question %}
-                        <a href="{% url 'v1:dashboard' api_key q.id %}">
+                        <a href="{% url 'v1:dashboard_overview' q.id %}">
                             <div class="questions-element">
                                 <div class="questions-element-status ongoing">Ongoing</div>
                                 <button class="questions-element-delete btn btn-danger single-delete-btn" qid="{{ q.id }}" qt="{{ q.question_title }}"><i class="fa fa-close"></i></button>

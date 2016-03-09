@@ -15,7 +15,6 @@ import {Action} from "./src/action.js";
 import {MultiAction} from "./src/multi_action.js";
 import {New} from "./src/new.js";
 import {Select} from "./src/select.js";
-import {Sample} from "./src/sample.js";
 
 function Submit() {
     Index();
@@ -26,7 +25,6 @@ function Submit() {
     Select();
 
     $('.dropdown-toggle').dropdown();
-    Sample();
 
 }
 

@@ -10,7 +10,6 @@
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="#">Questions</a></li>
                 {% if group_name %}
                     <li><a href="{% url 'v1:dashboard_group_overview' group_id %}">Overview</a></li>
                     <li><a href="{% url 'v1:dashboard_group_filter' group_id %}">Analysis</a></li>
