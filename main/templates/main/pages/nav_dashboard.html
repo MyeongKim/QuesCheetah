@@ -11,9 +11,15 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav navbar-right">
                 <li><a href="#">Questions</a></li>
-                <li><a href="#">Overview</a></li>
-                <li><a href="#">Analysis</a></li>
-                <li><a href="#">Users</a></li>
+                {% if group_name %}
+                    <li><a href="{% url 'v1:dashboard_group_overview' group_id %}">Overview</a></li>
+                    <li><a href="{% url 'v1:dashboard_group_filter' group_id %}">Analysis</a></li>
+                    <li><a href="{% url 'v1:dashboard_group_users' group_id %}">Users</a></li>
+                {% else %}
+                    <li><a href="{% url 'v1:dashboard_overview' questions.1.id %}">Overview</a></li>
+                    <li><a href="{% url 'v1:dashboard_filter' questions.1.id %}">Analysis</a></li>
+                    <li><a href="{% url 'v1:dashboard_users' questions.1.id %}">Users</a></li>
+                {% endif %}
                 {% if user.is_authenticated %}
                     <li class="login dropdown">
                         <a href="#" class="dropdown-toggle btn" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

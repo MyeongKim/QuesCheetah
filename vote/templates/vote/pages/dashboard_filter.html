@@ -95,7 +95,7 @@
                         {% with sorted_question_val=question_val|dictsort %}
                         <div id="answers-filter-q{{ question_num }}" style="display: none;">
                             {% for answer_num, answer_val in sorted_question_val.items %}
-                                <p><input type="checkbox" q_num={{ question_num }} a_num={{ answer_num }} checked> {{ answer_val.answer_count }}</p>
+                                <p><input type="checkbox" q_num={{ question_num }} a_num={{ answer_num }} checked> {{ answer_val.answer_text }}</p>
                             {% endfor %}
                         </div>
                         {% endwith %}
@@ -122,8 +122,6 @@
                         </h4>
                     {% endfor %}
                 {% endwith %}
-
-
             </div>
         </div>
         <div class="graph-test">
@@ -183,7 +181,6 @@
 
                             update_nums();
                         }
-
                     });
 
                     // Check and uncheck answer
@@ -252,7 +249,7 @@
                     // Initiate with first question
                     $('.filter-question-element:first').click();
 
-                    /// Dict argument example format is {'1':[1,2,3], '2':[1,2,3]}
+                    // Dict argument example format is {'1':[1,2,3], '2':[1,2,3]}
                     function update_time_data(dict){
                         if ('{{ group_name }}'){
                             // When page is dealing with group data.
@@ -501,10 +498,14 @@
                             });
                         });
                     });
+                    // Change Navigator url
+                    $('.group-info .dropdown-menu li a').each(function(index, value){
+                        var navi_url = $(this).attr('href');
+                        $(this).attr('href', navi_url.replace("overview", "filter"));
+                    });
                 });
 
         // move to js package file
         $(".group-status-state input").bootstrapSwitch();
-
     </script>
 {% endblock %}

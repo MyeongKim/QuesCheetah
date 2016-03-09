@@ -1,20 +1,139 @@
 {% extends 'vote/pages/dashboard_overview.html' %}
 
 {% load staticfiles %}
-
+{% load vote_extras %}
 {% block stylesheet %}
     {{ block.super }}
     <style>
+        .filter-checkbox-wrapper{
+            width: 100%;
+            padding: 20px;
+            color: #707979;
+            height: 162px;
+            border: solid #cfcfcf 1px;
+        }
+
+        .filter-checkbox-wrapper .filter-questions, .filter-answers{
+            border-right: solid #cfcfcf 1px;
+        }
+
+        .filter-checkbox-wrapper .filter-questions, .filter-checkbox-wrapper .filter-answers,
+        .filter-checkbox-wrapper .filter-selected{
+            height: 100%;
+            overflow: auto;
+            overflow-y: scroll;
+        }
+
+        .filter-checkbox-wrapper .filter-selected a{
+            text-decoration: none;
+        }
+
+        .filter-checkbox-wrapper .filter-selected i{
+            color: #cfcfcf;
+        }
+
+        .filter-question-navi.row{
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+
+        .filter-question-navi .col-sm-3{
+            margin: 3px;
+        }
+
+        .filter-question-navi div.dropdown{
+            background-color: rgba(59, 148, 96, 0.27);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .filter-question-navi div.dropdown span {
+            right: 5px;
+            position: absolute;
+        }
+
+        .filter-question-navi a{
+            color: #3E3B3B;
+        }
+
+        #filter-time-chart-title{
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        .filter-question-element:hover{
+            cursor: pointer;
+        }
+
+        .filter-question-element.active{
+            font-weight: bold;
+            color: #000;
+        }
+
+        .filter-selected .label:hover{
+            cursor: pointer;
+        }
+
+        .dashboard-user-list{
+            margin-top: 30px;
+        }
+
         .dashboard-user-list .input-group{
             width: 300px;
             float: right;
             margin-bottom: 5px;
         }
+
     </style>
 {% endblock %}
 
 {% block graph %}
     <div class="row">
+        <div class="filter-checkbox-wrapper">
+            <div class="col-sm-3 filter-questions">
+                <p class="p-title">Questions</p>
+                {% with sorted_questions=questions|dictsort %}
+                    {% for question_num, question_val in sorted_questions.items %}
+                        <p class="filter-question-element"><input type="checkbox" checked q_num="{{ question_num }}"> {{ question_val.question_text }}</p>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="col-sm-3 filter-answers">
+                <p class="p-title">Answers</p>
+                {% with sorted_answers=answers|dictsort %}
+                    {% for question_num, question_val in sorted_answers.items %}
+                        {% with sorted_question_val=question_val|dictsort %}
+                            <div id="answers-filter-q{{ question_num }}" style="display: none;">
+                                {% for answer_num, answer_val in sorted_question_val.items %}
+                                    <p><input type="checkbox" q_num={{ question_num }} a_num={{ answer_num }} checked> {{ answer_val.answer_text }}</p>
+                                {% endfor %}
+                            </div>
+                        {% endwith %}
+                    {% endfor %}
+                {% endwith %}
+            </div>
+            <div class="col-sm-6 filter-selected">
+                <p class="p-title">Selected</p>
+                {% with sorted_questions=questions|dictsort %}
+                    {% for question_num1, question_val in sorted_questions.items %}
+                        <h4>
+                            <span class="label label-primary label-question" q_num="{{ question_num1 }}">Q{{ question_num1 }} <i class="fa fa-times"></i></span>
+                            {% with sorted_answers=answers|dictsort %}
+                                {% for question_num2, question_val in sorted_answers.items %}
+                                    {% ifequal question_num1 question_num2 %}
+                                        {% with sorted_question_val=question_val|dictsort %}
+                                            {% for answer_num, answer_val in sorted_question_val.items %}
+                                                <span class="label label-default label-answer" a_num="{{ answer_num }}" q_num="{{ question_num2 }}">{{ answer_val.answer_text }} <i class="fa fa-times"></i></span>
+                                            {% endfor %}
+                                        {% endwith %}
+                                    {% endifequal %}
+                                {% endfor %}
+                            {% endwith %}
+                        </h4>
+                    {% endfor %}
+                {% endwith %}
+            </div>
+        </div>
         <div class="dashboard-user-list">
             <div class="input-group">
                 <span class="input-group-addon"><i class="fa fa-search"></i></span>
@@ -30,30 +149,33 @@
                 </tr>
                 </thead>
                 <tbody class="searchable">
-                <tr>
-                    <td>222</td>
-                    <td>BJ</td>
-                    <td>Question text1</td>
-                    <td>Answer3</td>
-                </tr>
-                <tr>
-                    <td>-</td>
-                    <td>-</td>
-                    <td>Question text2</td>
-                    <td>Answer4</td>
-                </tr>
-                <tr>
-                    <td>224</td>
-                    <td>MJ</td>
-                    <td>Question text1</td>
-                    <td>Answer1</td>
-                </tr>
-                <tr>
-                    <td>225</td>
-                    <td>Love</td>
-                    <td>Question text2</td>
-                    <td>Answer3</td>
-                </tr>
+                        {% if group_name %}
+                            <!--If this page deals with group question -->
+                            {% for question_num, question_val in useranswers.items %}
+                                {% for answer_num, answer_val in question_val.items %}
+                                    {% for useranswer in answer_val %}
+                                        <tr class="table-row" q_num="{{ question_num }}" a_num="{{ answer_num }}">
+                                            <td>{{ useranswer.id }}</td>
+                                            <td>{{ useranswer.unique_user }}</td>
+                                            <td class="td-question" q_num="{{ question_num }}"></td>
+                                            <td class="td-answer" a_num="{{ answer_num }}" q_num="{{ question_num }}"></td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            {% endfor %}
+                        {% else %}
+                            <!--If this page deals with single question -->
+                            {% for answer_num, answer_val in useranswers.items %}
+                                {% for useranswer in answer_val %}
+                                    <tr class="table-row" q_num="1" a_num="{{ answer_num }}">
+                                        <td>{{ useranswer.id }}</td>
+                                        <td>{{ useranswer.unique_user }}</td>
+                                        <td class="td-question" q_num="1"></td>
+                                        <td class="td-answer" a_num="{{ answer_num }}" q_num="1"></td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        {% endif %}
                 </tbody>
             </table>
         </div>
@@ -63,10 +185,136 @@
 {% block script %}
     <script src="{% static 'bootstrap/js/bootstrap-switch.min.js' %}"></script>
     <script type="application/javascript">
-        System.import("{% static "js/src/chart3.js" %}");
+        System.import("{% static "js/src/chart.js" %}");
 
-        // move to js package file
-        $("[name='my-checkbox']").bootstrapSwitch();
+        // Choose one question to display answers.
+        $('.filter-question-element').click(function(){
+            $('[id^="answers-filter-q"]').hide();
+            $('.filter-question-element').removeClass('active');
+
+            var q_num = $(this).children('input').attr('q_num');
+            $('#answers-filter-q'+q_num).show();
+            $(this).addClass('active');
+
+        });
+
+        // Check and uncheck question
+        $('.filter-question-element input').click(function(){
+            var q_num = $(this).attr('q_num');
+            if($(this).is(":checked")){
+                // user checked
+
+                // all answers become checked
+                $('#answers-filter-q'+q_num+' input').prop('checked', true);
+                // all selected label removed
+                $('.filter-selected span[q_num="'+q_num+'"]').show();
+
+                update_nums();
+            }else{
+                // user unchecked
+
+                // all answers become unchecked
+                $('#answers-filter-q'+q_num+' input').prop('checked', false);
+                // all selected label removed
+                $('.filter-selected span[q_num="'+q_num+'"]').hide();
+
+                update_nums();
+            }
+        });
+
+        // Check and uncheck answer
+        $('.filter-answers input').click(function(){
+            var q_num = $(this).attr('q_num');
+            var a_num = $(this).attr('a_num');
+            if($(this).is(":checked")){
+                // user checked
+
+                // selected label removed
+                $('.filter-selected span[a_num="'+a_num+'"][q_num="'+q_num+'"]').show();
+
+                if(!$('.filter-question-element input[q_num="'+q_num+'"]').is(":checked") ){
+                    // If unchecked question is checked by answer
+                    $('.filter-question-element input[q_num="'+q_num+'"]').prop('checked', true);
+                    $('.filter-selected .label-question[q_num="'+q_num+'"]').show();
+                }
+                update_nums();
+            }else{
+                // user unchecked
+
+                // selected label removed
+                $('.filter-selected span[a_num="'+a_num+'"][q_num="'+q_num+'"]').hide();
+
+                if(!$('.filter-answers input[q_num="'+q_num+'"]').is(":checked")){
+                    // If all answers are unchecked, uncheck question.
+                    $('.filter-question-element input[q_num="'+q_num+'"]').click();
+                }else{
+                    update_nums();
+                }
+            }
+        });
+
+        // Click selected label
+        $('.filter-selected span.label').click(function(){
+            var q_num = $(this).attr('q_num');
+            var a_num = $(this).attr('a_num');
+
+            if($(this).is('.label-question')){
+                // If label-question is clicked
+                $('.filter-question-element input[q_num="'+q_num+'"]').click();
+            }else{
+                // If label-answer is clicked
+                $('.filter-answers input[q_num="'+q_num+'"][a_num="'+a_num+'"]').click();
+            }
+        });
+
+        // assign selected q_num, a_num values
+        function update_nums(){
+            var current_nums = {};
+            $('.filter-selected .label-answer:visible').each(function(index){
+                var q_num = $(this).attr('q_num');
+                var a_num = $(this).attr('a_num');
+                if(current_nums[q_num]){
+                    if($.inArray(a_num, current_nums[q_num]) < 0){
+                        current_nums[q_num].push(a_num)
+                    }
+                }else{
+                    current_nums[q_num] = [a_num]
+                }
+            });
+            filter_table(current_nums);
+        }
+
+        // Replace table row with filtered data.
+        // Dict argument example format is {'1':[1,2,3], '2':[1,2,3]}
+        function filter_table(dict){
+            // Hide all row first
+            $('.table-row').hide();
+
+            // Disply only selected datas
+            $.each(dict, function(question_num, question_val){
+                $.each(question_val, function(index, answer_num){
+                   $('.table-row[q_num="'+question_num+'"][a_num="'+answer_num+'"]').show();
+                });
+            });
+        }
+
+        // Initiate with first question
+        $('.filter-question-element:first').click();
+
+        $(".group-status-state input").bootstrapSwitch();
+
+        // Fill table row by q_num, a_num
+        $.each($('.td-question, .td-answer'), function(index, value){
+            var q_num= $(this).attr('q_num');
+            var a_num= $(this).attr('a_num');
+            if(!a_num){
+                // write question text
+                $(this).text($('.filter-question-element input[q_num="'+q_num+'"]').parent().text());
+            }else{
+                // write answer text
+                $(this).text($('.filter-answers input[a_num="'+a_num+'"][q_num="'+q_num+'"]').parent().text());
+            }
+        });
 
         // search in users tab
         $('#filter').keyup(function () {
@@ -75,7 +323,13 @@
             $('.searchable tr').filter(function () {
                 return rex.test($(this).text());
             }).show();
+        });
 
-        })
+        // Change Navigator url
+        $('.group-info .dropdown-menu li a').each(function(index, value){
+            var navi_url = $(this).attr('href');
+            $(this).attr('href', navi_url.replace("overview", "users"));
+        });
+
     </script>
 {% endblock %}
