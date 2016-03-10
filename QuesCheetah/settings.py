@@ -174,7 +174,6 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'QuesCheetah', 'static'),
     ("node_modules", os.path.join(BASE_DIR, "node_modules")),
     ("jspm_packages", os.path.join(BASE_DIR, "jspm_packages")),
-    ("home", BASE_DIR)
 ]
 
 # CACHES = {

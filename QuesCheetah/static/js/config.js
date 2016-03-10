@@ -40,6 +40,7 @@ System.config({
     "core-js": "npm:core-js@1.2.6",
     "css": "github:systemjs/plugin-css@0.1.20",
     "highcharts": "npm:highcharts-release@4.2.3",
+    "highcharts-browserify": "npm:highcharts-browserify@2.0.2",
     "highstock": "npm:highcharts-release@4.2.3/highstock.js",
     "jquery": "npm:jquery@2.2.0",
     "qc-init": "js/quescheetah-init.js",
@@ -147,6 +148,10 @@ System.config({
     },
     "npm:graceful-readlink@1.0.1": {
       "fs": "github:jspm/nodelibs-fs@0.1.2"
+    },
+    "npm:highcharts-browserify@2.0.2": {
+      "highcharts-release": "npm:highcharts-release@4.2.3",
+      "process": "github:jspm/nodelibs-process@0.1.2"
     },
     "npm:highcharts-release@4.2.3": {
       "process": "github:jspm/nodelibs-process@0.1.2"
