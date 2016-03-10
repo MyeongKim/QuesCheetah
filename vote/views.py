@@ -56,7 +56,7 @@ def get_vote(request, api_key, question_id):
     '''
     request to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/SimpleResult'
+    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/SimpleResult'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -89,7 +89,7 @@ def get_multiple_vote(request, api_key, group_name):
     '''
     request to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(m.id)
+    url = 'http://www.quescheetah.com/v1/groups/'+str(m.id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -145,7 +145,7 @@ def dashboard_overview(request, question_id):
     '''
     request question data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)
+    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -162,7 +162,7 @@ def dashboard_overview(request, question_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -225,7 +225,7 @@ def dashboard_filter(request, question_id):
     '''
     request question data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)
+    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -242,7 +242,7 @@ def dashboard_filter(request, question_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -304,7 +304,7 @@ def dashboard_users(request, question_id):
     '''
     request question data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)
+    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -321,7 +321,7 @@ def dashboard_users(request, question_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/questions/'+str(question_id)+'/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -383,7 +383,7 @@ def dashboard_group_overview(request, group_id):
     '''
     request group data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)
+    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -400,7 +400,7 @@ def dashboard_group_overview(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)+'/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -463,7 +463,7 @@ def dashboard_group_filter(request, group_id):
     '''
     request group data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)
+    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -480,7 +480,7 @@ def dashboard_group_filter(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)+'/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -542,7 +542,7 @@ def dashboard_group_users(request, group_id):
     '''
     request group data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)
+    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -559,7 +559,7 @@ def dashboard_group_users(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/'+str(group_id)+'/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)

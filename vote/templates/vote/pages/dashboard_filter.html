@@ -386,7 +386,7 @@
                         // If this page is for group question
 
                         // Render timeline count chart
-                        $.getJSON('http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){
+                        $.getJSON('http://www.quescheetah.com/v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){
                             full_useranswer_time_data = data;
                             var qcStockData = [];
 
@@ -423,12 +423,12 @@
                             });
                         });
 
-                        var pie_get_url = 'http://127.0.0.1:8000/v1/groups/'+'{{ group_id }}';
+                        var pie_get_url = 'http://www.quescheetah.com/v1/groups/'+'{{ group_id }}';
                     {% else %}
                         // If this page is for single question
 
                         // Render timeline count chart
-                        $.getJSON('http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}'+'/answers/useranswers', function(data){
+                        $.getJSON('http://www.quescheetah.com/v1/questions/'+'{{ questions.1.id }}'+'/answers/useranswers', function(data){
                             full_useranswer_time_data = data;
                             var qcStockData = [];
 
@@ -459,7 +459,7 @@
                             });
                         });
 
-                        var pie_get_url = 'http://127.0.0.1:8000/v1/questions/'+'{{ questions.1.id }}';
+                        var pie_get_url = 'http://www.quescheetah.com/v1/questions/'+'{{ questions.1.id }}';
                     {% endif %}
                     // Render pie count chart
                     $.getJSON(pie_get_url, function(data){

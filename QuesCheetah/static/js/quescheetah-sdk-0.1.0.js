@@ -1,6 +1,6 @@
 function QuesCheetah(config){
     this.apiKey = config.apiKey;
-    this.baseUrl = "http://127.0.0.1:8000/v1/";
+    this.baseUrl = "http://www.quescheetah.com/v1/";
     this.callBackUrl = config.callBackUrl;
     this.receiveRealtimeResponse = config.receiveRealtimeResponse;
 
