@@ -125,24 +125,26 @@
         <div class="row">
             <div class="questions-wrapper">
                 <div class="questions-condition col-sm-3">
-                    <p><input type="checkbox" checked> Group</p>
-                    <p><input type="checkbox" checked> Single</p>
+                    <p><input type="checkbox" id="group-filter" checked> Group</p>
+                    <p><input type="checkbox" id="single-filter" checked> Single</p>
                 </div>
                 <div class="questions-items col-sm-9">
                     {% for m in multi_question %}
-                        <a href="{% url 'v1:dashboard_group_overview' m.id %}">
-                            <div class="questions-element">
-                                <div class="questions-element-status ongoing">Ongoing</div>
-                                <button class="questions-element-delete btn btn-danger multi-delete-btn" gid="{{ m.id }}"><i class="fa fa-close"></i></button>
-                                <div class="questions-element-title">{{ m.group_name }}</div>
-                                <div class="questions-element-info">
-                                    <div class="element-title">Questions</div>
-                                    <div class="element-data">{{ m.get_question_count }}</div>
-                                    <div class="element-title">Useranswers</div>
-                                    <div class="element-data">{{ m.get_useranswer_count }}</div>
+                        <div class="group-questions">
+                            <a href="{% url 'v1:dashboard_group_overview' m.id %}">
+                                <div class="questions-element">
+                                    <div class="questions-element-status ongoing">Ongoing</div>
+                                    <button class="questions-element-delete btn btn-danger multi-delete-btn" gid="{{ m.id }}"><i class="fa fa-close"></i></button>
+                                    <div class="questions-element-title">{{ m.group_name }}</div>
+                                    <div class="questions-element-info">
+                                        <div class="element-title">Questions</div>
+                                        <div class="element-data">{{ m.get_question_count }}</div>
+                                        <div class="element-title">Useranswers</div>
+                                        <div class="element-data">{{ m.get_useranswer_count }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     {% empty %}
                         <a href="{% url 'v1:new' api_key %}">
                             <div class="questions-element questions-element-empty">
@@ -151,19 +153,21 @@
                         </a>
                     {% endfor %}
                     {% for q in single_question %}
-                        <a href="{% url 'v1:dashboard_overview' q.id %}">
-                            <div class="questions-element">
-                                <div class="questions-element-status ongoing">Ongoing</div>
-                                <button class="questions-element-delete btn btn-danger single-delete-btn" qid="{{ q.id }}" qt="{{ q.question_title }}"><i class="fa fa-close"></i></button>
-                                <div class="questions-element-title">{{ q.question_title}}</div>
-                                <div class="questions-element-info">
-                                    <div class="element-title">Questions</div>
-                                    <div class="element-data">1</div>
-                                    <div class="element-title">Useranswers</div>
-                                    <div class="element-data">{{ q.get_useranswer_count }}</div>
+                        <div class="single-question">
+                            <a href="{% url 'v1:dashboard_overview' q.id %}">
+                                <div class="questions-element">
+                                    <div class="questions-element-status ongoing">Ongoing</div>
+                                    <button class="questions-element-delete btn btn-danger single-delete-btn" qid="{{ q.id }}" qt="{{ q.question_title }}"><i class="fa fa-close"></i></button>
+                                    <div class="questions-element-title">{{ q.question_title}}</div>
+                                    <div class="questions-element-info">
+                                        <div class="element-title">Questions</div>
+                                        <div class="element-data">1</div>
+                                        <div class="element-title">Useranswers</div>
+                                        <div class="element-data">{{ q.get_useranswer_count }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     {% empty %}
                         <a href="{% url 'v1:new' api_key %}">
                             <div class="questions-element questions-element-empty">
