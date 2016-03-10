@@ -20,8 +20,8 @@ export function Index() {
         if (password === password2 ){
             AjaxCall('signup', {email : email ,username:username, password : password}, function(json){
                 if(json.status){
-                    $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>"+json.msg+"</div>");
-                    $("#login-tab").tab('show');
+                    $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>Welcome!</div>");
+                    $("#login-tab a").click();
                     $('#signup-email').val('');
                     $('#signup-username').val('');
                     $('#signup-password').val('');
