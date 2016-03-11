@@ -612,9 +612,12 @@ def dashboard_group_users(request, group_id):
 def match_domain(request):
     api_key = get_api_key(request)
     if api_key:
-        request_domain = request.get_host()
+        request_domain = request.META.get('HTTP_ORIGIN')
+        if request_domain[:7] == 'http://':
+            request_domain = request_domain[7:]
         if request_domain[:4] == 'www.':
-            request_domain = request_domain[4:]
+       	    request_domain = request_domain[4:]
+        print(request_domain)
         try:
             a = ApiKey.objects.get(key=api_key)
             d = Domain.objects.get(domain=request_domain, api_key=a)
