@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.views.decorators.cache import cache_page, never_cache
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
+from django.utils.decorators import method_decorator
 from django.views.generic.base import View
 import urllib.request, urllib.error, urllib.parse
 from urllib.error import HTTPError
@@ -789,6 +790,7 @@ class Groups(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    @method_decorator(never_cache)
     def get(self, request, group_id):
         if match_domain(request):
             api_key = get_api_key(request)
@@ -1117,6 +1119,7 @@ class Questions(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    @method_decorator(never_cache)
     def get(self, request, question_id):
         if match_domain(request):
             api_key = get_api_key(request)
@@ -1461,6 +1464,7 @@ class Answers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
         question_id=kwargs['question_id']
         answer_num=kwargs.get('answer_num')
@@ -1658,6 +1662,7 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
         question_id = kwargs.get('question_id')
         unique_user = kwargs.get('unique_user')
