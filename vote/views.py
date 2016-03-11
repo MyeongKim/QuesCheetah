@@ -49,6 +49,7 @@ def new(request, api_key):
 
     return render(request, 'vote/pages/new.html', context)
 
+
 @never_cache
 def get_vote(request, api_key, question_id):
     context = {
@@ -131,6 +132,7 @@ def dashboard_select(request):
         # If user didn't make any question or group question, redirect to create page.
         return redirect('v1:new', api_key)
 
+
 def dashboard_overview(request, question_id):
     context = {
 
@@ -182,9 +184,9 @@ def dashboard_overview(request, question_id):
     provide other question/group info for navigation
     '''
     context.update({
-            'nav_group': [],
-            'nav_question': []
-        })
+        'nav_group': [],
+        'nav_question': []
+    })
 
     try:
         groups = MultiQuestion.objects.filter(api_key__key=api_key)
@@ -262,9 +264,9 @@ def dashboard_filter(request, question_id):
     provide other question/group info for navigation
     '''
     context.update({
-            'nav_group': [],
-            'nav_question': []
-        })
+        'nav_group': [],
+        'nav_question': []
+    })
 
     try:
         groups = MultiQuestion.objects.filter(api_key__key=api_key)
@@ -341,9 +343,9 @@ def dashboard_users(request, question_id):
     provide other question/group info for navigation
     '''
     context.update({
-            'nav_group': [],
-            'nav_question': []
-        })
+        'nav_group': [],
+        'nav_question': []
+    })
 
     try:
         groups = MultiQuestion.objects.filter(api_key__key=api_key)
@@ -420,9 +422,9 @@ def dashboard_group_overview(request, group_id):
     provide other question/group info for navigation
     '''
     context.update({
-            'nav_group': [],
-            'nav_question': []
-        })
+        'nav_group': [],
+        'nav_question': []
+    })
 
     try:
         groups = MultiQuestion.objects.filter(api_key__key=api_key)
@@ -500,9 +502,9 @@ def dashboard_group_filter(request, group_id):
     provide other question/group info for navigation
     '''
     context.update({
-            'nav_group': [],
-            'nav_question': []
-        })
+        'nav_group': [],
+        'nav_question': []
+    })
 
     try:
         groups = MultiQuestion.objects.filter(api_key__key=api_key)
@@ -579,9 +581,9 @@ def dashboard_group_users(request, group_id):
     provide other question/group info for navigation
     '''
     context.update({
-            'nav_group': [],
-            'nav_question': []
-        })
+        'nav_group': [],
+        'nav_question': []
+    })
 
     try:
         groups = MultiQuestion.objects.filter(api_key__key=api_key)
@@ -1091,7 +1093,7 @@ class Questions(View):
             load data for response json
             '''
             response_dict['questions'].update({
-                q.question_num : {
+                q.question_num: {
                     'question_id': q.id,
                     'question_title': q.question_title,
                     'question_text': q.question_text,
@@ -1104,12 +1106,12 @@ class Questions(View):
 
             a = q.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
-                q.question_num : {}
+                q.question_num: {}
             })
 
             for answer in a:
                 response_dict['answers'][q.question_num].update({
-                    answer.answer_num : {
+                    answer.answer_num: {
                         'answer_text': answer.answer_text,
                     }
                 })
@@ -1161,7 +1163,7 @@ class Questions(View):
 
             for answer in a:
                 response_dict['answers'][q.question_num].update({
-                    answer.answer_num : {
+                    answer.answer_num: {
                         'id': answer.id,
                         'answer_count': answer.get_answer_count,
                         'answer_text': answer.answer_text,
@@ -1267,7 +1269,7 @@ class Questions(View):
                 return error_return(desc, 404)
 
             response_dict['questions'].update({
-                updated_q.question_num : {
+                updated_q.question_num: {
                     'question_title': updated_q.question_title,
                     'question_text': updated_q.question_text,
                     'start_dt': updated_q.start_dt,
@@ -1279,12 +1281,12 @@ class Questions(View):
 
             a = updated_q.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
-                updated_q.question_num : {}
+                updated_q.question_num: {}
             })
 
             for answer in a:
                 response_dict['answers'][updated_q.question_num].update({
-                    answer.answer_num : {
+                    answer.answer_num: {
                         'answer_text': answer.answer_text,
                     }
                 })
@@ -1452,7 +1454,7 @@ class Answers(View):
 
             for answer in a:
                 response_dict['answers'].update({
-                    answer.answer_num : {
+                    answer.answer_num: {
                         'id': answer.id,
                         'answer_text': answer.answer_text,
                         'answer_count': answer.get_answer_count
@@ -1475,7 +1477,7 @@ class Answers(View):
                 return error_return(desc)
 
             response_dict = {
-                'answers':{}
+                'answers': {}
             }
 
             '''
@@ -1598,7 +1600,7 @@ class Answers(View):
 
             for answer in a:
                 response_dict['answers'].update({
-                    answer.answer_num : {
+                    answer.answer_num: {
                         'id': answer.id,
                         'answer_text': answer.answer_text,
                         'answer_count': answer.get_answer_count
