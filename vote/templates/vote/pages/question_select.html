@@ -119,6 +119,7 @@
         {% endif %}
         <div id="helper-msg"></div>
         <div class="questions-create-btn">
+            <input type="hidden" value="{{ api_key }}" name="api_key">
             <a href="{% url 'v1:new' api_key %}"><button class="btn btn-success btn-lg">Make a new question?</button></a>
         </div>
         <div class="row">

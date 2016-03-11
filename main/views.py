@@ -71,7 +71,7 @@ def user_signup(request):
 def user_login(request):
 
     context = {}
-
+    response_data = {}
     if request.is_ajax():
         response_data = {}
         data = json.loads(request.body.decode('utf-8'))
@@ -81,12 +81,14 @@ def user_login(request):
         try:
             user = authenticate(email=postEmail, password=postPassword)
         except:
-            return JsonResponse({'error': 'no user'})
+            response_data.update({'error': 'no user'})
+            return JsonResponse(response_data)
 
         if user is not None:
                 if user.is_active:
                     login(request, user)
-                    return JsonResponse({'status': 'success'})
+                    response_data.update({'status': 'success'})
+                    return JsonResponse(response_data)
 
         return JsonResponse({})
 

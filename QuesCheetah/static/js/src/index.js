@@ -1,5 +1,7 @@
 import {AjaxCall} from "../ajax_call.js";
 
+import { qc } from "../quescheetah-init.js";
+
 function escapeHtml(text) {
   return text
       .replace(/&/g, "&amp;")
@@ -45,6 +47,8 @@ export function Index() {
         AjaxCall('login', {email : email, password : password}, function(json){
             if(json.status === 'success'){
                 location.reload();
+            }else{
+                $('#tab-helper-msg').html("<div class='alert-box alert radius' data-alert>Ops! Check your email and password again.</div>");
             }
         });
     });

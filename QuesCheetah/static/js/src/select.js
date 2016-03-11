@@ -5,7 +5,7 @@ import { qc } from "../quescheetah-init.js";
 
 export function Select(){
     function reload(){
-        //location.reload();
+        location.reload();
     }
 
     $('.multi-delete-btn').click(function(){
@@ -14,6 +14,7 @@ export function Select(){
             var params = {
                 'group_id': $(this).attr('gid')
             };
+            qc.apiKey = $('input[name="api_key"]').val();
             qc.deleteGroup(params, reload);
         }
 
@@ -26,6 +27,7 @@ export function Select(){
                 'question_id': $(this).attr('qid'),
                 'question_title': $(this).attr('qt')
             };
+            qc.apiKey = $('input[name="api_key"]').val();
             qc.deleteQuestion(params, reload);
         }
     });

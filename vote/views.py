@@ -17,6 +17,7 @@ import jwt
 ''' server view function '''
 
 
+@never_cache
 def select_question(request):
     context = {
     }
@@ -1003,10 +1004,11 @@ class Groups(View):
             for q in questions:
                 answers = q.answers.filter(is_removed=False)
                 for answer in answers:
-                    useranswers = answer.user_answers.filter(is_removed=False)
-                    for useranswer in useranswers:
-                        useranswer.is_removed = True
-                        useranswer.save()
+                    if hasattr(answer, 'user_answers'):
+                        useranswers = answer.user_answers.filter(is_removed=False)
+                        for useranswer in useranswers:
+                            useranswer.is_removed = True
+                            useranswer.save()
 
                     answer.is_removed = True
                     answer.save()
@@ -1309,7 +1311,7 @@ class Questions(View):
 
             answers = q.answers.filter(is_removed=False)
             for answer in answers:
-                if answer.get('user_answers'):
+                if hasattr(answer, 'user_answers'):
                     useranswers = answer.user_answers.filter(is_removed=False)
                     for useranswer in useranswers:
                         useranswer.is_removed = True
