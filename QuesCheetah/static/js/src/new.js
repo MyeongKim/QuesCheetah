@@ -158,7 +158,7 @@ export function New(){
                 };
                 qc.apiKey = $('input[name="api_key"]').val();
                 qc.createGroup(params, function(){
-                    window.location.href = 'http://127.0.0.1:8000/v1/select';
+                    window.location.href = 'http://www.quescheetah.com/v1/select';
                 });
                 return false;
             }(); i++) {
