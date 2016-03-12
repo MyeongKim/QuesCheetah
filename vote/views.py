@@ -637,7 +637,7 @@ def dashboard_sample(request, page):
     '''
     request group data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/2'
+    url = 'http://www.quescheetah.com/v1/groups/2'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -654,7 +654,7 @@ def dashboard_sample(request, page):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/2/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/groups/2/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
