@@ -63,6 +63,7 @@ def get_vote(request, api_key, question_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -96,6 +97,7 @@ def get_multiple_vote(request, api_key, group_name):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -153,6 +155,7 @@ def dashboard_overview(request, question_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -170,6 +173,7 @@ def dashboard_overview(request, question_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -233,6 +237,7 @@ def dashboard_filter(request, question_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -250,6 +255,7 @@ def dashboard_filter(request, question_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -312,6 +318,7 @@ def dashboard_users(request, question_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -329,6 +336,7 @@ def dashboard_users(request, question_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -391,6 +399,7 @@ def dashboard_group_overview(request, group_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -408,6 +417,7 @@ def dashboard_group_overview(request, group_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -471,6 +481,7 @@ def dashboard_group_filter(request, group_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -488,6 +499,7 @@ def dashboard_group_filter(request, group_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -550,6 +562,7 @@ def dashboard_group_users(request, group_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -567,6 +580,7 @@ def dashboard_group_users(request, group_id):
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
+    req.add_header('Origin', 'quescheetah.com')
 
     try:
         response_json = urllib.request.urlopen(req).read()
