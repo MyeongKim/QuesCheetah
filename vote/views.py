@@ -623,6 +623,93 @@ def dashboard_group_users(request, group_id):
     return render(request, 'vote/pages/dashboard_users.html', context)
 
 
+@never_cache
+def dashboard_sample(request, page):
+    context = {
+
+    }
+
+    api_key = '4ae1772ba6c8439a8249901cdeffa7fe10900595'
+    context.update({
+        'api_key': api_key
+    })
+
+    '''
+    request group data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/groups/1'
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    '''
+    request useranswer data to rest api
+    '''
+    url = 'http://127.0.0.1:8000/v1/groups/1/answers/useranswers'
+
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError:
+        messages.add_message(request, messages.ERROR, 'Fail to get data.')
+        return HttpResponse(HTTPError.reason, HTTPError)
+
+    context.update(response_json)
+
+    '''
+    provide other question/group info for navigation
+    '''
+    context.update({
+        'nav_group': [],
+        'nav_question': []
+    })
+
+    try:
+        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for g in groups:
+            context['nav_group'].append({
+                "group_name": g.group_name,
+                "id": g.id
+            })
+
+    try:
+        questions = Question.objects.filter(api_key__key=api_key)
+    except ObjectDoesNotExist:
+        pass
+    else:
+        for q in questions:
+            context['nav_question'].append({
+                "question_title": q.question_title,
+                "id": q.id
+            })
+
+    context.update({
+        'is_sample': True
+    })
+
+    if page == 'users':
+        return render(request, 'vote/pages/dashboard_users.html', context)
+    if page == 'filter':
+        return render(request, 'vote/pages/dashboard_filter.html', context)
+    return render(request, 'vote/pages/dashboard_overview.html', context)
+
+
+
 def match_domain(request):
     api_key = get_api_key(request)
     if request.method == 'GET':

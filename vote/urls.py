@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
 
     # Dashboard management url
-
+    url(r'dashboard/sample/(?P<page>\w+)$', views.dashboard_sample, name='dashboard_sample'),
     url(r'dashboard/select$', views.dashboard_select, name='dashboard_select'),
     url(r'dashboard/groups/(?P<group_id>\w+)/overview$', views.dashboard_group_overview, name='dashboard_group_overview'),
     url(r'dashboard/(?P<question_id>\w+)/overview$', views.dashboard_overview, name='dashboard_overview'),
@@ -24,6 +24,7 @@ urlpatterns = [
     url(r'dashboard/(?P<question_id>\w+)/filter$', views.dashboard_filter, name='dashboard_filter'),
     url(r'dashboard/groups/(?P<group_id>\w+)/users$', views.dashboard_group_users, name='dashboard_group_users'),
     url(r'dashboard/(?P<question_id>\w+)/users$', views.dashboard_users, name='dashboard_users'),
+
 
     # REST API URLS
 

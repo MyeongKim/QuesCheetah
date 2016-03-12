@@ -1,0 +1,19 @@
+{% load staticfiles %}
+<div class="navbar-back"></div>
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="{% url 'main:index' %}">
+                <img src="{% static 'images/qc_logo.png' %}" height="40">
+                <p>QuesCheetah</p>
+            </a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="{% url 'v1:dashboard_sample' 'overview' %}">Overview</a></li>
+                <li><a href="{% url 'v1:dashboard_sample' 'filter' %}">Analysis</a></li>
+                <li><a href="{% url 'v1:dashboard_sample' 'users' %}">Users</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

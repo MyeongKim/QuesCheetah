@@ -148,7 +148,11 @@
 {% endblock %}
 
 {% block nav %}
-    {% include "main/pages/nav_dashboard.html" %}
+    {% if is_sample %}
+        {% include "main/pages/nav_dashboard_sample.html" %}
+    {% else %}
+        {% include "main/pages/nav_dashboard.html" %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
