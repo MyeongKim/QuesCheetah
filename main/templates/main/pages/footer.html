@@ -9,7 +9,7 @@
                 <div class="col-sm-2">
                     <p>Sample</p>
                     <div class="footer-elements">
-                        <a href="#"><p>Jekyll</p></a>
+                        <a href="https://mingkim.gitbooks.io/quescheetah-tutorial/content/jekyll.html" target="_blank"><p>Jekyll</p></a>
                         <a href="#"><p>Wordpress</p></a>
                         <a href="#"><p>Tistory</p></a>
                     </div>
@@ -17,30 +17,28 @@
                 <div class="col-sm-2">
                     <p>Documentation</p>
                     <div class="footer-elements">
-                        <a href="#"><p>Overview</p></a>
-                        <a href="#"><p>JavaScript SDK</p></a>
-                        <a href="#"><p>REST API</p></a>
+                        <a href="https://mingkim.gitbooks.io/quescheetah-tutorial/content/overview.html" target="_blank"><p>Overview</p></a>
+                        <a href="https://mingkim.gitbooks.io/quescheetah-tutorial/content/js-SDK.html" target="_blank"><p>JavaScript SDK</p></a>
+                        <a href="https://mingkim.gitbooks.io/quescheetah-document/content/" target="_blank"><p>REST API</p></a>
                     </div>
                 </div>
                 <div class="col-sm-2">
-                    <p>Dashboard</p>
+                    <p>Pages</p>
                     <div class="footer-elements">
-                        <a href="#"><p>Questions</p></a>
-                        <a href="#"><p>Overview</p></a>
-                        <a href="#"><p>Analysis</p></a>
-                        <a href="#"><p>Users</p></a>
+                        <a href="{% url 'v1:dashboard_select' %}"><p>Dashboard</p></a>
+                        <a href="{% url 'main:downloads' %}"><p>Downloads</p></a>
                     </div>
                 </div>
                 <div class="col-sm-2">
                     <p>Contact Us</p>
                     <div class="footer-elements">
-                        <a href="#"><p>Github</p></a>
+                        <a href="https://github.com/mingkim/QuesCheetah" target="_blank"><p>Github</p></a>
                     </div>
                 </div>
             </div>
             <div class="footer-license">
                 <div class="col-sm-12">
-                    QuesCheetah is Free Open Source Software released under the <a href="https://opensource.org/licenses/MIT">MIT</a> License.
+                    QuesCheetah is Free Open Source Software released under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT</a> License.
                 </div>
             </div>
         </div>
