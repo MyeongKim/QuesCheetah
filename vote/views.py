@@ -629,7 +629,7 @@ def dashboard_sample(request, page):
 
     }
 
-    api_key = '4ae1772ba6c8439a8249901cdeffa7fe10900595'
+    api_key = '911e89482c57ac3a0f6b9b4ee02f13a0c43d17bd'
     context.update({
         'api_key': api_key
     })
@@ -637,7 +637,7 @@ def dashboard_sample(request, page):
     '''
     request group data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/1'
+    url = 'http://127.0.0.1:8000/v1/groups/2'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -654,7 +654,7 @@ def dashboard_sample(request, page):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://127.0.0.1:8000/v1/groups/1/answers/useranswers'
+    url = 'http://127.0.0.1:8000/v1/groups/2/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
