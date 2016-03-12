@@ -189,3 +189,7 @@ def jwt_new(request):
         return JsonResponse({'jwt': str(encoded.decode('utf-8'))})
     else:
         return JsonResponse({'error': 'Not valid secret key.'})
+
+
+def tutorial_jekyll(request):
+    return render(request, 'main/pages/Jekyll tutorial.md.html')

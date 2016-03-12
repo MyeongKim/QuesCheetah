@@ -1,0 +1,116 @@
+{% block content %}
+    <h1><a id="How_to_install_Quescheetah_to_your_Jekyll_blog_0"></a>How to install Quescheetah to your Jekyll blog</h1>
+    <blockquote>
+        <p>You can check completed <a href="http://mingkim.github.io/programming/2016/02/04/SystemJS%EC%99%80-jspm/">sample widget</a> and <a href="http://www.quescheetah.com/v1/dashboard/sample/overview">sample dashboard</a>    first. Enjoy!</p>
+    </blockquote>
+    <p><a href="https://jekyllrb.com/">Jekyll</a> is simple static blog engine hosted by Github. In this tutorial, we’ll quickly add our simple vote widget in your Jekyll blog with Quescheetah.</p>
+    <h2><a id="1_Go_our_website_and_build_your_own_questions_6"></a>1. Go our website and build your own questions.</h2>
+    <p><img src="http://i64.tinypic.com/2rlzr43.png" alt="image"></p>
+    <p>First, Let’s go to our <a href="http://www.quescheetah.com/">Quescheetah</a> website and sign up. You can click the last “login” button of nav bar to signup. We provide account creation via</p>
+    <ul>
+        <li>Google</li>
+        <li>Facebook</li>
+        <li>Our own sign up form</li>
+    </ul>
+    <p>When you use your social account, Quescheetah signup is only available when you agree on our app authentication. We are collecting only two things, email and username.</p>
+    <p>If you finished signup process, you already logined or you can easily do this by clicking login button one more time. Your username will be displayed on our navbar and when click your name you can see the dropdown. Let’s click the “account” button.</p>
+    <p><img src="http://i64.tinypic.com/345flo1.png" alt="image"></p>
+    <p>There is only email information of our account yet. But we can see many other things soon. So from now, we can get our own api key. Api key is the key that used to say “This request is from { John dow }”. Simply click the “Get my api key” button to make our api key. Then we can see the screen below.</p>
+    <p><img src="http://i65.tinypic.com/2ai1mv6.png" alt="image"></p>
+    <p>The api key and other options are shown. But we’ll not handle other complex options. The next step is very important. Enroll domains. Why we have to do this?</p>
+    <p>The api key we use is included as header when sending requests. It’s easily discovered by other people and can be used by them. But the domain that will be enrolled with your account is checked in our server when handling requests. We check that if the request origin url is same to enrolled domain or not. So after we enroll our custom domain, we don’t have to worry our api key will be stealed. This is simmilar to Cross-Origin Resource Sharing concept.</p>
+    <p>Enroll our &quot;<a href="http://quescheetah.com">quescheetah.com</a>&quot; domain so we can use your api key inside our website. And also enroll “127.0.0.1:4000” for Jekyll test and your real blog domain({your-github-username}.github.io).</p>
+    <p><img src="http://i68.tinypic.com/sv455w.png" alt="image"></p>
+    <p>Finished this? Okay. Finally we are going to make our questions. Click your username of navbar and in this time, click the “Questions” button.</p>
+    <p><img src="http://i68.tinypic.com/205614h.png" alt="image"></p>
+    <p>The screen shows simple stack-like view. Your questions will be stacked when created, and you can click the left checkbox to filter things. Click the top “Make a new question?” button and go to next step.</p>
+    <p><img src="http://i65.tinypic.com/10577k8.png" alt="image"></p>
+    <p>In this tutorial, we are going to build simple group question which includes 2 questions. Click “+ Add Contact” tab button to change question. Fill in the form as following and don’t forget to write upper group name. Group name field appears when you make second question.</p>
+    <ul>
+        <li>group name = qc_demo</li>
+        <li>(question_1)Question title = Are you coming to my blog again?</li>
+        <li>(question_1)Question text = Are you coming to my blog again?</li>
+        <li>(question_1)Answer text1 = Of course!</li>
+        <li>(question_1)Answer text2 = Never</li>
+        <li>(question_2)Question title = Is this post helpful to you?</li>
+        <li>(question_2)Question text = Is this post helpful to you?</li>
+        <li>(question_2)Answer text1 = Yes!</li>
+        <li>(question_2)Answer text2 = Not at all…</li>
+    </ul>
+    <p><img src="http://i63.tinypic.com/j5xdtx.png" alt="image"></p>
+    <p>Good! If you completely finished, you can see our group question and following info. Since nobody answered our questions yet, Useranswer count is zero. If something went wrong, just click the upper “X” button to delete this. Lastly we need to know what is the id of this group question. Click the white box and move to dashboard page. In this page we can check the id. Graph doesn’t show anything cause there is no useranswer.</p>
+    <p><img src="http://i68.tinypic.com/21kbka8.png" alt="image"></p>
+    <h2><a id="3_Make_sure_your_Jekyll_blog_includes_Bootstrap_and_jQuery_library_69"></a>3. Make sure your Jekyll blog includes Bootstrap and jQuery library.</h2>
+    <p>Our widget was made with some components like tab and grid css. So whenever user wants to customize the widget, It can be easily manipulated. Download jQuery v2+ and bootstrap v3+. Don’t forget to download js file and css file of Bootstrap. We need both. You can directly download files or use CDN instead.</p>
+    <ul>
+        <li><a href="http://jquery.com/">Download jQuery</a></li>
+        <li><a href="getbootstrap.com">Download Bootstrap</a></li>
+    </ul>
+    <p>After download, locate these files properly at your base html file.</p>
+    <pre><code class="language-html"><span class="hljs-doctype">&lt;!DOCTYPE html&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">html</span> <span class="hljs-attribute">lang</span>=<span class="hljs-value">"en-us"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">title</span>&gt;</span>My Blog<span class="hljs-tag">&lt;/<span class="hljs-title">title</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"</span> <span class="hljs-attribute">integrity</span>=<span class="hljs-value">"sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"</span> <span class="hljs-attribute">crossorigin</span>=<span class="hljs-value">"anonymous"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"{{ site.baseurl }}public/css/poole.css"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"{{ site.baseurl }}public/css/syntax.css"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"{{ site.baseurl }}public/css/hyde.css"</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">link</span> <span class="hljs-attribute">rel</span>=<span class="hljs-value">"stylesheet"</span> <span class="hljs-attribute">href</span>=<span class="hljs-value">"{{ site.baseurl }}public/css/mycss.css"</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">head</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">body</span>&gt;</span>
+        {% include sidebar.html %}
+        <span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">class</span>=<span class="hljs-value">"content container"</span>&gt;</span>
+        {{ content }}
+        <span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">body</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"//code.jquery.com/jquery-1.11.3.min.js"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">script</span> <span class="hljs-attribute">src</span>=<span class="hljs-value">"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"</span> <span class="hljs-attribute">integrity</span>=<span class="hljs-value">"sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS"</span> <span class="hljs-attribute">crossorigin</span>=<span class="hljs-value">"anonymous"</span>&gt;</span><span class="undefined"></span><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">html</span>&gt;</span>
+    </code></pre>
+    <h2><a id="3_Download_bundlejs_file_and_Quescheetah_SDK_file_102"></a>3. Download bundle.js file and Quescheetah SDK file.</h2>
+    <ul>
+        <li>Download bundle-0.0.1.js</li>
+        <li>Download Quescheetah JavaScript SDk-0.0.1.js</li>
+    </ul>
+    <p>All you need to download in our site is these two JavaScript file. We provide all html, css, Javascript elements inside bundle file. The only thing you have to do is making one &lt;div&gt; that provides two attributes, id and (gid/qid).</p>
+    <p>the &lt;div&gt; is like as following.</p>
+    <pre><code class="language-html"><span class="hljs-tag">&lt;<span class="hljs-title">div</span> <span class="hljs-attribute">id</span>=<span class="hljs-value">"systemjs-sample"</span> <span class="hljs-attribute">gid</span>=<span class="hljs-value">"5"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-title">div</span>&gt;</span>
+    </code></pre>
+    <p>Id is supposed to be “systemjs-sample”. The script inside bundle file looks for our div by this id value. This tutorial is targeted to the page that includes only one widget. So If you want to change this you have to customize seperate script file we provides.</p>
+    <p>Our “gid/qid” attribute shows which question is supposed to be here. If you made a group question, use “gid”. Otherwise in the case you made a single question, use “qid”. Wirte your id value that we checked before in dashboard page.</p>
+    <p>And lastly, in bundle-0.0.1.js file, find the config object that includes ‘apiKey’, ‘callBackUrl’, ‘receiveRealtimeResponse’ key. Then put your api key as value of ‘apiKey’. Default value would be ‘your-api-key’. If you completed this process everything is ready.</p>
+    <pre><code class="language-javascript">$__System.register(<span class="hljs-string">'7'</span>, [<span class="hljs-string">'10'</span>], <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">_export</span>) </span>{
+        <span class="hljs-pi">    'use strict'</span>;
+
+        <span class="hljs-keyword">var</span> config, qc;
+        <span class="hljs-keyword">return</span> {
+        setters: [<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">_</span>) </span>{}],
+        execute: <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>) </span>{
+        config = {
+        <span class="hljs-string">'apiKey'</span>: <span class="hljs-string">'b3e9d78456671bd24be1041c16d6e689afec27d6'</span>,
+        <span class="hljs-string">'callBackUrl'</span>: <span class="hljs-string">'http://localhost:8000'</span>,
+        <span class="hljs-string">'receiveRealtimeResponse'</span>: <span class="hljs-literal">false</span>
+        };
+        qc = <span class="hljs-keyword">new</span> QuesCheetah(config);
+
+        _export(<span class="hljs-string">'qc'</span>, qc);
+        }
+        };
+        });
+    </code></pre>
+    <h2><a id="4_Restart_the_Jekyll_and__check_results_in_your_dashboard_142"></a>4. Restart the Jekyll and  check results in your dashboard</h2>
+    <p>Did you save the code we modified? Then, go to the directory that your Jekyll blog is installed. Restart with the command “jekyll s” and confirm the local result in your browser.</p>
+    <p><img src="http://i67.tinypic.com/98g1md.png" alt="image"></p>
+    <p>Of course you can vote to the questions in local envirnment. Your “useranswer” data will be saved after the POST method request is sent. When all question was answered, result Bootstrap modal shows, and page is reloaded automatically.</p>
+    <p><img src="http://i66.tinypic.com/712yqg.png" alt="images"></p>
+    <p>After page reloaded, answer buttons have been disabled. It’s because that our bundle script saved cookie about each question in your browser. Therefore answering twice in same question could be blocked. If you delete cookie with <a href="">console window</a> or browser setting, you can vote again.</p>
+    <p>Let’s go to quescheetah dashboard page again and in this time the screen shows our graphs!</p>
+    <p><img src="http://i63.tinypic.com/esjazk.png" alt="images"></p>
+    <p>You can search other graphs also in nav bar. “Overview” shows overall timeline graph and bar chart per question. In “Analysis” you can make your own filter. Graphs are re-rendered whenever you make a different filter. So it is enjoyable to analysis the relation between questions. Lastly in “Users” all useranswer data about this group/question is shown. You can serch by keywords of unique name and question text also with our filter.</p>
+    <p>Completed results can be checked in this links.</p>
+    <ul>
+        <li><a href="http://mingkim.github.io/programming/2016/02/04/SystemJS%EC%99%80-jspm/">sample widget</a></li>
+        <li><a href="http://www.quescheetah.com/v1/dashboard/sample/overview">sample dashboard</a></li>
+    </ul>
+    <p>Thank you for reading our first tutorial. Enjoy!</p>
+{% endblock %}

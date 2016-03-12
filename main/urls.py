@@ -11,4 +11,7 @@ urlpatterns = [
     url(r'^apikey/new', views.apikey_new, name='apikey_new'),
     url(r'^domain/new', views.domain_new, name='domain_new'),
     url(r'^jwt/new', views.jwt_new, name='jwt_new'),
+
+    # Tutorial/Documents
+    url(r'tutorial/jekyll$', views.tutorial_jekyll, name='tutorial_jekyll'),
 ]
