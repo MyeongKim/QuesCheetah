@@ -629,7 +629,7 @@ def dashboard_sample(request, page):
 
     }
 
-    api_key = '911e89482c57ac3a0f6b9b4ee02f13a0c43d17bd'
+    api_key = 'b3e9d78456671bd24be1041c16d6e689afec27d6'
     context.update({
         'api_key': api_key
     })
@@ -637,7 +637,7 @@ def dashboard_sample(request, page):
     '''
     request group data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/2'
+    url = 'http://www.quescheetah.com/v1/groups/5'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -654,7 +654,7 @@ def dashboard_sample(request, page):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/2/answers/useranswers'
+    url = 'http://www.quescheetah.com/v1/groups/5/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
