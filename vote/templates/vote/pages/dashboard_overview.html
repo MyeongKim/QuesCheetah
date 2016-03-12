@@ -249,8 +249,7 @@
 
                     $.ajaxSetup({
                         headers : {
-                            'api-key' : '4ae1772ba6c8439a8249901cdeffa7fe10900595',
-                            'Origin'  : 'quescheetah.com'
+                            'api-key' : '911e89482c57ac3a0f6b9b4ee02f13a0c43d17bd'
                         }
                     });
 
@@ -259,69 +258,35 @@
                         // If this page is for group question
 
                         // Render timeline count chart
-                        $.ajax({
-                            url: 'http://www.quescheetah.com/v1/groups/'+'{{ group_id }}'+'/answers/useranswers',
-                            dataType : 'json',
-                            success: function(data){
-                                var qcStockData = [];
+                        $.getJSON('http://www.quescheetah.com/v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){
+                            var qcStockData = [];
 
-                                $.each(data['useranswers'], function(question_num, value){
-                                    qcStockData[question_num-1] = {data: []};
-                                    var sort_array= [];
+                            $.each(data['useranswers'], function(question_num, value){
+                                qcStockData[question_num-1] = {data: []};
+                                var sort_array= [];
 
-                                    $.each(value, function(answer_num, answer_value){
-                                        if (answer_value[0]){
-                                            $.each(answer_value, function(index, answer){
-                                                sort_array.push(answer);
-                                            });
-                                        }
-                                    });
-                                    sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
-                                    $.each(sort_array, function(index, useranswer_value){
-                                        qcStockData[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
-                                    });
-                                });
-                                $('#container1').highcharts('StockChart', {
-                                    rangeSelector: {
-                                        selected: 1
-                                    },
-                                    series: qcStockData,
-                                    yAxis: {
-                                        allowDecimals:false
+                                $.each(value, function(answer_num, answer_value){
+                                    if (answer_value[0]){
+                                        $.each(answer_value, function(index, answer){
+                                            sort_array.push(answer);
+                                        });
                                     }
                                 });
-                            }
+                                sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});
+                                $.each(sort_array, function(index, useranswer_value){
+                                    qcStockData[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);
+                                });
+                            });
+                            $('#container1').highcharts('StockChart', {
+                                rangeSelector: {
+                                    selected: 1
+                                },
+                                series: qcStockData,
+                                yAxis: {
+                                    allowDecimals:false
+                                }
+                            });
                         });
-
-{#                        $.getJSON('http://www.quescheetah.com/v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){#}
-{#                            var qcStockData = [];#}
-{##}
-{#                            $.each(data['useranswers'], function(question_num, value){#}
-{#                                qcStockData[question_num-1] = {data: []};#}
-{#                                var sort_array= [];#}
-{##}
-{#                                $.each(value, function(answer_num, answer_value){#}
-{#                                    if (answer_value[0]){#}
-{#                                        $.each(answer_value, function(index, answer){#}
-{#                                            sort_array.push(answer);#}
-{#                                        });#}
-{#                                    }#}
-{#                                });#}
-{#                                sort_array.sort(function(x,y){ return Number(new Date(x['created_dt']).getTime()) - Number(new Date(y['created_dt']).getTime())});#}
-{#                                $.each(sort_array, function(index, useranswer_value){#}
-{#                                    qcStockData[question_num-1]['data'].push([Number(new Date(useranswer_value['created_dt']).getTime()), index+1]);#}
-{#                                });#}
-{#                            });#}
-{#                            $('#container1').highcharts('StockChart', {#}
-{#                                rangeSelector: {#}
-{#                                    selected: 1#}
-{#                                },#}
-{#                                series: qcStockData,#}
-{#                                yAxis: {#}
-{#                                    allowDecimals:false#}
-{#                                }#}
-{#                            });#}
-{#                        });#}
 
                         var get_bar_url = 'http://www.quescheetah.com/v1/groups/'+'{{ group_id }}';
                     {% else %}
@@ -362,76 +327,39 @@
 
                     {% endif %}
                     // Render bar count chart
-                    $.ajax({
-                        url: get_bar_url,
-                        dataType : 'json',
-                        success: function(data) {
-                            $.each(data['questions'], function (question_num, question_val) {
-                                var xAxisCat = [];
-                                var yAxisData = [];
-                                $.each(data['answers'][question_num], function (answer_num, answer_val) {
-                                    xAxisCat.push(answer_val['answer_text']);
-                                    yAxisData.push(answer_val['answer_count']);
-                                });
-                                $('#qc-bar-chart' + question_num).highcharts({
-                                    chart: {
-                                        type: 'bar'
-                                    },
-                                    title: {
-                                        text: null
-                                    },
-                                    xAxis: {
-                                        categories: xAxisCat
-                                    },
-                                    yAxis: {
-                                        allowDecimals: false,
-                                        title: {
-                                            text: 'useranswer count'
-                                        }
-                                    },
-                                    legend: {
-                                        enabled: false
-                                    },
-                                    series: [{
-                                        data: yAxisData
-                                    }]
-                                });
+                    $.getJSON(get_bar_url, function(data) {
+                        $.each(data['questions'], function (question_num, question_val) {
+                            var xAxisCat = [];
+                            var yAxisData = [];
+                            $.each(data['answers'][question_num], function (answer_num, answer_val) {
+                                xAxisCat.push(answer_val['answer_text']);
+                                yAxisData.push(answer_val['answer_count']);
                             });
-                        }
+                            $('#qc-bar-chart' + question_num).highcharts({
+                                chart: {
+                                    type: 'bar'
+                                },
+                                title: {
+                                    text: null
+                                },
+                                xAxis: {
+                                    categories: xAxisCat
+                                },
+                                yAxis: {
+                                    allowDecimals: false,
+                                    title: {
+                                        text: 'useranswer count'
+                                    }
+                                },
+                                legend: {
+                                    enabled: false
+                                },
+                                series: [{
+                                    data: yAxisData
+                                }]
+                            });
+                        });
                     });
-{#                    $.getJSON(get_bar_url, function(data) {#}
-{#                        $.each(data['questions'], function (question_num, question_val) {#}
-{#                            var xAxisCat = [];#}
-{#                            var yAxisData = [];#}
-{#                            $.each(data['answers'][question_num], function (answer_num, answer_val) {#}
-{#                                xAxisCat.push(answer_val['answer_text']);#}
-{#                                yAxisData.push(answer_val['answer_count']);#}
-{#                            });#}
-{#                            $('#qc-bar-chart' + question_num).highcharts({#}
-{#                                chart: {#}
-{#                                    type: 'bar'#}
-{#                                },#}
-{#                                title: {#}
-{#                                    text: null#}
-{#                                },#}
-{#                                xAxis: {#}
-{#                                    categories: xAxisCat#}
-{#                                },#}
-{#                                yAxis: {#}
-{#                                    allowDecimals: false,#}
-{#                                    title: {#}
-{#                                        text: 'useranswer count'#}
-{#                                    }#}
-{#                                },#}
-{#                                legend: {#}
-{#                                    enabled: false#}
-{#                                },#}
-{#                                series: [{#}
-{#                                    data: yAxisData#}
-{#                                }]#}
-{#                            });#}
-{#                        });#}
-{#                    });#}
                 });
 
         // move to js package file

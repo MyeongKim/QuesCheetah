@@ -625,6 +625,8 @@ def dashboard_group_users(request, group_id):
 
 def match_domain(request):
     api_key = get_api_key(request)
+    if request.method == 'GET':
+        return True
     if api_key:
         request_domain = request.META.get('HTTP_ORIGIN')
         if request_domain[:7] == 'http://':
