@@ -15,7 +15,8 @@ urlpatterns = [
     url(r'^get/(?P<api_key>\w+)/(?P<question_id>\d+)$', views.get_vote, name='get_vote'),
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
 
-    # Dashboard management url
+    # Dashboard management URLS
+
     url(r'dashboard/sample/(?P<page>\w+)$', views.dashboard_sample, name='dashboard_sample'),
     url(r'dashboard/select$', views.dashboard_select, name='dashboard_select'),
     url(r'dashboard/groups/(?P<group_id>\w+)/overview$', views.dashboard_group_overview, name='dashboard_group_overview'),
@@ -28,31 +29,16 @@ urlpatterns = [
 
     # REST API URLS
 
-    # GET
-    url(r'^groups/(?P<group_id>\w+)/answers/useranswers$', csrf_exempt(views.Useranswers.as_view())),
-    # GET, PUT, DELETE
-    url(r'^groups/(?P<group_id>\d+)$', csrf_exempt(views.Groups.as_view()), name='group'),
-    # POST
-    url(r'^groups$', csrf_exempt(views.Groups.as_view()), name='group_post'),
-
-    # GET
-    url(r'^questions/(?P<question_id>\w+)/SimpleResult$', views.simple_view_answer, name='question_simple_result'),
-    # GET
-    url(r'^questions/(?P<question_id>\w+)/ToPrivate$', views.to_private, name='question_to_private'),
-    # GET(full), PUT, DELETE
-    url(r'^questions/(?P<question_id>\w+)$', csrf_exempt(views.Questions.as_view()), name='question'),
-    # POST
-    url(r'^questions$', csrf_exempt(views.Questions.as_view()), name='question_post'),
-
-    # POST, GET, PUT
-    url(r'^questions/(?P<question_id>\w+)/answers/$', csrf_exempt(views.Answers.as_view()), name='answer_post'),
-    # GET, DELETE
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)$', csrf_exempt(views.Answers.as_view()), name='answer'),
-
-    # GET
-    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/$', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
-    # GET, DELETE, PUT
-    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/(?P<unique_user>\w+)$', csrf_exempt(views.Useranswers.as_view()), name='useranswer'),
-    # POST, GET
-    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)/useranswers$', csrf_exempt(views.Useranswers.as_view()), name='useranswer_post'),
+    url(r'^groups/(?P<group_id>\w+)/answers/useranswers$', csrf_exempt(views.Useranswers.as_view())), # GET
+    url(r'^groups/(?P<group_id>\d+)$', csrf_exempt(views.Groups.as_view()), name='group'), # GET, PUT, DELETE
+    url(r'^groups$', csrf_exempt(views.Groups.as_view()), name='group_post'), # POST
+    url(r'^questions/(?P<question_id>\w+)/SimpleResult$', views.simple_view_answer, name='question_simple_result'), # GET
+    url(r'^questions/(?P<question_id>\w+)/ToPrivate$', views.to_private, name='question_to_private'), # GET
+    url(r'^questions/(?P<question_id>\w+)$', csrf_exempt(views.Questions.as_view()), name='question'), # GET(full), PUT, DELETE
+    url(r'^questions$', csrf_exempt(views.Questions.as_view()), name='question_post'), # POST
+    url(r'^questions/(?P<question_id>\w+)/answers/$', csrf_exempt(views.Answers.as_view()), name='answer_post'), # POST, GET, PUT
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)$', csrf_exempt(views.Answers.as_view()), name='answer'), # GET, DELETE
+    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/$', csrf_exempt(views.Useranswers.as_view()), name='useranswer'), # GET
+    url(r'^questions/(?P<question_id>\w+)/answers/useranswers/(?P<unique_user>\w+)$', csrf_exempt(views.Useranswers.as_view()), name='useranswer'), # GET, DELETE, PUT
+    url(r'^questions/(?P<question_id>\w+)/answers/(?P<answer_num>\d+)/useranswers$', csrf_exempt(views.Useranswers.as_view()), name='useranswer_post'), # POST, GET
 ]
