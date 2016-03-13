@@ -44,7 +44,7 @@ System.config({
     "highstock": "npm:highcharts-release@4.2.3/highstock.js",
     "jquery": "npm:jquery@2.2.0",
     "qc-init": "js/quescheetah-init.js",
-    "qc-sdk": "js/quescheetah-sdk-0.1.0.js",
+    "qc-sdk": "js/quescheetah-sdk-0.0.1.js",
     "submit": "js/submit.js",
     "systemjs": "npm:systemjs@0.19.18",
     "text": "github:systemjs/plugin-text@0.0.7",
