@@ -17,7 +17,7 @@ Web Platform with Django for the fast/easy Q&A of your site. Go check our [homep
 * Supports realtime data feature with our [socket server](https://github.com/mingkim/QuesCheetah-socket). 
 
 ## Document / Tutorial
----
+
 * [Overview]()
 * [JavaScript SDK](https://mingkim.gitbooks.io/quescheetah-tutorial/content/js-SDK.html)
 * [REST API](https://mingkim.gitbooks.io/quescheetah-document/content/)
@@ -26,7 +26,7 @@ Web Platform with Django for the fast/easy Q&A of your site. Go check our [homep
  
 
 ## Basic Use of sample widget
----
+
 To use sample widget, import [jQuery](http://jquery.com/) and [Bootstrap](http://getbootstrap.com/) first.
 
 ```html
@@ -81,13 +81,13 @@ After refresh the page, our simple widget will show.
 ![image](http://i67.tinypic.com/98g1md.png)
 
 ## Running the test
----
+
 You can use our .yml files for using CircleCI, TravisCI. Or just enter this command in project directory.
 ```python
 ./manage.py test
 ```
 
 ## License
----
+
 MIT
 
