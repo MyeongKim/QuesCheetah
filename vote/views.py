@@ -15,9 +15,15 @@ from vote.models import Question, Answer, UserAnswer, MultiQuestion
 
 import jwt
 
-''' server view function '''
+
+"""
+QueesCheetah Web Server view function
+Functions includes several activities in quescheetah.com.
+Dashboard page rendering function included.
+"""
 
 
+# Render question select page for a account
 @never_cache
 def select_question(request):
     context = {
@@ -44,6 +50,7 @@ def select_question(request):
     return render(request, 'vote/pages/question_select.html', context)
 
 
+# Render creating a new question page
 def new(request, api_key):
     context = {
         'api_key': api_key
@@ -52,67 +59,7 @@ def new(request, api_key):
     return render(request, 'vote/pages/new.html', context)
 
 
-@never_cache
-def get_vote(request, api_key, question_id):
-    context = {
-        'api_key': api_key
-    }
-
-    '''
-    request to rest api
-    '''
-    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/SimpleResult'
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    return render(request, 'vote/pages/action.html', context)
-
-
-def get_multiple_vote(request, api_key, group_name):
-    context = {
-        'api_key': api_key
-    }
-
-    try:
-        api_key_instance = ApiKey.objects.get(key=api_key)
-        multi_question_instance = MultiQuestion.objects.get(api_key=api_key_instance, group_name=group_name, is_removed=False)
-    except ObjectDoesNotExist:
-        desc = 'The MultiQuestion does not exist in followed api key.'
-        messages.add_message(request, messages.ERROR, desc)
-        return redirect('main:user_mypage', request.user.id)
-
-    '''
-    request to rest api
-    '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(multi_question_instance.id)
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    return render(request, 'vote/pages/multi_action.html', context)
-
-
+# Show a dashboard related page for a user
 def dashboard_select(request):
     context = {
 
@@ -141,6 +88,7 @@ def dashboard_select(request):
         return redirect('v1:new', api_key)
 
 
+# Render dashboard overview page for a single question.
 def dashboard_overview(request, question_id):
     context = {
 
@@ -224,6 +172,7 @@ def dashboard_overview(request, question_id):
     return render(request, 'vote/pages/dashboard_overview.html', context)
 
 
+# Render dashboard analysis page for a single question.
 def dashboard_filter(request, question_id):
     context = {
 
@@ -305,6 +254,7 @@ def dashboard_filter(request, question_id):
     return render(request, 'vote/pages/dashboard_filter.html', context)
 
 
+# Render dashboard users page for a single question.
 def dashboard_users(request, question_id):
     context = {
 
@@ -386,6 +336,7 @@ def dashboard_users(request, question_id):
     return render(request, 'vote/pages/dashboard_users.html', context)
 
 
+# Render dashboard overview page for a group question.
 def dashboard_group_overview(request, group_id):
     context = {
 
@@ -468,6 +419,7 @@ def dashboard_group_overview(request, group_id):
     return render(request, 'vote/pages/dashboard_overview.html', context)
 
 
+# Render dashboard analysis page for a group question.
 def dashboard_group_filter(request, group_id):
     context = {
 
@@ -549,6 +501,7 @@ def dashboard_group_filter(request, group_id):
     return render(request, 'vote/pages/dashboard_filter.html', context)
 
 
+# Render dashboard users page for a group question.
 def dashboard_group_users(request, group_id):
     context = {
 
@@ -630,6 +583,7 @@ def dashboard_group_users(request, group_id):
     return render(request, 'vote/pages/dashboard_users.html', context)
 
 
+# Render dashboard sample page that anyone can access
 @never_cache
 def dashboard_sample(request, page):
     context = {
@@ -716,10 +670,26 @@ def dashboard_sample(request, page):
     return render(request, 'vote/pages/dashboard_overview.html', context)
 
 
+
+"""
+Our view functions for REST API request
+Every functions check if this request has correct authentication.
+If request method is 'GET', we don't need to check authentication.
+All response format is all JSON format. (also in error case)
+"""
+
+"""
+Domain matching process is only needed
+when request method is not 'GET'.
+We check request header 'Origin' to match user's domain instance value.
+This proccess inhibits Cross Origin Request Sharing.
+"""
+
+
 def match_domain(request):
-    api_key = get_api_key(request)
     if request.method == 'GET':
         return True
+    api_key = get_api_key(request)
     if api_key:
         request_domain = request.META.get('HTTP_ORIGIN')
         if request_domain[:7] == 'http://':
@@ -735,15 +705,19 @@ def match_domain(request):
     else:
         return False
 
-# ======================================
 
-''' rest api function '''
-
+# Make JSON object for response
 def error_return(desc, status=400):
     return JsonResponse({
         'error': True,
         'description': desc
     }, status=status)
+
+
+"""
+Parse request header 'api-key' and get information.
+If the value is not exist, check the authentication can be done by JWT.
+"""
 
 
 def get_api_key(request):
@@ -759,7 +733,13 @@ def get_api_key(request):
         return decoded_value.get('api-key')
 
 
+"""
+Actions about MultiQuestion model.
+Correct request format can be accessed in following url.
+https://mingkim.gitbooks.io/quescheetah-document/content/Group/index.html
+"""
 class Groups(View):
+    # Create a new MultiQuestion instance.
     def post(self, request):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -856,6 +836,7 @@ class Groups(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Send a MultiQuestion info
     @method_decorator(never_cache)
     def get(self, request, group_id):
         if match_domain(request):
@@ -913,6 +894,7 @@ class Groups(View):
             desc = 'This request url is not authenticated in followed api_key. / Or api key is not valid.'
             return error_return(desc, 401)
 
+    # Update a MultiQuestion value
     def put(self, request, group_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -1052,6 +1034,7 @@ class Groups(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Delete a MultiQuestion and all related Queston, Answer, Useranswer
     def delete(self, request, group_id):
         if match_domain(request):
             api_key = get_api_key(request)
@@ -1095,8 +1078,16 @@ class Groups(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
-
+"""
+Actions about Question model.
+Question related data can be requested by 2 format in 'GET' method.
+One is short simple information response,
+and the other one is full response that contains all informations.
+Correct request format can be accessed in following url.
+https://mingkim.gitbooks.io/quescheetah-document/content/Question/index.html
+"""
 class Questions(View):
+    # Make a new Question
     def post(self, request):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -1185,6 +1176,7 @@ class Questions(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Send a Question data.
     @method_decorator(never_cache)
     def get(self, request, question_id):
         if match_domain(request):
@@ -1239,6 +1231,7 @@ class Questions(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Updates a Question.
     def put(self, request, question_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -1360,6 +1353,7 @@ class Questions(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Delete a Question and related Answer, Useranswer
     def delete(self, request, question_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -1402,16 +1396,13 @@ class Questions(View):
             return error_return(desc, 401)
 
 
+"""
+Sends abridged information about
+the question and following answers.
+"""
 @csrf_exempt
 @require_GET
 def simple_view_answer(request, question_id):
-    """
-    POST - /v1/answer/view/simple
-
-    answer 의 중요 정보만을 제공합니다.
-    :parameter - api_key, ( question_title / question_id )
-    :return - question_title, question_text, answer({answer_num, answer_text, answer_count})
-    """
     if match_domain(request):
         api_key = get_api_key(request)
         if not api_key:
@@ -1453,6 +1444,7 @@ def simple_view_answer(request, question_id):
         return error_return(desc, 401)
 
 
+# Change question state to private
 @csrf_exempt
 @require_GET
 def to_private(request, question_id):
@@ -1483,7 +1475,17 @@ def to_private(request, question_id):
         return error_return(desc, 401)
 
 
+
+"""
+Actions about Answer model.
+Answer related data can be requested by 2 format in 'GET' method.
+One is specific to the requested answer number,
+and the other one is full response that contains all informations.
+Correct request format can be accessed in following url.
+https://mingkim.gitbooks.io/quescheetah-document/content/Answer/index.html
+"""
 class Answers(View):
+    # Make a new Answer
     def post(self, request, question_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -1530,6 +1532,7 @@ class Answers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Send a Answer data
     @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
         question_id=kwargs['question_id']
@@ -1544,9 +1547,11 @@ class Answers(View):
                 'answers': {}
             }
 
-            '''
-            logic for get answer list
-            '''
+            """
+            case 1.
+            logic for get_answer_list
+            Send all information
+            """
             if not answer_num:
                 try:
                     api_key_instance = ApiKey.objects.get(key=api_key)
@@ -1571,9 +1576,12 @@ class Answers(View):
                     return error_return(desc, 404)
 
                 return JsonResponse(response_dict)
-            '''
-            logic for get one answer
-            '''
+
+            """
+            case 2.
+            logic for get_one_answer
+            Send specific one answer_num information.
+            """
             if answer_num:
                 try:
                     api_key_instance = ApiKey.objects.get(key=api_key)
@@ -1601,6 +1609,7 @@ class Answers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Delete a Answer and related Useranswer
     def delete(self, request, question_id, answer_num):
         if match_domain(request):
             api_key = get_api_key(request)
@@ -1630,6 +1639,7 @@ class Answers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Update a Answer data
     def put(self, request, question_id):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -1677,7 +1687,17 @@ class Answers(View):
             return error_return(desc, 401)
 
 
+"""
+Actions about Useranswer model.
+Useranswer related data can be requested by 3 format in 'GET' method.
+One is specific to the requested unique user,
+and another one is specific to the one answer.
+and the last one is full response that contains all useranswers in the group.
+Correct request format can be accessed in following url.
+https://mingkim.gitbooks.io/quescheetah-document/content/Useranswer/index.html
+"""
 class Useranswers(View):
+    # Make a new Useranswer
     def post(self, request, question_id, answer_num):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
@@ -1728,6 +1748,7 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Send a Useranswer data
     @method_decorator(never_cache)
     def get(self, request, *args, **kwargs):
         question_id = kwargs.get('question_id')
@@ -1752,9 +1773,10 @@ class Useranswers(View):
                     desc = 'The Question does not exist in followed api key.'
                     return error_return(desc, 404)
 
-            '''
-            case 1. get all useranswers
-            '''
+            """
+            case 1.
+            get all useranswers of one question.
+            """
             if not unique_user and not answer_num and not group_id:
                 try:
                     answer_instance_set = Answer.objects.filter(question=question_instance, is_removed=False)
@@ -1778,9 +1800,11 @@ class Useranswers(View):
                             "created_dt": useranswer.created_dt
                         })
                 return JsonResponse(response_dict)
-            '''
-            case 2. get all useranswers of one answer
-            '''
+
+            """
+            case 2.
+            get all useranswers of one answer
+            """
             if answer_num and (not unique_user):
                 try:
                     answer_instance = Answer.objects.get(question=question_instance, answer_num=answer_num, is_removed=False)
@@ -1806,9 +1830,10 @@ class Useranswers(View):
                     })
                 return JsonResponse(response_dict)
 
-            '''
-            case 3. get one useranswer
-            '''
+            """
+            case 3.
+            get one useranswer by unique user name.
+            """
             if unique_user:
                 try:
                     answer_instance_set = Answer.objects.filter(question=question_instance, is_removed=False)
@@ -1832,9 +1857,11 @@ class Useranswers(View):
                     "created_dt": useranswer_instance.created_dt
                 })
                 return JsonResponse(response_dict)
-            '''
-            case 4. get all useranswers of one group
-            '''
+
+            """
+            case 4.
+            get all useranswers of one group
+            """
             if group_id:
                 try:
                     question_instance_set = Question.objects.filter(multi_question_id=group_id)
@@ -1873,6 +1900,7 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Delete a Useranswer
     def delete(self, request, question_id, unique_user):
         if match_domain(request):
             api_key = get_api_key(request)
@@ -1906,6 +1934,7 @@ class Useranswers(View):
             desc = 'This request url is not authenticated in followed api_key.'
             return error_return(desc, 401)
 
+    # Update a Useranswer
     def put(self, request, question_id, unique_user):
         if match_domain(request):
             data = json.loads(request.body.decode('utf-8'))
