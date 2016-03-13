@@ -4,7 +4,7 @@
 ---
 # QuesCheetah
 
-Web Platform with Django for the fast/easy Q&A of your site. Go check our [homepage](quescheetah.com).
+Web Platform with Django for the fast/easy Q&A of your site. Go check our [homepage](http://www.quescheetah.com).
 
 > You can check completed [sample widget](http://mingkim.github.io/programming/2016/02/04/SystemJS%EC%99%80-jspm/) and [sample dashboard](http://www.quescheetah.com/v1/dashboard/sample/overview) first. Enjoy!
 
