@@ -189,3 +189,7 @@ def jwt_new(request):
         return JsonResponse({'jwt': str(encoded.decode('utf-8'))})
     else:
         return JsonResponse({'error': 'Not valid secret key.'})
+
+
+def downloads(request):
+    return render(request, 'main/pages/downloads.html')

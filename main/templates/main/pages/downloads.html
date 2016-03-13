@@ -1,0 +1,106 @@
+{% extends 'main/base.html' %}
+
+{% load staticfiles %}
+
+{% block stylesheet %}
+    <style>
+        .download-wrapper{
+            width: 780px;
+            margin: 0 auto;
+        }
+
+        .download-header{
+            border-bottom: solid 1px #cfcfcf;
+            margin-bottom: 50px;
+        }
+
+        .download-element{
+
+        }
+        .download-sdk img{
+            opacity: 0.3;
+        }
+
+        .download-sdk-image, .download-bundle-image{
+            float: left;
+            margin-bottom: 80px;
+        }
+
+        .download-sdk-body{
+            float: right;
+            width: 400px;
+            height: 300px;
+            position: relative;
+            margin-bottom: 80px;
+        }
+
+        .download-bundle-body{
+            float: right;
+            width: 400px;
+            height: 340px;
+            position: relative;
+            margin-bottom: 80px;
+
+        }
+
+        .download-sdk-body p, .download-bundle-body p{
+            color: #6f7c92;
+        }
+
+        .download-button{
+            position: absolute;
+            bottom: 0;
+        }
+
+        .download-button button{
+            margin-top: 4px;
+        }
+
+    </style>
+{% endblock %}
+{% block content %}
+    <div class="download-wrapper">
+        <div class="download-header">
+            <h3>Download</h3>
+            <p>QuesCheetah (currently v1.0.0) provides JavaScript SDK and bundle js file to quickly get started.</p>
+        </div>
+        <div class="row">
+            <div class="download-sdk download-element">
+                <div class="download-sdk-image">
+                    <img src="https://image.freepik.com/free-icon/toolbox_318-47593.png" width="300">
+                </div>
+                <div class="download-sdk-body">
+                    <h3>QuesCheetah Javascript SDK</h3>
+                    <p>v0.1.0</p>
+                    <p>Use our JavaScript SDK for easy request to QuesCheetah REST API. It doesn't need any additional library to use this</p>
+                    <div class="download-button">
+                        <a href="https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/quescheetah-sdk-0.1.0.js" download><button class="btn btn-default"><i class="fa fa-download fa-2x"></i> Download SDK</button></a>
+                        <a href="https://mingkim.gitbooks.io/quescheetah-tutorial/content/js-SDK.html" target="_blank"><button class="btn btn-default"><i class="fa fa-book fa-2x"></i> Read document</button></a>
+                    </div>
+                </div>
+            </div>
+            <div class="download-bundle download-element">
+                <div class="download-bundle-image">
+                    <img src="http://i67.tinypic.com/2ymzx3s.png" width="300" >
+                </div>
+                <div class="download-bundle-body">
+                    <h3>QuesCheetah Javascript bundle</h3>
+                    <p>v0.1.0</p>
+                    <p>If you are planning to make a simple vote widget, use this bundle file. All html,css and js files to install this widget is compressed into one bundle js file.</p>
+                    <p>Document of customization is also available.</p>
+                    <div class="download-button">
+                        <a href="https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/bundle-0.1.0.js" download><button class="btn btn-default"><i class="fa fa-download fa-2x"></i> Download bundle</button></a>
+                        <br>
+                        <a href="https://mingkim.gitbooks.io/quescheetah-tutorial/content/jekyll.html" target="_blank"><button class="btn btn-default"><i class="fa fa-book fa-2x"></i> Jekyll tutorial</button></a>
+                        <a href="https://mingkim.gitbooks.io/quescheetah-tutorial/content/customize-sample.html" target="_blank"><button class="btn btn-default"><i class="fa fa-book fa-2x"></i> Customize tutorial</button></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% include "main/pages/footer.html"  %}
+{% endblock %}
+
+{% block script %}{% endblock %}
