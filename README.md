@@ -6,6 +6,9 @@
 
 Web Platform with Django for the fast/easy Q&A of your site. Go check our [homepage](quescheetah.com).
 
+> You can check completed [sample widget](http://mingkim.github.io/programming/2016/02/04/SystemJS%EC%99%80-jspm/) and [sample dashboard](http://www.quescheetah.com/v1/dashboard/sample/overview) first. Enjoy!
+
+
 *Receiving realtime data through socket server is not completed yet. But you can install it and manipultate coming data.*
 
 * Supports REST API request realated with question data.
