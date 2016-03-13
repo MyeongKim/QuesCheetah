@@ -46,9 +46,8 @@ Make a new div as follows inside body tag. "gid" property means id of created gr
 <div id="systemjs-sample" gid="5"></div>
 ```
 
-Insert our bundle js file and JavaScript SDK file under the bootstrap file.
+Insert our bundle js file  under the bootstrap file. This file includes JavaScript SDK, html, css, js files to start widget. 
 ```html
-<script src="js/quescheetah-sdk-0.1.0.js"></script>
 <script src="js/bundle-0.0.1.js"></script>
 ```
 
