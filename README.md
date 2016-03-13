@@ -1,218 +1,91 @@
 <img src="./QuesCheetah/static/images/qc_logo.png" width="100"><img src="./QuesCheetah/static/images/quescheetah-logo.png" width="400">
 
 
-
-
-Web SDK for the easy Q&A of your site.
-
-
 ---
+# QuesCheetah
 
-**Home page**
+Web Platform with Django for the fast/easy Q&A of your site. Go check our [homepage](quescheetah.com).
 
-[On developing yet.]()
+*Receiving realtime data through socket server is not completed yet. But you can install it and manipultate coming data.*
 
-**Sample code**
+* Supports REST API request realated with question data.
+* Provides dashboard page to manage results.
+* Can be install easily with bundle js file fot [sample widget](https://github.com/mingkim/QuesCheetah_sample).
+* Supports realtime data feature with our [socket server](https://github.com/mingkim/QuesCheetah-socket). 
 
-[https://github.com/mingkim/QuesCheetah_sample](https://github.com/mingkim/QuesCheetah_sample)
-
-**REST API Documentation**
-
-[https://mingkim.gitbooks.io/quescheetah-document/content/](https://mingkim.gitbooks.io/quescheetah-document/content/)
-
-**Used open source projects**
-
-[NOTICE.txt](./NOTICE.txt)
-
-**Demo Video**
-
-[https://youtu.be/BW8eLg8mp_E](https://youtu.be/BW8eLg8mp_E)
-
-**Tutorial - Installation at your Jekyll blog in 3 minutes**
-
-[https://youtu.be/4pEEbU2EPk4](https://youtu.be/4pEEbU2EPk4)
-
-**slideshare**
-
-[http://www.slideshare.net/ssuser0d8ba1/naver-d2-campus-fest-2015-quescheetah-56732325](http://www.slideshare.net/ssuser0d8ba1/naver-d2-campus-fest-2015-quescheetah-56732325)
-
-
+## Document / Tutorial
 ---
+* [Overview]()
+* [JavaScript SDK](https://mingkim.gitbooks.io/quescheetah-tutorial/content/js-SDK.html)
+* [REST API](https://mingkim.gitbooks.io/quescheetah-document/content/)
+* [Install with Jekyll](https://mingkim.gitbooks.io/quescheetah-tutorial/content/jekyll.html)
+* [Customizing sample widget](https://mingkim.gitbooks.io/quescheetah-tutorial/content/customize-sample.html)
+ 
 
+## Basic Use of sample widget
+---
+To use sample widget, import [jQuery](http://jquery.com/) and [Bootstrap](http://getbootstrap.com/) first.
 
-# Download SDK
-You can download QuesCheetah JavaScript file [here](https://raw.githubusercontent.com/mingkim/QuesCheetah/master/QuesCheetah/static/js/quescheetah-sdk-0.0.1.js)
-
-
-# Installation
-
-To start QuesCheetah, you need jQuery first. Put [jQuery](http://jquery.com/) script tag first and then put sdk script behind.
-
-
-``` javascript
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script src="libs/quescheetah-sdk-0.0.1.js"></script>
+```html
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <title>My Blog</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  </head>
+  <body>
+    <!-- widget will be displayed -->
+  </body>
+  <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+</html>
 ```
 
+Make a new div as follows inside body tag. "gid" property means id of created group question.
+```html
+<div id="systemjs-sample" gid="5"></div>
+```
 
-# Sample
+Insert our bundle js file and JavaScript SDK file under the bootstrap file.
+```html
+<script src="js/quescheetah-sdk-0.1.0.js"></script>
+<script src="js/bundle-0.0.1.js"></script>
+```
 
-Sample project for QuesCheetah is [here](https://github.com/mingkim/QuesCheetah_sample)(https://github.com/mingkim/QuesCheetah_sample)
-
-You can test creating questions, making answers, direct voting and delete questions.
-No additional server needed.
-
-# Usage
-
-You should get a api key to use the API. You can get it from [here](http://quescheetah.com)(http://quescheetah.com)
+In the code of SDK file, replace "your-api-key" value inside the "config" object.
 
 ```javascript
-    //Callback functions
-    var error = function (err, response, body) {
-        console.log(err);
+$__System.register('7', ['10'], function (_export) {
+    'use strict';
+
+    var config, qc;
+    return {
+        setters: [function (_) {}],
+        execute: function () {
+            config = {
+                'apiKey': 'your-api-key',
+                'callBackUrl': 'http://localhost:8000',
+                'receiveRealtimeResponse': false
+            };
+            qc = new QuesCheetah(config);
+
+            _export('qc', qc);
+        }
     };
-    var success = function (data) {
-        console.log(data);
-    };
-
-    //Get this data from your twitter apps dashboard
-    var config = {
-        "apiKey": "XXX",
-        "callBackUrl": "XXX"
-    }
-
-    var qc = new QuesCheetah(config);
-
+});
 ```
 
-# Functions
+After refresh the page, our simple widget will show.
+![image](http://i67.tinypic.com/98g1md.png)
 
-Following functions can be used inside of your JavaScript file. 
-
-Check the parameter of the request and the response format in the REST API section.
-
-
-##**Group**
-###**1. create a group question**
-
-Create many questions. These questions are grouped together as ```group_name```.
-
-REST API URL = ```"groups"```
-
-```javascript
-    qs.createGroup(params, successCallback, errorCallback);
+## Running the test
+---
+You can use our .yml files for using CircleCI, TravisCI. Or just enter this command in project directory.
+```python
+./manage.py test
 ```
 
-###**2. delete a group question**
-
-Delete a group with all related question, answer and useranswer data.
-
-REST API URL = ```"groups/{groupId}"```
-
-```javascript
-    qs.deleteGroup(params, successCallback, errorCallback);
-```
-
-##**Question**
-###**1. make a question**
-
-Make a single question.
-
-REST API URL = ```"questions"```
-
-```javascript
-    qs.createQuestion(params, successCallback, errorCallback);
-```
-
-###**2. get a question**
-
-get a question data.
-
-REST API URL = ```"questions/{questionId}"```
-
-```javascript
-    qs.getQuestion(params, successCallback, errorCallback);
-```
-
-###**3. update a question**
-
-update a question data.
-
-REST API URL = ```"questions/{questionId}"```
-
-```javascript
-    qs.updateQuestion(params, successCallback, errorCallback);
-```
-
-###**4. delete a question**
-
-delete a question data with all answer and useranswer data.
-
-REST API URL = ```"questions/{questionId}"```
-
-```javascript
-    qs.deleteQuestion(params, successCallback, errorCallback);
-```
-
-##**Answer**
-###**1. make a new answer of specific question**
-
-Add a new answer to the question.
-
-REST API URL = ```"questions/{questionId}/answers"```
-
-```javascript
-    qs.createAnswer(params, successCallback, errorCallback);
-```
-
-###**2. get one answer data of the question**
-
-Get answer data of ```answerNum```.
-
-REST API URL = ```"questions/{questionId}/answers/{answerNum}"```
-
-```javascript
-    qs.getAnswer(params, successCallback, errorCallback);
-```
-
-###**3. delete one answer data of the question**
-
-Delete answer data of ```answerNum```.
-
-REST API URL = ```"questions/{questionId}/answers/{answerNum}"```
-
-```javascript
-    qs.deleteAnswer(params, successCallback, errorCallback);
-```
-
-##**Useranswer**
-###**1. create useranswer**
-
-Used when new user answers the question. 
-
-REST API URL = ```"questions/{questionId}/answers/{answerNum}/useranswers"```
-
-```javascript
-    qs.createUserAnswer(params, successCallback, errorCallback);
-```
-
-###**2. update useranswer**
-
-Change the number which user answered.
-
-REST API URL = ```"questions/{questionId}/answers/useranswers/{uniqueUser}"```
-
-```javascript
-    qs.updateUserAnswer(params, successCallback, errorCallback);
-```
-
-###**3. delete useranswer**
-
-Delete the useranswer data of ```uniqueUser```.
-
-REST API URL = ```"questions/{questionId}/answers/useranswers/{uniqueUser}"```
-
-```javascript
-    qs.deleteUserAnswer(params, successCallback, errorCallback);
-```
+## License
+---
+MIT
 
