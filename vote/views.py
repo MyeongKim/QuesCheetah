@@ -30,15 +30,17 @@ def select_question(request):
         context.update({
             'api_key': api_key
         })
+
     try:
-        q_api_key = ApiKey.objects.get(key=api_key)
+        api_key_instance = ApiKey.objects.get(key=api_key)
     except ObjectDoesNotExist:
         messages.add_message(request, messages.ERROR, 'This api_key is not valid.')
         return redirect('main:user_mypage', request.user.id)
 
-    single_question = Question.objects.filter(api_key=q_api_key, multi_question=None, is_removed=False)
-    m = MultiQuestion.objects.filter(api_key=q_api_key, is_removed=False)
-    context.update({'multi_question': m, 'single_question': single_question})
+    single_question_set = Question.objects.filter(api_key=api_key_instance, multi_question=None, is_removed=False)
+    multi_question_set = MultiQuestion.objects.filter(api_key=api_key_instance, is_removed=False)
+    context.update({'multi_question': multi_question_set, 'single_question': single_question_set})
+
     return render(request, 'vote/pages/question_select.html', context)
 
 
@@ -83,8 +85,8 @@ def get_multiple_vote(request, api_key, group_name):
     }
 
     try:
-        a = ApiKey.objects.get(key=api_key)
-        m = MultiQuestion.objects.get(api_key=a, group_name=group_name, is_removed=False)
+        api_key_instance = ApiKey.objects.get(key=api_key)
+        multi_question_instance = MultiQuestion.objects.get(api_key=api_key_instance, group_name=group_name, is_removed=False)
     except ObjectDoesNotExist:
         desc = 'The MultiQuestion does not exist in followed api key.'
         messages.add_message(request, messages.ERROR, desc)
@@ -93,7 +95,7 @@ def get_multiple_vote(request, api_key, group_name):
     '''
     request to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(m.id)
+    url = 'http://www.quescheetah.com/v1/groups/'+str(multi_question_instance.id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -125,11 +127,15 @@ def dashboard_select(request):
         })
 
     if MultiQuestion.objects.get(api_key__key=api_key):
-        m_id = MultiQuestion.objects.get(api_key__key=api_key).id
-        return redirect('v1:dashboard_group_overview', m_id)
+        multi_question_id = MultiQuestion.objects.get(api_key__key=api_key).id
+
+        return redirect('v1:dashboard_group_overview', multi_question_id)
+
     elif Question.objects.get(api_key__key=api_key):
-        q_id = Question.objects.get(api_key__key=api_key).id
-        return redirect('v1:dashboard_overview', q_id)
+        question_id = Question.objects.get(api_key__key=api_key).id
+
+        return redirect('v1:dashboard_overview', question_id)
+
     else:
         # If user didn't make any question or group question, redirect to create page.
         return redirect('v1:new', api_key)
@@ -139,6 +145,7 @@ def dashboard_overview(request, question_id):
     context = {
 
     }
+
     if not hasattr(request.user, 'api_keys'):
         messages.add_message(request, messages.ERROR, 'You should create api key first.')
         return redirect('main:user_mypage', request.user.id)
@@ -193,25 +200,25 @@ def dashboard_overview(request, question_id):
     })
 
     try:
-        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for g in groups:
+        for multi_question in multi_question_instance_set:
             context['nav_group'].append({
-                "group_name": g.group_name,
-                "id": g.id
+                "group_name": multi_question.group_name,
+                "id": multi_question.id
             })
 
     try:
-        questions = Question.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for q in questions:
+        for question in question_instance_set:
             context['nav_question'].append({
-                "question_title": q.question_title,
-                "id": q.id
+                "question_title": question.question_title,
+                "id": question.id
             })
 
     return render(request, 'vote/pages/dashboard_overview.html', context)
@@ -275,25 +282,25 @@ def dashboard_filter(request, question_id):
     })
 
     try:
-        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for g in groups:
+        for multi_question in multi_question_instance_set:
             context['nav_group'].append({
-                "group_name": g.group_name,
-                "id": g.id
+                "group_name": multi_question.group_name,
+                "id": multi_question.id
             })
 
     try:
-        questions = Question.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for q in questions:
+        for question in question_instance_set:
             context['nav_question'].append({
-                "question_title": q.question_title,
-                "id": q.id
+                "question_title": question.question_title,
+                "id": question.id
             })
     return render(request, 'vote/pages/dashboard_filter.html', context)
 
@@ -356,25 +363,25 @@ def dashboard_users(request, question_id):
     })
 
     try:
-        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for g in groups:
+        for multi_question in multi_question_instance_set:
             context['nav_group'].append({
-                "group_name": g.group_name,
-                "id": g.id
+                "group_name": multi_question.group_name,
+                "id": multi_question.id
             })
 
     try:
-        questions = Question.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for q in questions:
+        for question in question_instance_set:
             context['nav_question'].append({
-                "question_title": q.question_title,
-                "id": q.id
+                "question_title": question.question_title,
+                "id": question.id
             })
     return render(request, 'vote/pages/dashboard_users.html', context)
 
@@ -437,25 +444,25 @@ def dashboard_group_overview(request, group_id):
     })
 
     try:
-        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for g in groups:
+        for multi_question in multi_question_instance_set:
             context['nav_group'].append({
-                "group_name": g.group_name,
-                "id": g.id
+                "group_name": multi_question.group_name,
+                "id": multi_question.id
             })
 
     try:
-        questions = Question.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for q in questions:
+        for question in question_instance_set:
             context['nav_question'].append({
-                "question_title": q.question_title,
-                "id": q.id
+                "question_title": question.question_title,
+                "id": question.id
             })
 
     return render(request, 'vote/pages/dashboard_overview.html', context)
@@ -519,25 +526,25 @@ def dashboard_group_filter(request, group_id):
     })
 
     try:
-        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for g in groups:
+        for multi_question in multi_question_instance_set:
             context['nav_group'].append({
-                "group_name": g.group_name,
-                "id": g.id
+                "group_name": multi_question.group_name,
+                "id": multi_question.id
             })
 
     try:
-        questions = Question.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for q in questions:
+        for question in question_instance_set:
             context['nav_question'].append({
-                "question_title": q.question_title,
-                "id": q.id
+                "question_title": question.question_title,
+                "id": question.id
             })
     return render(request, 'vote/pages/dashboard_filter.html', context)
 
@@ -600,25 +607,25 @@ def dashboard_group_users(request, group_id):
     })
 
     try:
-        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for g in groups:
+        for multi_question in multi_question_instance_set:
             context['nav_group'].append({
-                "group_name": g.group_name,
-                "id": g.id
+                "group_name": multi_question.group_name,
+                "id": multi_question.id
             })
 
     try:
-        questions = Question.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for q in questions:
+        for question in question_instance_set:
             context['nav_question'].append({
-                "question_title": q.question_title,
-                "id": q.id
+                "question_title": question.question_title,
+                "id": question.id
             })
     return render(request, 'vote/pages/dashboard_users.html', context)
 
@@ -677,25 +684,25 @@ def dashboard_sample(request, page):
     })
 
     try:
-        groups = MultiQuestion.objects.filter(api_key__key=api_key)
+        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for g in groups:
+        for multi_question in multi_question_instance_set:
             context['nav_group'].append({
-                "group_name": g.group_name,
-                "id": g.id
+                "group_name": multi_question.group_name,
+                "id": multi_question.id
             })
 
     try:
-        questions = Question.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
-        for q in questions:
+        for question in question_instance_set:
             context['nav_question'].append({
-                "question_title": q.question_title,
-                "id": q.id
+                "question_title": question.question_title,
+                "id": question.id
             })
 
     context.update({
@@ -709,7 +716,6 @@ def dashboard_sample(request, page):
     return render(request, 'vote/pages/dashboard_overview.html', context)
 
 
-
 def match_domain(request):
     api_key = get_api_key(request)
     if request.method == 'GET':
@@ -720,10 +726,9 @@ def match_domain(request):
             request_domain = request_domain[7:]
         if request_domain[:4] == 'www.':
        	    request_domain = request_domain[4:]
-        print(request_domain)
         try:
-            a = ApiKey.objects.get(key=api_key)
-            d = Domain.objects.get(domain=request_domain, api_key=a)
+            api_key_instance = ApiKey.objects.get(key=api_key)
+            domain_instance = Domain.objects.get(domain=request_domain, api_key=api_key_instance)
         except ObjectDoesNotExist:
             return False
         return True
@@ -733,53 +738,6 @@ def match_domain(request):
 # ======================================
 
 ''' rest api function '''
-
-
-@require_POST
-def get_url_list(request):
-    """
-    POST - /v1/question/url/list
-
-    허용하는 url list 를 return 합니다.
-
-    :parameter - api_key, ( question_title / question_id )
-    :return - urls
-    """
-    if match_domain(request):
-        data = json.loads(request.body.decode('utf-8'))
-        api_key = data.get('api_key')
-        question_title = data.get('question_title')
-        question_id = data.get('question_id')
-
-        response_dict = {}
-
-        try:
-            a = ApiKey.objects.get(key=api_key)
-
-            if question_title and question_id:
-                q = Question.objects.get(api_key=a, question_title=question_title, id=question_id, is_removed=False)
-            elif question_id:
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
-            elif question_title:
-                q = Question.objects.get(api_key=a, question_title=question_title, is_removed=False)
-        except ObjectDoesNotExist:
-            desc = 'The Question does not exist in followed api key.'
-            return error_return(desc)
-
-        u = q.authenticated_urls
-        if u:
-            response_dict.update({
-                'urls': [url.full_url for url in u]
-            })
-        else:
-            desc = 'No urls in this question'
-            return error_return(desc)
-
-        return JsonResponse(response_dict)
-    else:
-        desc = 'This request url is not authenticated in followed api_key.'
-        return error_return(desc)
-
 
 def error_return(desc, status=400):
     return JsonResponse({
@@ -793,12 +751,12 @@ def get_api_key(request):
     if api_key:
         return api_key
     else:
-        secret = ApiKey.objects.get(id=request.META.get('HTTP_KID')).secret_key
+        secret_key = ApiKey.objects.get(id=request.META.get('HTTP_KID')).secret_key
         try:
-            decoded = jwt.decode(request.META.get('HTTP_JWT'), secret, algorithms=['HS256', 'HS512', 'HS384'])
+            decoded_value = jwt.decode(request.META.get('HTTP_JWT'), secret_key, algorithms=['HS256', 'HS512', 'HS384'])
         except jwt.InvalidTokenError:
             return False
-        return decoded.get('api-key')
+        return decoded_value.get('api-key')
 
 
 class Groups(View):
@@ -817,12 +775,12 @@ class Groups(View):
             }
 
             try:
-                a = ApiKey.objects.get(key=api_key)
+                api_key_instance = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey does not exist in followed key.'
                 return error_return(desc, 404)
 
-            new_multiq = MultiQuestion(api_key=a, group_name=group_name)
+            new_multiq = MultiQuestion(api_key=api_key_instance, group_name=group_name)
             new_multiq.save()
 
             for question_key, question_value in data.get('questions').items():
@@ -835,7 +793,7 @@ class Groups(View):
 
                 if question_title:
                     new_question = Question(
-                        api_key=a,
+                        api_key=api_key_instance,
                         multi_question=new_multiq,
                         question_title=question_title,
                         question_text=question_text,
@@ -856,19 +814,19 @@ class Groups(View):
                             new_answer.save()
 
             try:
-                mq = MultiQuestion.objects.get(id=new_multiq.id, is_removed=False)
-                q = mq.question_elements.filter(is_removed=False).order_by('question_num')
+                multi_question_instance = MultiQuestion.objects.get(id=new_multiq.id, is_removed=False)
+                question_instance_set = multi_question_instance.question_elements.filter(is_removed=False).order_by('question_num')
 
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
                 return error_return(desc, 404)
 
             response_dict.update({
-                "group_id": mq.id,
-                "group_name": mq.group_name
+                "group_id": multi_question_instance.id,
+                "group_name": multi_question_instance.group_name
             })
 
-            for question in q:
+            for question in question_instance_set:
                 response_dict['questions'].update({
                     question.question_num : {
                         'question_id': question.id,
@@ -881,12 +839,12 @@ class Groups(View):
                     }
                 })
 
-                a = question.answers.filter(is_removed=False).order_by('answer_num')
+                answer_instance_set = question.answers.filter(is_removed=False).order_by('answer_num')
                 response_dict['answers'].update({
                     question.question_num : {}
                 })
 
-                for answer in a:
+                for answer in answer_instance_set:
                     response_dict['answers'][question.question_num].update({
                         answer.answer_num : {
                             'answer_text': answer.answer_text,
@@ -912,18 +870,18 @@ class Groups(View):
             }
 
             try:
-                m = MultiQuestion.objects.get(id=group_id, is_removed=False)
-                q = m.question_elements.filter(is_removed=False).order_by('question_num')
+                multi_question_instance = MultiQuestion.objects.get(id=group_id, is_removed=False)
+                question_instance_set = multi_question_instance.question_elements.filter(is_removed=False).order_by('question_num')
             except ObjectDoesNotExist:
                 desc = 'The MultiQuestion does not exist in follwed api key'
                 return error_return(desc, 404)
 
             response_dict.update({
-                "group_id": m.id,
-                "group_name": m.group_name
+                "group_id": multi_question_instance.id,
+                "group_name": multi_question_instance.group_name
             })
 
-            for question in q:
+            for question in question_instance_set:
                 response_dict['questions'].update({
                     question.question_num : {
                         'id': question.id,
@@ -936,12 +894,12 @@ class Groups(View):
                     }
                 })
 
-                a = question.answers.filter(is_removed=False).order_by('answer_num')
+                answer_instance_set = question.answers.filter(is_removed=False).order_by('answer_num')
                 response_dict['answers'].update({
                     question.question_num : {}
                 })
 
-                for answer in a:
+                for answer in answer_instance_set:
                     response_dict['answers'][question.question_num].update({
                         answer.answer_num : {
                             'id': answer.id,
@@ -971,17 +929,17 @@ class Groups(View):
             update_answer_dict = {}
 
             try:
-                a = ApiKey.objects.get(key=api_key)
+                api_key_instance = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey does not exist in followed key.'
                 return error_return(desc, 404)
 
-            m = MultiQuestion.objects.get(api_key=a, id=group_id, is_removed=False)
+            multi_question_instance = MultiQuestion.objects.get(api_key=api_key_instance, id=group_id, is_removed=False)
             group_name = data.get('group_name')
 
             if group_name:
-                m.group_name = group_name
-                m.save()
+                multi_question_instance.group_name = group_name
+                multi_question_instance.save()
 
             if data.get('questions'):
                 for question_key, question_value in data.get('questions').items():
@@ -993,7 +951,7 @@ class Groups(View):
                     is_private = question_value.get('is_private') == 'True'
 
                     try:
-                        selected_q = m.question_elements.get(question_num=question_key, is_removed=False)
+                        selected_question_instance = multi_question_instance.question_elements.get(question_num=question_key, is_removed=False)
                     except ObjectDoesNotExist:
                         desc = 'Question does not exist.'
                         return error_return(desc, 404)
@@ -1024,8 +982,8 @@ class Groups(View):
                         })
 
                     for key in update_question_dict:
-                        setattr(selected_q, key, update_question_dict[key])
-                    selected_q.save(is_update=True)
+                        setattr(selected_question_instance, key, update_question_dict[key])
+                    selected_question_instance.save(is_update=True)
 
                     '''
                     update answer instance
@@ -1035,7 +993,7 @@ class Groups(View):
                             answer_text = answer_value.get('answer_text')
 
                             try:
-                                selected_a = selected_q.answers.get(answer_num=answer_key, is_removed=False)
+                                selected_answer_instance = selected_question_instance.answers.get(answer_num=answer_key, is_removed=False)
                             except ObjectDoesNotExist:
                                 desc = 'Answer does not exist.'
                                 return error_return(desc, 404)
@@ -1046,25 +1004,25 @@ class Groups(View):
                                 })
 
                             for key in update_answer_dict:
-                                setattr(selected_a, key, update_answer_dict[key])
-                            selected_a.save()
+                                setattr(selected_answer_instance, key, update_answer_dict[key])
+                            selected_answer_instance.save()
 
             '''
             load data for response json
             '''
             try:
-                mq = MultiQuestion.objects.get(id=m.id, is_removed=False)
-                q = mq.question_elements.filter(is_removed=False).order_by('question_num')
+                multi_question_created = MultiQuestion.objects.get(id=multi_question_instance.id, is_removed=False)
+                question_created_set = multi_question_created.question_elements.filter(is_removed=False).order_by('question_num')
             except ObjectDoesNotExist:
                 desc = 'MultiQuestion does not exist by new_multiq.id'
                 return error_return(desc, 404)
 
             response_dict.update({
-                "group_id": mq.id,
-                "group_name": mq.group_name
+                "group_id": multi_question_created.id,
+                "group_name": multi_question_created.group_name
             })
 
-            for question in q:
+            for question in question_created_set:
                 response_dict['questions'].update({
                     question.question_num : {
                         'question_title': question.question_title,
@@ -1076,12 +1034,12 @@ class Groups(View):
                     }
                 })
 
-                a = question.answers.filter(is_removed=False).order_by('answer_num')
+                answer_created_set = question.answers.filter(is_removed=False).order_by('answer_num')
                 response_dict['answers'].update({
                     question.question_num : {}
                 })
 
-                for answer in a:
+                for answer in answer_created_set:
                     response_dict['answers'][question.question_num].update({
                         answer.answer_num : {
                             'answer_text': answer.answer_text,
@@ -1104,29 +1062,29 @@ class Groups(View):
             response_dict = {}
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                m = MultiQuestion.objects.get(api_key=a, id=group_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                multi_question_instance = MultiQuestion.objects.get(api_key=api_key_instance, id=group_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
-            questions = m.question_elements.filter(is_removed=False)
-            for q in questions:
-                answers = q.answers.filter(is_removed=False)
-                for answer in answers:
+            question_instance_set = multi_question_instance.question_elements.filter(is_removed=False)
+            for question in question_instance_set:
+                answer_instance_set = question.answers.filter(is_removed=False)
+                for answer in answer_instance_set:
                     if hasattr(answer, 'user_answers'):
-                        useranswers = answer.user_answers.filter(is_removed=False)
-                        for useranswer in useranswers:
+                        useranswer_instance_set = answer.user_answers.filter(is_removed=False)
+                        for useranswer in useranswer_instance_set:
                             useranswer.is_removed = True
                             useranswer.save()
 
                     answer.is_removed = True
                     answer.save()
 
-                questions.update(is_removed = True)
+                question_instance_set.update(is_removed = True)
 
-            m.is_removed = True
-            m.save()
+            question_instance_set.is_removed = True
+            question_instance_set.save()
 
             response_dict.update({
                 "result": "success",
@@ -1163,13 +1121,13 @@ class Questions(View):
             }
 
             try:
-                a = ApiKey.objects.get(key=api_key)
+                api_key_instance = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey instance does not exist in followed key.'
                 return error_return(desc, 404)
 
             new_question = Question(
-                api_key=a,
+                api_key=api_key_instance,
                 question_title=question_title,
                 question_text=question_text,
                 question_num="1",
@@ -1182,7 +1140,7 @@ class Questions(View):
             new_question.save()
 
             try:
-                q = Question.objects.get(api_key=a, id=new_question.id, is_removed=False)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=new_question.id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
@@ -1190,7 +1148,7 @@ class Questions(View):
             for key, value in answer_data.items():
                 answer_text = value.get('answer_text')
                 if answer_text:
-                    new_answer = Answer(question=q, answer_text=answer_text, answer_num=key)
+                    new_answer = Answer(question=question_instance, answer_text=answer_text, answer_num=key)
                     new_answer.save()
                 else:
                     pass
@@ -1199,24 +1157,24 @@ class Questions(View):
             load data for response json
             '''
             response_dict['questions'].update({
-                q.question_num: {
-                    'question_id': q.id,
-                    'question_title': q.question_title,
-                    'question_text': q.question_text,
-                    'start_dt': q.start_dt,
-                    'end_dt': q.end_dt,
-                    'is_editable': q.is_editable,
-                    'is_private': q.is_private
+                question_instance.question_num: {
+                    'question_id': question_instance.id,
+                    'question_title': question_instance.question_title,
+                    'question_text': question_instance.question_text,
+                    'start_dt': question_instance.start_dt,
+                    'end_dt': question_instance.end_dt,
+                    'is_editable': question_instance.is_editable,
+                    'is_private': question_instance.is_private
                 }
             })
 
-            a = q.answers.filter(is_removed=False).order_by('answer_num')
+            answer_instance_set = question_instance.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
-                q.question_num: {}
+                question_instance.question_num: {}
             })
 
-            for answer in a:
-                response_dict['answers'][q.question_num].update({
+            for answer in answer_instance_set:
+                response_dict['answers'][question_instance.question_num].update({
                     answer.answer_num: {
                         'answer_text': answer.answer_text,
                     }
@@ -1241,8 +1199,8 @@ class Questions(View):
             }
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
@@ -1251,24 +1209,24 @@ class Questions(View):
             load data for response json
             '''
             response_dict['questions'].update({
-                q.question_num : {
-                    'id': q.id,
-                    'question_title': q.question_title,
-                    'question_text': q.question_text,
-                    'start_dt': q.start_dt,
-                    'end_dt': q.end_dt,
-                    'is_editable': q.is_editable,
-                    'is_private': q.is_private
+                question_instance.question_num : {
+                    'id': question_instance.id,
+                    'question_title': question_instance.question_title,
+                    'question_text': question_instance.question_text,
+                    'start_dt': question_instance.start_dt,
+                    'end_dt': question_instance.end_dt,
+                    'is_editable': question_instance.is_editable,
+                    'is_private': question_instance.is_private
                 }
             })
 
-            a = q.answers.filter(is_removed=False).order_by('answer_num')
+            answer_instance_set = question_instance.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
-                q.question_num : {}
+                question_instance.question_num : {}
             })
 
-            for answer in a:
-                response_dict['answers'][q.question_num].update({
+            for answer in answer_instance_set:
+                response_dict['answers'][question_instance.question_num].update({
                     answer.answer_num: {
                         'id': answer.id,
                         'answer_count': answer.get_answer_count,
@@ -1297,7 +1255,7 @@ class Questions(View):
             update_answer_dict = {}
 
             try:
-                a = ApiKey.objects.get(key=api_key)
+                api_key_instance = ApiKey.objects.get(key=api_key)
             except ObjectDoesNotExist:
                 desc = 'The ApiKey instance does not exist in followed key.'
                 return error_return(desc, 404)
@@ -1312,7 +1270,7 @@ class Questions(View):
                 is_private = question_data.get('is_private') == 'True'
 
                 try:
-                    selected_q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                    selected_question = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'Question does not exist.'
                     return error_return(desc, 404)
@@ -1343,8 +1301,8 @@ class Questions(View):
                     })
 
                 for key in update_question_dict:
-                    setattr(selected_q, key, update_question_dict[key])
-                selected_q.save(is_update=True)
+                    setattr(selected_question, key, update_question_dict[key])
+                selected_question.save(is_update=True)
 
                 '''
                 update answer instance
@@ -1354,7 +1312,7 @@ class Questions(View):
                         answer_text = answer_value.get('answer_text')
 
                         try:
-                            selected_a = selected_q.answers.get(answer_num=answer_key, is_removed=False)
+                            selected_answer = selected_question.answers.get(answer_num=answer_key, is_removed=False)
                         except ObjectDoesNotExist:
                             desc = 'Answer does not exist.'
                             return error_return(desc, 404)
@@ -1365,33 +1323,33 @@ class Questions(View):
                             })
 
                         for key in update_answer_dict:
-                            setattr(selected_a, key, update_answer_dict[key])
-                        selected_a.save()
+                            setattr(selected_answer, key, update_answer_dict[key])
+                        selected_answer.save()
 
             try:
-                updated_q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                updated_question = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
             response_dict['questions'].update({
-                updated_q.question_num: {
-                    'question_title': updated_q.question_title,
-                    'question_text': updated_q.question_text,
-                    'start_dt': updated_q.start_dt,
-                    'end_dt': updated_q.end_dt,
-                    'is_editable': updated_q.is_editable,
-                    'is_private': updated_q.is_private
+                updated_question.question_num: {
+                    'question_title': updated_question.question_title,
+                    'question_text': updated_question.question_text,
+                    'start_dt': updated_question.start_dt,
+                    'end_dt': updated_question.end_dt,
+                    'is_editable': updated_question.is_editable,
+                    'is_private': updated_question.is_private
                 }
             })
 
-            a = updated_q.answers.filter(is_removed=False).order_by('answer_num')
+            answer_updated_set = updated_question.answers.filter(is_removed=False).order_by('answer_num')
             response_dict['answers'].update({
-                updated_q.question_num: {}
+                updated_question.question_num: {}
             })
 
-            for answer in a:
-                response_dict['answers'][updated_q.question_num].update({
+            for answer in answer_updated_set:
+                response_dict['answers'][updated_question.question_num].update({
                     answer.answer_num: {
                         'answer_text': answer.answer_text,
                     }
@@ -1413,26 +1371,26 @@ class Questions(View):
             response_dict = {}
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
 
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
-            answers = q.answers.filter(is_removed=False)
-            for answer in answers:
+            answer_instance_set = question_instance.answers.filter(is_removed=False)
+            for answer in answer_instance_set:
                 if hasattr(answer, 'user_answers'):
-                    useranswers = answer.user_answers.filter(is_removed=False)
-                    for useranswer in useranswers:
+                    useranswer_instance_set = answer.user_answers.filter(is_removed=False)
+                    for useranswer in useranswer_instance_set:
                         useranswer.is_removed = True
                         useranswer.save()
 
                 answer.is_removed = True
                 answer.save()
 
-            q.is_removed = True
-            q.save(is_update=True)
+            question_instance.is_removed = True
+            question_instance.save(is_update=True)
 
             response_dict.update({
                 "result": "success",
@@ -1463,20 +1421,20 @@ def simple_view_answer(request, question_id):
         answer_list = []
 
         try:
-            a = ApiKey.objects.get(key=api_key)
-            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+            api_key_instance = ApiKey.objects.get(key=api_key)
+            question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
         except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api_key.'
                 return error_return(desc, 404)
 
         response_dict.update({
-            'id': q.id,
-            'question_title': q.question_title,
-            'question_text': q.question_text
+            'id': question_instance.id,
+            'question_title': question_instance.question_title,
+            'question_text': question_instance.question_text
         })
-        a = q.answers.filter(is_removed=False)
-        if a:
-            for answer in a:
+        answer_instance_set = question_instance.answers.filter(is_removed=False)
+        if answer_instance_set:
+            for answer in answer_instance_set:
                 answer_list.append({
                     'id': answer.id,
                     'answer_num': answer.answer_num,
@@ -1507,14 +1465,14 @@ def to_private(request, question_id):
         response_dict = {}
 
         try:
-            a = ApiKey.objects.get(key=api_key)
-            q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+            api_key_instance = ApiKey.objects.get(key=api_key)
+            question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
         except ObjectDoesNotExist:
             desc = 'The Question does not exist in followed api key.'
             return error_return(desc, 404)
 
-        q.is_private = True
-        q.save(is_update=True)
+        question_instance.is_private = True
+        question_instance.save(is_update=True)
         response_dict.update({
             "result": "success",
             "description": "Switched to the private question."
@@ -1539,8 +1497,8 @@ class Answers(View):
             }
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
@@ -1548,7 +1506,7 @@ class Answers(View):
             for key, value in data.get('answers').items():
                 answer_text = value.get('answer_text')
                 if answer_text:
-                    new_answer = Answer(question=q, answer_text=answer_text, answer_num=key)
+                    new_answer = Answer(question=question_instance, answer_text=answer_text, answer_num=key)
                     new_answer.save()
                 else:
                     pass
@@ -1556,9 +1514,9 @@ class Answers(View):
             '''
             load data for response json
             '''
-            a = q.answers.filter(is_removed=False).order_by('answer_num')
+            answer_instance_set = question_instance.answers.filter(is_removed=False).order_by('answer_num')
 
-            for answer in a:
+            for answer in answer_instance_set:
                 response_dict['answers'].update({
                     answer.answer_num: {
                         'id': answer.id,
@@ -1591,15 +1549,15 @@ class Answers(View):
             '''
             if not answer_num:
                 try:
-                    a = ApiKey.objects.get(key=api_key)
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                    api_key_instance = ApiKey.objects.get(key=api_key)
+                    question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api key.'
                     return error_return(desc, 404)
 
-                a = q.answers.filter(is_removed=False)
-                if a:
-                    for answer in a:
+                answer_instance_set = question_instance.answers.filter(is_removed=False)
+                if answer_instance_set:
+                    for answer in answer_instance_set:
                         response_dict['answers'].update({
                             answer.answer_num : {}
                         })
@@ -1618,21 +1576,21 @@ class Answers(View):
             '''
             if answer_num:
                 try:
-                    a = ApiKey.objects.get(key=api_key)
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                    api_key_instance = ApiKey.objects.get(key=api_key)
+                    question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api key.'
                     return error_return(desc, 404)
 
-                a = q.answers.get(answer_num=answer_num, is_removed=False)
-                if a:
+                answer_instance_set = question_instance.answers.get(answer_num=answer_num, is_removed=False)
+                if answer_instance_set:
                     response_dict['answers'].update({
-                        a.answer_num : {}
+                        answer_instance_set.answer_num : {}
                     })
-                    response_dict['answers'][a.answer_num].update({
-                        'id': a.id,
-                        'answer_text': a.answer_text,
-                        'answer_count': a.get_answer_count
+                    response_dict['answers'][answer_instance_set.answer_num].update({
+                        'id': answer_instance_set.id,
+                        'answer_text': answer_instance_set.answer_text,
+                        'answer_count': answer_instance_set.get_answer_count
                     })
                 else:
                     desc = 'The Answer does not exist.'
@@ -1652,16 +1610,16 @@ class Answers(View):
             response_dict = {}
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
-            answer = q.answers.filter(answer_num=answer_num, is_removed=False)
-            for a in answer:
-                a.is_removed = True
-                a.save()
+            answer_instance_set = question_instance.answers.filter(answer_num=answer_num, is_removed=False)
+            for answer in answer_instance_set:
+                answer.is_removed = True
+                answer.save()
 
             response_dict.update({
                 "result": "success",
@@ -1684,27 +1642,27 @@ class Answers(View):
             }
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
             for key, value in data.get('answers').items():
-                update_a = Answer.objects.get(question=q, answer_num=key, is_removed=False)
+                updated_answer = Answer.objects.get(question=question_instance, answer_num=key, is_removed=False)
                 answer_text = value.get('answer_text')
                 if answer_text:
-                    update_a.answer_text = answer_text
-                    update_a.save()
+                    updated_answer.answer_text = answer_text
+                    updated_answer.save()
                 else:
                     pass
 
             '''
             load data for response json
             '''
-            a = q.answers.filter(is_removed=False).order_by('answer_num')
+            answer_instance_set = question_instance.answers.filter(is_removed=False).order_by('answer_num')
 
-            for answer in a:
+            for answer in answer_instance_set:
                 response_dict['answers'].update({
                     answer.answer_num: {
                         'id': answer.id,
@@ -1733,15 +1691,15 @@ class Useranswers(View):
             }
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api key.'
                 return error_return(desc, 404)
 
-            if q.answers:
+            if question_instance.answers:
                 try:
-                    a = Answer.objects.get(question=q, answer_num=answer_num, is_removed=False)
+                    a = Answer.objects.get(question=question_instance, answer_num=answer_num, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Answer does not exist in followed answer_num.'
                     return error_return(desc, 404)
@@ -1788,8 +1746,8 @@ class Useranswers(View):
 
             if not group_id:
                 try:
-                    a = ApiKey.objects.get(key=api_key)
-                    q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                    api_key_instance = ApiKey.objects.get(key=api_key)
+                    question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api key.'
                     return error_return(desc, 404)
@@ -1799,25 +1757,25 @@ class Useranswers(View):
             '''
             if not unique_user and not answer_num and not group_id:
                 try:
-                    answers = Answer.objects.filter(question=q, is_removed=False)
+                    answer_instance_set = Answer.objects.filter(question=question_instance, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Answer does not exist in followed answer_num.'
                     return error_return(desc, 404)
 
-                for a in answers:
+                for answer in answer_instance_set:
                     response_dict['useranswers'].update({
-                        a.answer_num : []
+                        answer.answer_num : []
                     })
                     try:
-                        useranswers = UserAnswer.objects.filter(answer=a, is_removed=False)
+                        useranswer_instance_set = UserAnswer.objects.filter(answer=answer, is_removed=False)
                     except UserAnswer.DoesNotExist:
                         desc = 'No such user answered this question.'
                         return error_return(desc, 404)
-                    for u in useranswers:
-                        response_dict['useranswers'][a.answer_num].append({
-                            "unique_user": u.unique_user,
-                            "id": u.id,
-                            "created_dt": u.created_dt
+                    for useranswer in useranswer_instance_set:
+                        response_dict['useranswers'][answer.answer_num].append({
+                            "unique_user": useranswer.unique_user,
+                            "id": useranswer.id,
+                            "created_dt": useranswer.created_dt
                         })
                 return JsonResponse(response_dict)
             '''
@@ -1825,26 +1783,26 @@ class Useranswers(View):
             '''
             if answer_num and (not unique_user):
                 try:
-                    answer = Answer.objects.get(question=q, answer_num=answer_num, is_removed=False)
+                    answer_instance = Answer.objects.get(question=question_instance, answer_num=answer_num, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Answer does not exist in followed answer_num.'
                     return error_return(desc, 404)
 
                 response_dict['useranswers'].update({
-                    answer.answer_num: []
+                    answer_instance.answer_num: []
                 })
 
                 try:
-                    useranswers = UserAnswer.objects.filter(answer=answer, is_removed=False)
+                    useranswer_instance_set = UserAnswer.objects.filter(answer=answer_instance, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'No such user answered this question.'
                     return error_return(desc, 404)
 
-                for u in useranswers:
-                    response_dict['useranswers'][answer.answer_num].append({
-                        "unique_user": u.unique_user,
-                        "id": u.id,
-                        "created_dt": u.created_dt
+                for useranswer in useranswer_instance_set:
+                    response_dict['useranswers'][answer_instance.answer_num].append({
+                        "unique_user": useranswer.unique_user,
+                        "id": useranswer.id,
+                        "created_dt": useranswer.created_dt
                     })
                 return JsonResponse(response_dict)
 
@@ -1853,25 +1811,25 @@ class Useranswers(View):
             '''
             if unique_user:
                 try:
-                    answers = Answer.objects.filter(question=q, is_removed=False)
+                    answer_instance_set = Answer.objects.filter(question=question_instance, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The Answer does not exist in followed answer_num.'
                     return error_return(desc, 404)
 
                 try:
-                    useranswer = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
+                    useranswer_instance = UserAnswer.objects.get(answer__in=answer_instance_set, unique_user=unique_user, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'No such user answered this question.'
                     return error_return(desc, 404)
 
                 response_dict['useranswers'].update({
-                    useranswer.answer.answer_num: {}
+                    useranswer_instance.answer.answer_num: {}
                 })
 
-                response_dict['useranswers'][useranswer.answer.answer_num].update({
-                    "unique_user": useranswer.unique_user,
-                    "id": useranswer.id,
-                    "created_dt": useranswer.created_dt
+                response_dict['useranswers'][useranswer_instance.answer.answer_num].update({
+                    "unique_user": useranswer_instance.unique_user,
+                    "id": useranswer_instance.id,
+                    "created_dt": useranswer_instance.created_dt
                 })
                 return JsonResponse(response_dict)
             '''
@@ -1879,35 +1837,35 @@ class Useranswers(View):
             '''
             if group_id:
                 try:
-                    questions = Question.objects.filter(multi_question_id=group_id)
+                    question_instance_set = Question.objects.filter(multi_question_id=group_id)
                 except ObjectDoesNotExist:
                     desc = 'The question does not exist in followed group_id.'
                     return error_return(desc, 404)
 
-                for q in questions:
+                for question_instance in question_instance_set:
                     response_dict['useranswers'].update({
-                            q.question_num : {}
+                            question_instance.question_num : {}
                         })
 
                     try:
-                        answers = Answer.objects.filter(question=q, is_removed=False)
+                        answer_instance_set = Answer.objects.filter(question=question_instance, is_removed=False)
                     except ObjectDoesNotExist:
                         continue
 
-                    for a in answers:
-                        response_dict['useranswers'][q.question_num].update({
-                            a.answer_num : []
+                    for answer_instance in answer_instance_set:
+                        response_dict['useranswers'][question_instance.question_num].update({
+                            answer_instance.answer_num : []
                         })
                         try:
-                            useranswers = UserAnswer.objects.filter(answer=a, is_removed=False)
+                            useranswer_instance_set = UserAnswer.objects.filter(answer=answer_instance, is_removed=False)
                         except UserAnswer.DoesNotExist:
                             continue
 
-                        for u in useranswers:
-                            response_dict['useranswers'][q.question_num][a.answer_num].append({
-                                "unique_user": u.unique_user,
-                                "id": u.id,
-                                "created_dt": u.created_dt
+                        for useranswer_instance in useranswer_instance_set:
+                            response_dict['useranswers'][question_instance.question_num][answer_instance.answer_num].append({
+                                "unique_user": useranswer_instance.unique_user,
+                                "id": useranswer_instance.id,
+                                "created_dt": useranswer_instance.created_dt
                             })
                 return JsonResponse(response_dict)
 
@@ -1924,17 +1882,17 @@ class Useranswers(View):
             response_dict = {}
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                     desc = 'The Question does not exist in followed api_key.'
                     return error_return(desc, 404)
 
             try:
-                answers = Answer.objects.filter(question=q, is_removed=False)
-                useranswer = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
-                useranswer.is_removed = True
-                useranswer.save()
+                answer_instance_set = Answer.objects.filter(question=question_instance, is_removed=False)
+                useranswer_instance = UserAnswer.objects.get(answer__in=answer_instance_set, unique_user=unique_user, is_removed=False)
+                useranswer_instance.is_removed = True
+                useranswer_instance.save()
             except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed unique_user.'
                     return error_return(desc, 404)
@@ -1961,34 +1919,34 @@ class Useranswers(View):
             }
 
             try:
-                a = ApiKey.objects.get(key=api_key)
-                q = Question.objects.get(api_key=a, id=question_id, is_removed=False)
+                api_key_instance = ApiKey.objects.get(key=api_key)
+                question_instance = Question.objects.get(api_key=api_key_instance, id=question_id, is_removed=False)
             except ObjectDoesNotExist:
                 desc = 'The Question does not exist in followed api_key.'
                 return error_return(desc, 404)
 
-            if q.is_editable:
+            if question_instance.is_editable:
                 try:
-                    answers = Answer.objects.filter(question=q, is_removed=False)
-                    u = UserAnswer.objects.get(answer__in=answers, unique_user=unique_user, is_removed=False)
+                    answer_instance_set = Answer.objects.filter(question=question_instance, is_removed=False)
+                    useranswer_instance = UserAnswer.objects.get(answer__in=answer_instance_set, unique_user=unique_user, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The UserAnswer does not exist in followed unique_user.'
                     return error_return(desc, 404)
 
                 try:
-                    new_answer = Answer.objects.get(question=q, answer_num=answer_num, is_removed=False)
+                    new_answer = Answer.objects.get(question=question_instance, answer_num=answer_num, is_removed=False)
                 except ObjectDoesNotExist:
                     desc = 'The new Answer instance does not exist in followed unique_user.'
                     return error_return(desc, 404)
 
-                u.answer = new_answer
-                u.save()
+                useranswer_instance.answer = new_answer
+                useranswer_instance.save()
 
                 response_dict['useranswer'].update({
-                    "answer_num": u.answer.answer_num,
-                    "unique_user": u.unique_user,
-                    "created_dt": u.created_dt,
-                    'id': u.id
+                    "answer_num": useranswer_instance.answer.answer_num,
+                    "unique_user": useranswer_instance.unique_user,
+                    "created_dt": useranswer_instance.created_dt,
+                    'id': useranswer_instance.id
                 })
                 return JsonResponse(response_dict)
             else:
