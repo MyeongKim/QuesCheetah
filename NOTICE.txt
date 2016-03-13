@@ -706,26 +706,16 @@ FROM, OUT OF THE USE OR INABILITY TO USE THE FONT SOFTWARE OR FROM
 OTHER DEALINGS IN THE FONT SOFTWARE.
 
 =======================================================================
-Chart.js (http://www.chartjs.org/)
+Highcharts.js (http://www.highcharts.com/)
 =======================================================================
 
-Copyright (c) 2013-2016 Nick Downie
+https://shop.highsoft.com/media/highsoft/Standard-License-Agreement-6.0.pdf
 
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in the Software
-without restriction, including without limitation the rights to use, copy, modify, merge,
-publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
-to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or
-substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
-LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-OTHER DEALINGS IN THE SOFTWARE.
+Subject to the terms and conditions specified in this Agreement, a Website License grants
+Licensee a non-exclusive and non-transferable right to install and utilize the Software on
+Licensee’s own website. The Single Website License does not grant Licensee any right to
+carry out a Customer Installation, or to use the Software in web applications, intranets, or
+SaaS applications.
 
 
 =======================================================================
