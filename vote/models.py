@@ -13,7 +13,7 @@ from django.utils import timezone
 
 class MultiQuestion(models.Model):
     api_key = models.ForeignKey(ApiKey, related_name='multiquestions')
-    group_name = models.CharField(max_length=100, unique=True)
+    group_name = models.CharField(max_length=100)
 
     created_dt = models.DateTimeField(auto_now_add=True)
     updated_dt = models.DateTimeField(auto_now=True)
