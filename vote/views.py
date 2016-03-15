@@ -682,7 +682,8 @@ def dashboard_sample(request, page):
             })
 
     context.update({
-        'is_sample': True
+        'is_sample': True,
+        'HOST_HOME': HOST_HOME
     })
 
     if page == 'users':
