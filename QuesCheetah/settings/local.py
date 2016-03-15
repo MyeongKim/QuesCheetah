@@ -6,4 +6,4 @@ DEBUG = True
 HOST_HOME = '127.0.0.1:8000/'
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = ''
+SECRET_KEY = 'local'
