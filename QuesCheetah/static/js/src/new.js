@@ -158,7 +158,11 @@ export function New(){
                 };
                 qc.apiKey = $('input[name="api_key"]').val();
                 qc.createGroup(params, function(){
-                    window.location.href = 'http://www.quescheetah.com/v1/select';
+                    // Get current page url and redirect to question select page.
+                    var url = window.location.href;
+                    var arr = url.split("/");
+                    var result = arr[0] + "//" + arr[2];
+                    window.location.href = result+'/v1/select';
                 });
                 return false;
             }(); i++) {

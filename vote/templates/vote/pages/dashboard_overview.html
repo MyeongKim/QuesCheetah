@@ -265,7 +265,7 @@
                         // If this page is for group question
 
                         // Render timeline count chart
-                        $.getJSON('http://www.quescheetah.com/v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){
+                        $.getJSON('http://'+'{{ HOST_HOME }}'+'v1/groups/'+'{{ group_id }}'+'/answers/useranswers', function(data){
                             var qcStockData = [];
 
                             $.each(data['useranswers'], function(question_num, value){
@@ -295,12 +295,12 @@
                             });
                         });
 
-                        var get_bar_url = 'http://www.quescheetah.com/v1/groups/'+'{{ group_id }}';
+                        var get_bar_url = 'http://'+'{{ HOST_HOME }}'+'v1/groups/'+'{{ group_id }}';
                     {% else %}
                         // If this page is for single question
 
                         // Render timeline count chart
-                        $.getJSON('http://www.quescheetah.com/v1/questions/'+'{{ questions.1.id }}'+'/answers/useranswers', function(data){
+                        $.getJSON('http://'+'{{ HOST_HOME }}'+'v1/questions/'+'{{ questions.1.id }}'+'/answers/useranswers', function(data){
                             var qcStockData = [];
 
                             qcStockData[0] = {data: []};
@@ -330,7 +330,7 @@
                             });
                         });
 
-                        var get_bar_url = 'http://www.quescheetah.com/v1/questions/'+'{{ questions.1.id }}';
+                        var get_bar_url = 'http://'+'{{ HOST_HOME }}'+'v1/questions/'+'{{ questions.1.id }}';
 
                     {% endif %}
                     // Render bar count chart
