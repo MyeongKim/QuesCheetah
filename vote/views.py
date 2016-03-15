@@ -81,13 +81,13 @@ def dashboard_select(request):
             'api_key': api_key
         })
 
-    if MultiQuestion.objects.get(api_key__key=api_key):
-        multi_question_id = MultiQuestion.objects.get(api_key__key=api_key).id
+    if MultiQuestion.objects.filter(api_key__key=api_key):
+        multi_question_id = MultiQuestion.objects.filter(api_key__key=api_key)[0].id
 
         return redirect('v1:dashboard_group_overview', multi_question_id)
 
-    elif Question.objects.get(api_key__key=api_key):
-        question_id = Question.objects.get(api_key__key=api_key).id
+    elif Question.objects.filter(api_key__key=api_key):
+        question_id = Question.objects.filter(api_key__key=api_key)[0].id
 
         return redirect('v1:dashboard_overview', question_id)
 
