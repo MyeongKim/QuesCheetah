@@ -1,4 +1,3 @@
-# 직접 개발한 코드
 import datetime
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
@@ -15,6 +14,7 @@ from main.models import User, ApiKey, Domain
 from urllib.parse import urlparse
 import json
 import jwt
+
 
 def index(request):
     context = {
