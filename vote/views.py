@@ -12,8 +12,16 @@ from urllib.error import HTTPError
 import json
 from main.models import ApiKey, Domain
 from vote.models import Question, Answer, UserAnswer, MultiQuestion
+from django.conf import settings
 
 import jwt
+
+"""
+Get host domain variable which is
+different with execution environment.
+Default local address is "127.0.0.1:8000".
+"""
+HOST_HOME = getattr(settings, "HOST_HOME", None)
 
 
 """
@@ -106,11 +114,11 @@ def dashboard_overview(request, question_id):
     '''
     request question data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)
+    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -124,11 +132,11 @@ def dashboard_overview(request, question_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -169,6 +177,9 @@ def dashboard_overview(request, question_id):
                 "id": question.id
             })
 
+    context.update({
+        'HOST_HOME': HOST_HOME
+    })
     return render(request, 'vote/pages/dashboard_overview.html', context)
 
 
@@ -189,11 +200,11 @@ def dashboard_filter(request, question_id):
     '''
     request question data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)
+    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -207,11 +218,11 @@ def dashboard_filter(request, question_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -251,6 +262,10 @@ def dashboard_filter(request, question_id):
                 "question_title": question.question_title,
                 "id": question.id
             })
+
+    context.update({
+        'HOST_HOME': HOST_HOME
+    })
     return render(request, 'vote/pages/dashboard_filter.html', context)
 
 
@@ -271,11 +286,11 @@ def dashboard_users(request, question_id):
     '''
     request question data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)
+    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -289,11 +304,11 @@ def dashboard_users(request, question_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/questions/'+str(question_id)+'/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -353,11 +368,11 @@ def dashboard_group_overview(request, group_id):
     '''
     request group data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)
+    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -371,11 +386,11 @@ def dashboard_group_overview(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)+'/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -416,6 +431,9 @@ def dashboard_group_overview(request, group_id):
                 "id": question.id
             })
 
+    context.update({
+        'HOST_HOME': HOST_HOME
+    })
     return render(request, 'vote/pages/dashboard_overview.html', context)
 
 
@@ -436,11 +454,11 @@ def dashboard_group_filter(request, group_id):
     '''
     request group data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)
+    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -454,11 +472,11 @@ def dashboard_group_filter(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)+'/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -498,6 +516,10 @@ def dashboard_group_filter(request, group_id):
                 "question_title": question.question_title,
                 "id": question.id
             })
+
+    context.update({
+        'HOST_HOME': HOST_HOME
+    })
     return render(request, 'vote/pages/dashboard_filter.html', context)
 
 
@@ -518,11 +540,11 @@ def dashboard_group_users(request, group_id):
     '''
     request group data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)
+    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -536,11 +558,11 @@ def dashboard_group_users(request, group_id):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/'+str(group_id)+'/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)+'/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
-    req.add_header('Origin', 'quescheetah.com')
+    req.add_header('Origin', HOST_HOME)
 
     try:
         response_json = urllib.request.urlopen(req).read()
@@ -598,7 +620,7 @@ def dashboard_sample(request, page):
     '''
     request group data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/5'
+    url = 'http://'+HOST_HOME+'v1/groups/5'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
@@ -615,7 +637,7 @@ def dashboard_sample(request, page):
     '''
     request useranswer data to rest api
     '''
-    url = 'http://www.quescheetah.com/v1/groups/5/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/groups/5/answers/useranswers'
 
     req = urllib.request.Request(url)
     req.add_header('api-key', api_key)
