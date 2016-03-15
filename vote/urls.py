@@ -11,8 +11,6 @@ urlpatterns = [
     # QuesCheetah Web Server URLS
 
     url(r'^select$', views.select_question, name='select_question'),
-    url(r'^get/multiple/(?P<api_key>\w+)/(?P<group_name>[\w|\W]+)$', views.get_multiple_vote, name='get_multiple_vote'),
-    url(r'^get/(?P<api_key>\w+)/(?P<question_id>\d+)$', views.get_vote, name='get_vote'),
     url(r'^new/(?P<api_key>\w+)$', views.new, name='new'),
 
     # Dashboard management URLS
