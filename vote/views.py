@@ -1064,10 +1064,11 @@ class Groups(View):
                     answer.is_removed = True
                     answer.save()
 
-                question_instance_set.update(is_removed = True)
+                question.is_removed = True
+                question.save(is_update=True)
 
-            question_instance_set.is_removed = True
-            question_instance_set.save()
+            multi_question_instance.is_removed = True
+            multi_question_instance.save()
 
             response_dict.update({
                 "result": "success",
