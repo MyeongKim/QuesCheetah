@@ -18,7 +18,8 @@ Web Platform with Django for the fast/easy Q&A of your site. Go check our [homep
 
 ## Document / Tutorial
 
-* [Overview]()
+* [Overview](https://mingkim.gitbooks.io/quescheetah-tutorial/content/overview.html)
+* [How to install QuesCheetah](https://mingkim.gitbooks.io/quescheetah-tutorial/content/install_local.html)
 * [JavaScript SDK](https://mingkim.gitbooks.io/quescheetah-tutorial/content/js-SDK.html)
 * [REST API](https://mingkim.gitbooks.io/quescheetah-document/content/)
 * [Install with Jekyll](https://mingkim.gitbooks.io/quescheetah-tutorial/content/jekyll.html)
