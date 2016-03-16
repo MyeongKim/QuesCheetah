@@ -107,7 +107,7 @@ def user_mypage(request, id):
     u = User.objects.get(id=id)
     try:
         a = ApiKey.objects.get(user=u)
-        d = Domain.objects.filter(api_key=a)
+        d = Domain.objects.filter(api_key=a, is_removed=False)
     except ObjectDoesNotExist:
         a = None
         d = None
@@ -144,19 +144,48 @@ def domain_new(request):
         else:
             post_domain = parsed_domain.path
 
+        # If server can't find a correct URL format
         if not post_domain:
             messages.add_message(request, messages.ERROR, 'Please write a right url.')
-            return redirect('main:user_mypage', request.user.id)
 
         try:
             a = ApiKey.objects.get(key=request.POST.get('api_key'))
         except ObjectDoesNotExist:
             messages.add_message(request, messages.ERROR, 'api key doesn\'t exist.')
-            return redirect('main:user_mypage', request.user.id)
 
-        d = Domain(domain=post_domain, api_key=a)
-        d.save()
+        # Check if this user already has the same URL
+        try:
+            d = Domain.objects.get(domain=post_domain, api_key=a)
+        except ObjectDoesNotExist:
+            d = Domain(domain=post_domain, api_key=a)
+            d.save()
+        else:
+            messages.add_message(request, messages.ERROR, 'There is already same domain in your account.')
+
     return redirect('main:user_mypage', request.user.id)
+
+
+def domain_delete(request):
+    response_json = {}
+    if request.is_ajax():
+        data = json.loads(request.body.decode('utf-8'))
+        domain_id = data.get('d_id')
+
+        try:
+            domain_instance = Domain.objects.get(id=domain_id)
+        except ObjectDoesNotExist:
+            response_json.update({
+                'status': 'fail'
+            })
+
+        domain_instance.is_removed = True
+        domain_instance.save()
+
+        response_json.update({
+            'status': 'success'
+        })
+
+        return JsonResponse(response_json)
 
 
 def secret_key_new(request, key):
