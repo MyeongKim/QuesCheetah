@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^apikey/(?P<key>\w+)/secret', views.secret_key_new, name='secret_key_new'),
     url(r'^apikey/new', views.apikey_new, name='apikey_new'),
     url(r'^domain/new', views.domain_new, name='domain_new'),
+    url(r'^domain/delete', views.domain_delete, name='domain_delete'),
     url(r'^jwt/new', views.jwt_new, name='jwt_new'),
 
     url(r'^downloads', views.downloads, name='downloads'),

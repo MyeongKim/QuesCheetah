@@ -37,4 +37,18 @@ export function Mypage(){
             })
         }
     });
+
+    // Delete enrolled domain instance
+    $('.domain-delete-btn').click(function(){
+        var domain_id = $(this).attr('d_id');
+
+        AjaxCall('/domain/delete', {'d_id': domain_id}, function(json){
+            if(json.status == 'success'){
+                location.reload();
+            }else{
+                alert("Delete request failed.");
+            }
+        });
+    });
+
 }

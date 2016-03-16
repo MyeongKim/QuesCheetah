@@ -75,6 +75,11 @@
             width: 90%;
             display: inline-block;
         }
+
+        .domain-delete-btn:hover{
+            cursor: pointer;
+        }
+
     </style>
 {% endblock %}
 {% block content %}
@@ -134,7 +139,7 @@
                             <tr>
                                 <th>{{ forloop.counter }}</th>
                                 <th>{{ domain }}</th>
-                                <th><i class="fa fa-remove"></i></th>
+                                <th><span class="domain-delete-btn" d_id="{{ domain.id }}"><i class="fa fa-remove"></i></span></th>
                             </tr>
                         {% endfor %}
                         </tbody>
