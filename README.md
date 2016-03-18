@@ -1,6 +1,6 @@
 <img src="./QuesCheetah/static/images/qc_logo.png" width="100"><img src="./QuesCheetah/static/images/quescheetah-logo.png" width="400">
 
-
+[![Build Status](https://travis-ci.org/mingkim/QuesCheetah.svg?branch=master)](https://travis-ci.org/mingkim/QuesCheetah) [![Circle CI](https://circleci.com/gh/mingkim/QuesCheetah.svg?style=svg)](https://circleci.com/gh/mingkim/QuesCheetah)
 ---
 # QuesCheetah
 

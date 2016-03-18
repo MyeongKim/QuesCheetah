@@ -9,6 +9,7 @@ machine:
     version: 3.4.3
   environment:
     BUILD_ON_CRICLE: true
+    DJANGO_SETTINGS_MODULE: QuesCheetah.settings.local
 
 database:
   pre:
