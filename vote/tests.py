@@ -14,7 +14,7 @@ class ApiTestCase(TestCase):
         cls.a.save()
         cls.d = Domain.objects.create(domain="127.0.0.1", api_key=cls.a)
 
-        cls.c = Client(HTTP_API_KEY=cls.a.key, HTTP_HOST="127.0.0.1")
+        cls.c = Client(HTTP_API_KEY=cls.a.key, HTTP_ORIGIN="127.0.0.1")
 
     def test_create_group_question(self):
         """Make a new group question"""
