@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
 from django.http import JsonResponse, HttpResponse
@@ -34,16 +35,16 @@ Dashboard page rendering function included.
 # Render question select page for a account
 @never_cache
 def select_question(request):
-    context = {
-    }
+    context = {}
+
     if not hasattr(request.user, 'api_keys'):
         messages.add_message(request, messages.ERROR, 'You should create api key first.')
         return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
+
+    api_key = request.user.api_keys.key
+    context.update({
+        'api_key': api_key
+    })
 
     try:
         api_key_instance = ApiKey.objects.get(key=api_key)
@@ -59,6 +60,7 @@ def select_question(request):
 
 
 # Render creating a new question page
+@never_cache
 def new(request, api_key):
     context = {
         'api_key': api_key
@@ -69,87 +71,86 @@ def new(request, api_key):
 
 # Show a dashboard related page for a user
 def dashboard_select(request):
-    context = {
+    context = {}
 
-    }
     if not hasattr(request.user, 'api_keys'):
         messages.add_message(request, messages.ERROR, 'You should create api key first.')
         return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
+
+    api_key = request.user.api_keys.key
+    context.update({
+        'api_key': api_key
+    })
 
     if MultiQuestion.objects.filter(api_key__key=api_key):
         multi_question_id = MultiQuestion.objects.filter(api_key__key=api_key)[0].id
-
         return redirect('v1:dashboard_group_overview', multi_question_id)
-
     elif Question.objects.filter(api_key__key=api_key):
         question_id = Question.objects.filter(api_key__key=api_key)[0].id
-
         return redirect('v1:dashboard_overview', question_id)
-
     else:
         # If user didn't make any question or group question, redirect to create page.
         return redirect('v1:new', api_key)
 
 
-# Render dashboard overview page for a single question.
-def dashboard_overview(request, question_id):
-    context = {
+@contextmanager
+def request_to_rest_api(api_key, url):
+    """Send a request to REST API."""
+    req = urllib.request.Request(url)
+    req.add_header('api-key', api_key)
+    req.add_header('Origin', HOST_HOME)
 
-    }
+    try:
+        response_json = urllib.request.urlopen(req).read()
+        response_json = json.loads(response_json.decode('utf-8'))
+    except HTTPError as e:
+        yield None, e
+    else:
+        print("sdfsdf")
+        yield response_json, None
+
+
+def dashboard_render(request, question_id=None, group_id=None):
+    context = {}
+
+    collection = "groups" if request.path.find("groups") != -1 else "questions"
+    id_value = question_id or group_id
+    template_path = "dashboard_"+request.path.split('/')[-1]
 
     if not hasattr(request.user, 'api_keys'):
         messages.add_message(request, messages.ERROR, 'You should create api key first.')
         return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
+
+    api_key = request.user.api_keys.key
+    context.update({
+        'api_key': api_key
+    })
 
     '''
     request question data to rest api
     '''
-    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)
+    url = 'http://'+HOST_HOME+'v1/'+collection+'/'+str(id_value)
 
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
+    with request_to_rest_api(api_key, url) as (response_json, err):
+        if err:
+            messages.add_message(request, messages.ERROR, 'Fail to get data.')
+            return HttpResponse(HTTPError.reason, HTTPError)
     context.update(response_json)
 
     '''
     request useranswer data to rest api
     '''
-    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)+'/answers/useranswers'
+    url = 'http://'+HOST_HOME+'v1/'+collection+'/'+str(id_value)+'/answers/useranswers'
 
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
+    with request_to_rest_api(api_key, url) as (response_json, err):
+        if err:
+            messages.add_message(request, messages.ERROR, 'Fail to get data.')
+            return HttpResponse(HTTPError.reason, HTTPError)
     context.update(response_json)
 
-    '''
+    """
     provide other question/group info for navigation
-    '''
+    """
     context.update({
         'nav_group': [],
         'nav_question': []
@@ -157,6 +158,7 @@ def dashboard_overview(request, question_id):
 
     try:
         multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
+        question_instance_set = Question.objects.filter(api_key__key=api_key)
     except ObjectDoesNotExist:
         pass
     else:
@@ -166,11 +168,6 @@ def dashboard_overview(request, question_id):
                 "id": multi_question.id
             })
 
-    try:
-        question_instance_set = Question.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
         for question in question_instance_set:
             context['nav_question'].append({
                 "question_title": question.question_title,
@@ -180,429 +177,8 @@ def dashboard_overview(request, question_id):
     context.update({
         'HOST_HOME': HOST_HOME
     })
-    return render(request, 'vote/pages/dashboard_overview.html', context)
 
-
-# Render dashboard analysis page for a single question.
-def dashboard_filter(request, question_id):
-    context = {
-
-    }
-    if not hasattr(request.user, 'api_keys'):
-        messages.add_message(request, messages.ERROR, 'You should create api key first.')
-        return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
-
-    '''
-    request question data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    request useranswer data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)+'/answers/useranswers'
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    provide other question/group info for navigation
-    '''
-    context.update({
-        'nav_group': [],
-        'nav_question': []
-    })
-
-    try:
-        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for multi_question in multi_question_instance_set:
-            context['nav_group'].append({
-                "group_name": multi_question.group_name,
-                "id": multi_question.id
-            })
-
-    try:
-        question_instance_set = Question.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for question in question_instance_set:
-            context['nav_question'].append({
-                "question_title": question.question_title,
-                "id": question.id
-            })
-
-    context.update({
-        'HOST_HOME': HOST_HOME
-    })
-    return render(request, 'vote/pages/dashboard_filter.html', context)
-
-
-# Render dashboard users page for a single question.
-def dashboard_users(request, question_id):
-    context = {
-
-    }
-    if not hasattr(request.user, 'api_keys'):
-        messages.add_message(request, messages.ERROR, 'You should create api key first.')
-        return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
-
-    '''
-    request question data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    request useranswer data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/questions/'+str(question_id)+'/answers/useranswers'
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    provide other question/group info for navigation
-    '''
-    context.update({
-        'nav_group': [],
-        'nav_question': []
-    })
-
-    try:
-        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for multi_question in multi_question_instance_set:
-            context['nav_group'].append({
-                "group_name": multi_question.group_name,
-                "id": multi_question.id
-            })
-
-    try:
-        question_instance_set = Question.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for question in question_instance_set:
-            context['nav_question'].append({
-                "question_title": question.question_title,
-                "id": question.id
-            })
-    return render(request, 'vote/pages/dashboard_users.html', context)
-
-
-# Render dashboard overview page for a group question.
-def dashboard_group_overview(request, group_id):
-    context = {
-
-    }
-    if not hasattr(request.user, 'api_keys'):
-        messages.add_message(request, messages.ERROR, 'You should create api key first.')
-        return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
-
-    '''
-    request group data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    request useranswer data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)+'/answers/useranswers'
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    provide other question/group info for navigation
-    '''
-    context.update({
-        'nav_group': [],
-        'nav_question': []
-    })
-
-    try:
-        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for multi_question in multi_question_instance_set:
-            context['nav_group'].append({
-                "group_name": multi_question.group_name,
-                "id": multi_question.id
-            })
-
-    try:
-        question_instance_set = Question.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for question in question_instance_set:
-            context['nav_question'].append({
-                "question_title": question.question_title,
-                "id": question.id
-            })
-
-    context.update({
-        'HOST_HOME': HOST_HOME
-    })
-    return render(request, 'vote/pages/dashboard_overview.html', context)
-
-
-# Render dashboard analysis page for a group question.
-def dashboard_group_filter(request, group_id):
-    context = {
-
-    }
-    if not hasattr(request.user, 'api_keys'):
-        messages.add_message(request, messages.ERROR, 'You should create api key first.')
-        return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
-
-    '''
-    request group data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    request useranswer data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)+'/answers/useranswers'
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    provide other question/group info for navigation
-    '''
-    context.update({
-        'nav_group': [],
-        'nav_question': []
-    })
-
-    try:
-        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for multi_question in multi_question_instance_set:
-            context['nav_group'].append({
-                "group_name": multi_question.group_name,
-                "id": multi_question.id
-            })
-
-    try:
-        question_instance_set = Question.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for question in question_instance_set:
-            context['nav_question'].append({
-                "question_title": question.question_title,
-                "id": question.id
-            })
-
-    context.update({
-        'HOST_HOME': HOST_HOME
-    })
-    return render(request, 'vote/pages/dashboard_filter.html', context)
-
-
-# Render dashboard users page for a group question.
-def dashboard_group_users(request, group_id):
-    context = {
-
-    }
-    if not hasattr(request.user, 'api_keys'):
-        messages.add_message(request, messages.ERROR, 'You should create api key first.')
-        return redirect('main:user_mypage', request.user.id)
-    else:
-        api_key = request.user.api_keys.key
-        context.update({
-            'api_key': api_key
-        })
-
-    '''
-    request group data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    request useranswer data to rest api
-    '''
-    url = 'http://'+HOST_HOME+'v1/groups/'+str(group_id)+'/answers/useranswers'
-
-    req = urllib.request.Request(url)
-    req.add_header('api-key', api_key)
-    req.add_header('Origin', HOST_HOME)
-
-    try:
-        response_json = urllib.request.urlopen(req).read()
-        response_json = json.loads(response_json.decode('utf-8'))
-    except HTTPError:
-        messages.add_message(request, messages.ERROR, 'Fail to get data.')
-        return HttpResponse(HTTPError.reason, HTTPError)
-
-    context.update(response_json)
-
-    '''
-    provide other question/group info for navigation
-    '''
-    context.update({
-        'nav_group': [],
-        'nav_question': []
-    })
-
-    try:
-        multi_question_instance_set = MultiQuestion.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for multi_question in multi_question_instance_set:
-            context['nav_group'].append({
-                "group_name": multi_question.group_name,
-                "id": multi_question.id
-            })
-
-    try:
-        question_instance_set = Question.objects.filter(api_key__key=api_key)
-    except ObjectDoesNotExist:
-        pass
-    else:
-        for question in question_instance_set:
-            context['nav_question'].append({
-                "question_title": question.question_title,
-                "id": question.id
-            })
-    return render(request, 'vote/pages/dashboard_users.html', context)
+    return render(request, 'vote/pages/'+template_path+'.html', context)
 
 
 # Render dashboard sample page that anyone can access
@@ -710,11 +286,13 @@ This proccess inhibits Cross Origin Request Sharing.
 
 
 def match_domain(request):
+    print("sdfsdfsdf")
     if request.method == 'GET':
         return True
     api_key = get_api_key(request)
     if api_key:
         request_domain = request.META.get('HTTP_ORIGIN')
+        print("도메인은 "+request_domain)
         if request_domain[:7] == 'http://':
             request_domain = request_domain[7:]
         if request_domain[:4] == 'www.':
